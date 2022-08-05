@@ -1,0 +1,18 @@
+--- a/drivers/st/ddr/stm32mp1_ddr.c	2022-07-14 22:49:43.419557000 +0200
++++ b/drivers/st/ddr/stm32mp1_ddr.c	2022-07-14 23:21:17.767966864 +0200
+@@ -322,6 +322,7 @@
+ 			(uintptr_t)&phy->pgsr, pgsr);
+ 
+ 		if (timeout_elapsed(timeout)) {
++			ERROR("DDR RAM PHY Init Timeout\n");
+ 			panic();
+ 		}
+ 
+@@ -774,6 +775,7 @@
+ static int board_ddr_power_init(enum ddr_type ddr_type)
+ {
+ 	if (dt_pmic_status() > 0) {
++		NOTICE("pmic_ddr_power_init(%d)\n", ddr_type);
+ 		return pmic_ddr_power_init(ddr_type);
+ 	}
+ 

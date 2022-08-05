@@ -1,0 +1,11 @@
+--- a/sound/soc/stm/Makefile	2021-08-26 14:51:21.000000000 +0200
++++ b/sound/soc/stm/Makefile	2022-03-31 14:27:25.883633405 +0200
+@@ -16,3 +16,8 @@
+ 
+ #DFSDM
+ obj-$(CONFIG_SND_SOC_STM32_DFSDM) += stm32_adfsdm.o
++
++#SSM2518
++snd-soc-stm32-ssm2518-objs := stm_ssm2518.o
++obj-$(CONFIG_SND_SOC_STM32_SSM2518) += snd-soc-stm32-ssm2518.o
++

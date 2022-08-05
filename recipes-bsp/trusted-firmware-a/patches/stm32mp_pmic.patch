@@ -1,0 +1,92 @@
+--- a/drivers/st/pmic/stm32mp_pmic.c	2022-07-14 19:28:40.898160000 +0200
++++ b/drivers/st/pmic/stm32mp_pmic.c	2022-07-14 19:35:06.444065563 +0200
+@@ -187,6 +187,13 @@
+ 
+ void initialize_pmic(void)
+ {
++	int ireg;
++	int i;
++	int ival;
++	int ierr;
++	uint8_t irgv;
++	static const uint8_t invm[] = { 0xDE, 0x93, 0xC0, 0x02, 0xFA, 0x33, 0x02, 0x33 /*I2C addr*/ };
++	
+ 	if (!initialize_pmic_i2c()) {
+ 		VERBOSE("No PMIC\n");
+ 		return;
+@@ -198,10 +205,72 @@
+ 		panic();
+ 	}
+ 
+-	if (stpmic1_powerctrl_on() < 0) {
+-		panic();
+-	}
++	/* Check the PMIC NVM memory to be set to THOR-E2 preferences. */
+ 
++	irgv = 0;
++	ival = stpmic1_register_read(0xFD /*NVM_LDOS_VOUT_SHR1*/, &irgv);
++	
++	if (!ival)
++	{
++		if (irgv != 0x33 /*LDO1=3.3V, LDO3=Buck2/2*/)
++		{
++			INFO("PMIC NVM needs to be updated.\n");
++
++			ierr = 0;
++			mdelay(10);
++
++			for(i = 0, ireg = 0xF8 /*NVM_MAIN_CTRL_SHR*/; i < (int)sizeof(invm) /*NVM_I2C_ADDR_SHR*/; ireg++, i++)
++			{
++				if (stpmic1_register_update(ireg, invm[i], 0xFF))
++				{
++					ERROR("Error writing to PMIC NVM memory.\n");
++					ierr = 1;
++					break;
++				}
++				mdelay(10);
++			}
++
++			if (!ierr)
++			{
++				if (stpmic1_register_update( 0xB9 /*NVM control register (NVM_CR)*/, 0x01 /*Write shadow registers to NVM*/, 0x03))
++				{
++					ERROR("Error storing data non-volatile to PMIC.\n");
++				}
++				else
++				{
++					i = 20;
++					irgv = 0;
++					do
++					{
++						if (!i--)
++						{
++							ERROR("PMIC Busy flag timeout.\n");
++							break;
++						}
++						
++						mdelay(20);
++						ival = stpmic1_register_read(0xB8 /*NVM status register (NVM_SR)*/, &irgv);
++
++						if (ival)
++						{
++							ERROR("Error reading PMIC Busy flag.\n");
++							break;
++						}
++					}
++					while(irgv & 1 /*NVM_BUSY*/);
++					
++					if (!(irgv & 1 /*NVM_BUSY*/))
++					{
++						INFO("PMIC NVM successfully updated.\n");
++					}
++				}
++			}
++		}
++	}
++	else
++	{
++		ERROR("Can't verify PMIC NVM memory.\n");
++	}
+ }
+ 
+ #if DEBUG

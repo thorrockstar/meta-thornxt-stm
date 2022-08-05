@@ -1,0 +1,44 @@
+--- a/drivers/gpu/drm/panel/panel-simple.c
++++ b/drivers/gpu/drm/panel/panel-simple.c
+@@ -709,6 +709,31 @@
+ 	.bus_format = MEDIA_BUS_FMT_RGB888_1X24,
+ };
+ 
++static const struct drm_display_mode hifaycx_rd570_mode = {
++	.clock = 33333,
++	.hdisplay = 480,
++	.hsync_start = 480 + 30,
++	.hsync_end = 480 + 30 + 10,
++	.htotal = 480 + 30 + 10 + 30,
++	.vdisplay = 960,
++	.vsync_start = 960 + 16,
++	.vsync_end = 960 + 16 + 10,
++	.vtotal = 960 + 16 + 10 + 16,
++	//.vrefresh = 60,
++	.flags = DRM_MODE_FLAG_NVSYNC | DRM_MODE_FLAG_NHSYNC,
++};
++
++static const struct panel_desc hifaycx_rd570 = {
++	.modes = &hifaycx_rd570_mode,
++	.num_modes = 1,
++	.size = {
++		.width = 65,
++		.height = 125,
++	},
++       .connector_type = DRM_MODE_CONNECTOR_DPI,
++	.bus_format = MEDIA_BUS_FMT_RGB888_1X24,
++};
++
+ static const struct drm_display_mode ampire_am800480r3tmqwa1h_mode = {
+ 	.clock = 33333,
+ 	.hdisplay = 800,
+@@ -4301,6 +4325,9 @@
+ 		.compatible = "winstar,wf35ltiacd",
+ 		.data = &winstar_wf35ltiacd,
+ 	}, {
++		.compatible = "hifaycx,rd570",
++		.data = &hifaycx_rd570,
++	}, {
+ 		/* Must be the last entry */
+ 		.compatible = "panel-dpi",
+ 		.data = &panel_dpi,

@@ -1,0 +1,20 @@
+--- a/arch/arm/dts/stm32mp157a-ed1-u-boot.dtsi	2022-07-28 18:51:55.632604000 +0200
++++ b/arch/arm/dts/stm32mp157a-ed1-u-boot.dtsi	2022-07-28 18:59:47.352269654 +0200
+@@ -18,17 +18,6 @@
+ 		u-boot,boot-led = "heartbeat";
+ 		u-boot,error-led = "error";
+ 		u-boot,mmc-env-partition = "fip";
+-		st,fastboot-gpios = <&gpioa 13 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+-		st,stm32prog-gpios = <&gpioa 14 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+-	};
+-
+-	led {
+-		led-red {
+-			label = "error";
+-			gpios = <&gpioa 13 GPIO_ACTIVE_LOW>;
+-			default-state = "off";
+-			status = "okay";
+-		};
+ 	};
+ 
+ #ifdef CONFIG_STM32MP15x_STM32IMAGE

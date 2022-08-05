@@ -1,0 +1,10 @@
+--- a/common/main.c	2022-07-19 22:34:28.354634000 +0200
++++ b/common/main.c	2022-07-19 23:06:30.323049607 +0200
+@@ -54,6 +54,7 @@
+ 		update_tftp(0UL, NULL, NULL);
+ 
+ 	s = bootdelay_process();
++	
+ 	if (cli_process_fdt(&s))
+ 		cli_secure_boot_cmd(s);
+ 

@@ -1,0 +1,11 @@
+--- a/drivers/pinctrl/stm32/pinctrl-stm32.c
++++ b/drivers/pinctrl/stm32/pinctrl-stm32.c
+@@ -469,7 +469,7 @@
+ 	spin_lock_irqsave(&pctl->irqmux_lock, flags);
+ 
+ 	if (pctl->irqmux_map & BIT(hwirq)) {
+-		dev_err(pctl->dev, "irq line %ld already requested.\n", hwirq);
++		//dev_err(pctl->dev, "irq line %ld already requested.\n", hwirq);
+ 		ret = -EBUSY;
+ 	} else {
+ 		pctl->irqmux_map |= BIT(hwirq);

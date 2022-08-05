@@ -1,0 +1,20 @@
+--- a/sound/soc/stm/stm32_sai_sub.c	2022-07-26 08:17:49.278327000 +0200
++++ b/sound/soc/stm/stm32_sai_sub.c	2022-07-26 08:43:00.222862082 +0200
+@@ -576,6 +576,9 @@
+ 			return ret;
+ 
+ 		ret = clk_set_rate_exclusive(sai->sai_mclk, freq);
++
++	#if 0 // Ignore the warning and proceed.
++
+ 		if (ret) {
+ 			dev_err(cpu_dai->dev,
+ 				ret == -EBUSY ?
+@@ -584,6 +587,7 @@
+ 			return ret;
+ 		}
+ 
++	#endif
+ 		dev_dbg(cpu_dai->dev, "SAI MCLK frequency is %uHz\n", freq);
+ 		sai->mclk_rate = freq;
+ 	}

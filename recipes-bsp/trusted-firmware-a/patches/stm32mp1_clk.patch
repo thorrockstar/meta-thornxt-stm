@@ -1,0 +1,14 @@
+--- a/drivers/st/clk/stm32mp1_clk.c	2022-07-14 20:45:38.968583000 +0200
++++ b/drivers/st/clk/stm32mp1_clk.c	2022-07-14 20:55:06.070988634 +0200
+@@ -2163,10 +2163,7 @@
+ 
+ 	*fracv = fdt_read_uint32_default(fdt, plloff, "frac", 0);
+ 
+-	ret = fdt_read_uint32_array(fdt, plloff, "csg", (uint32_t)PLLCSG_NB,
+-				    csg);
+-
+-	*csg_set = (ret == 0);
++	*csg_set = 0;
+ 
+ 	if (ret == -FDT_ERR_NOTFOUND) {
+ 		ret = 0;
