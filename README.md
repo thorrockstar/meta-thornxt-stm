@@ -191,4 +191,4 @@ Roy Schneider <roy@thor.engineering>
 
 When creating patches insert the [meta-thornxt-stm] tag in the subject, for example
 use something like:
-git format-patch -s --subject-prefix='meta-thore2][PATCH' <origin>
+git format-patch -s --subject-prefix='meta-thornxt-stm][PATCH' <origin>
