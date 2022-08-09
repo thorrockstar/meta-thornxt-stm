@@ -11,6 +11,8 @@ SRC_URI += " \
 	file://pxe_utils.patch;patch=1 \
 	file://stm32mp157a-ev1-u-boot.patch;patch=1 \
 	file://stm32mp157a-ed1-u-boot.patch;patch=1 \
+	file://build.patch;patch=1 \
+	file://dfu.patch;patch=1 \
 "
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
