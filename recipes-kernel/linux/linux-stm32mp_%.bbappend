@@ -14,7 +14,7 @@ SRC_URI += " \
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-KERNEL_MODULE_AUTOLOAD += "g_serial cdc-acm"
+KERNEL_MODULE_AUTOLOAD += "cdc-acm"
 
 do_configure_prepend() {
     cp ${WORKDIR}/defconfig ${WORKDIR}/build/.config
