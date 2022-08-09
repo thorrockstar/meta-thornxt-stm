@@ -1,11 +1,13 @@
 --- a/common/dfu.c	2022-08-09 12:42:36.553418000 +0200
 +++ b/common/dfu.c	2022-08-09 13:04:09.143672334 +0200
-@@ -20,10 +20,14 @@
+@@ -19,11 +19,16 @@
+ #include <g_dnl.h>
  #include <usb.h>
  #include <net.h>
- 
-+extern int g_flashing_done_hint;
++#include <asm/gpio.h>
 +
++extern int g_flashing_done_hint;
+ 
  int run_usb_dnl_gadget(int usbctrl_index, char *usb_dnl_gadget)
  {
  	bool dfu_reset = false;
@@ -15,7 +17,7 @@
  
  	ret = usb_gadget_initialize(usbctrl_index);
  	if (ret) {
-@@ -41,7 +45,22 @@
+@@ -41,7 +46,22 @@
  	unsigned long start_time = get_timer(0);
  #endif
  

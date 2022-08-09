@@ -16,7 +16,7 @@
  
  #include "../../st/common/stusb160x.h"
  
-@@ -78,6 +78,567 @@
+@@ -78,6 +78,569 @@
  #define USB_START_LOW_THRESHOLD_UV	1230000
  #define USB_START_HIGH_THRESHOLD_UV	2150000
  
@@ -189,7 +189,7 @@
 +    unsigned char txbuf[400];
 +    unsigned char rxbuf[400];
 +    
-+    printf("\nInitialize GC9503V display controller via SPI.\n");
++    printf("\nInitialize GC9503V display controller via SPI. ");
 +
 +    /* Setup GPIO. */
 +	
@@ -226,7 +226,7 @@
 +            }
 +            else
 +            {
-+                mdelay(100);
++                mdelay(50);
 +
 +                /* Transmit initialization sequence. */
 +
@@ -305,14 +305,14 @@
 +
 +                    /* Short delay after the last command. */
 +
-+                    mdelay(10);
++                    mdelay(5);
 +
 +                    /* Next command. */
 +
 +                    pb += 2;
 +                }
 +
-+                mdelay(50);
++                mdelay(25);
 +
 +                /* Release the SPI. */
 +
@@ -325,6 +325,8 @@
 +        gpio_direction_output(94 /*PF14 WR_DISPLAY*/, 0);
 +        gpio_free(94 /*PF14*/);
 +    }
++
++    printf("Done.\n");
 +}
 +
 +void init_board_gpios_ios(void)
@@ -584,7 +586,7 @@
  int board_early_init_f(void)
  {
  	/* nothing to do, only used in SPL */
-@@ -100,7 +661,7 @@
+@@ -100,7 +663,7 @@
  	else
  		mode = "basic";
  
@@ -593,7 +595,7 @@
  	fdt_compat = fdt_getprop(gd->fdt_blob, 0, "compatible",
  				 &fdt_compat_len);
  	if (fdt_compat && fdt_compat_len)
-@@ -127,57 +688,6 @@
+@@ -127,57 +690,6 @@
  	return 0;
  }
  
@@ -651,7 +653,7 @@
  int g_dnl_board_usb_cable_connected(void)
  {
  	struct udevice *dwc2_udc_otg;
-@@ -220,227 +730,6 @@
+@@ -220,227 +732,6 @@
  }
  #endif /* CONFIG_USB_GADGET_DOWNLOAD */
  
@@ -879,7 +881,7 @@
  static void sysconf_init(void)
  {
  	u8 *syscfg;
-@@ -530,137 +819,30 @@
+@@ -530,137 +821,30 @@
  				 1000000);
  	if (ret) {
  		pr_err("SYSCFG: I/O compensation failed, timeout.\n");
@@ -1023,7 +1025,7 @@
  
  	return 0;
  }
-@@ -709,15 +891,11 @@
+@@ -709,15 +893,11 @@
  		}
  	}
  
