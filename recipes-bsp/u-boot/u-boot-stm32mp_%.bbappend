@@ -13,6 +13,7 @@ SRC_URI += " \
 	file://stm32mp157a-ed1-u-boot.patch;patch=1 \
 	file://build.patch;patch=1 \
 	file://dfu.patch;patch=1 \
+	file://stm32prog.patch;patch=1 \
 "
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
