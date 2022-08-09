@@ -1,0 +1,12 @@
+--- a/drivers/mtd/ubi/build.c	2022-08-05 16:36:50.851384000 +0200
++++ b/drivers/mtd/ubi/build.c	2022-08-09 09:03:13.422112826 +0200
+@@ -1122,9 +1122,6 @@
+ 			spin_unlock(&ubi_devices_lock);
+ 			return -EBUSY;
+ 		}
+-		/* This may only happen if there is a bug */
+-		ubi_err(ubi, "%s reference count %d, destroy anyway",
+-			ubi->ubi_name, ubi->ref_count);
+ 	}
+ 	ubi_devices[ubi_num] = NULL;
+ 	spin_unlock(&ubi_devices_lock);
