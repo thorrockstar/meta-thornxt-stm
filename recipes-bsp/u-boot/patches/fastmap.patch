@@ -1,0 +1,10 @@
+--- a/drivers/mtd/ubi/fastmap.c	2022-08-10 17:03:38.640537000 +0200
++++ b/drivers/mtd/ubi/fastmap.c	2022-08-10 17:22:11.987173352 +0200
+@@ -1613,7 +1613,6 @@
+ 		}
+ 	} else {
+ 		if (!tmp_e) {
+-			ubi_err(ubi, "could not find any anchor PEB");
+ 
+ 			for (i = 1; i < new_fm->used_blocks; i++) {
+ 				ubi_wl_put_fm_peb(ubi, new_fm->e[i], i, 0);
