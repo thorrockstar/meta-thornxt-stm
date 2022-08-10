@@ -1,0 +1,11 @@
+--- a/lib/optee/optee_utils.c	2022-08-10 15:37:05.586880000 +0200
++++ b/lib/optee/optee_utils.c	2022-08-10 15:46:24.954590834 +0200
+@@ -62,7 +62,7 @@
+ 	}
+ 
+ 	else {
+-		WARN("Not a known TEE, use default loading options.\n");
++		INFO("Use default loading options.\n");
+ 	}
+ 
+ 	return valid;

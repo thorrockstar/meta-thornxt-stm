@@ -7,6 +7,7 @@ SRC_URI += " \
 	file://stm32mp1_clk.patch;patch=1 \
 	file://stm32mp1_ddr.patch;patch=1 \
 	file://stm32mp_pmic.patch;patch=1 \
+	file://optee_utils.patch;patch=1 \
 "
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
