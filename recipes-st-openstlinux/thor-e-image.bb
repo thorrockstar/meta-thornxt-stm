@@ -61,6 +61,8 @@ IMAGE_INSTALL_remove = "\
     tcpdump \
     cracklib \
     sqlite3 \
+    nfc \
+    zeroconf \
     "
 
 # add important components to image
@@ -85,7 +87,17 @@ fix_udev_files () {
     rm -f $D${sysconfdir}/udev/hwdb.bin
     rm -fr $D${sysconfdir}/udev/hwdb.d
     rm -fr $D${sysconfdir}/rc3.d/S03rng-tools
+    rm -fr $D${sysconfdir}/rc3.d/S21avahi-daemon
+    rm -fr $D${sysconfdir}/rc3.d/S22ofono
+    rm -fr $D${sysconfdir}/rc3.d/S39alsa-state
+    rm -fr $D${sysconfdir}/rc3.d/S64neard
     rm -fr $D${sysconfdir}/rc5.d/S03rng-tools
+    rm -fr $D${sysconfdir}/rc5.d/S21avahi-daemon
+    rm -fr $D${sysconfdir}/rc5.d/S22ofono
+    rm -fr $D${sysconfdir}/rc5.d/S39alsa-state
+    rm -fr $D${sysconfdir}/rc5.d/S64neard
+    rm -fr $D${sysconfdir}/fw_env.config.mmc
+    rm -fr $D${sysconfdir}/fw_env.config.nor
 }
 
 fix_usr_files () {
