@@ -1,6 +1,6 @@
 --- a/arch/arm/dts/stm32mp157f-ev1.dts
 +++ b/arch/arm/dts/stm32mp157f-ev1.dts
-@@ -1,84 +1,998 @@
+@@ -1,84 +1,794 @@
  // SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
  /*
 - * Copyright (C) STMicroelectronics 2019 - All Rights Reserved
@@ -48,7 +48,10 @@
  	chosen {
  		stdout-path = "serial0:115200n8";
  	};
-+
+-};
+ 
+-&ltdc {
+-	status = "okay";
 +	cpus {
 +		cpu1: cpu@1 {
 +			compatible = "arm,cortex-a7";
@@ -65,7 +68,11 @@
 +			     <GIC_SPI 201 IRQ_TYPE_LEVEL_HIGH>;
 +		interrupt-affinity = <&cpu0>, <&cpu1>;
 +	};
-+
+ 
+-	port {
+-		ltdc_ep0_out: endpoint@0 {
+-			reg = <0>;
+-			remote-endpoint = <&dsi_in>;
 +	soc {
 +		m_can1: can@4400e000 {
 +			compatible = "bosch,m_can";
@@ -91,9 +98,14 @@
 +			clock-names = "hclk", "cclk";
 +			bosch,mram-cfg = <0x1400 0 0 32 0 0 2 2>;
 +			status = "disabled";
-+		};
-+	};
-+
+ 		};
+ 	};
+-};
+ 
+-&dsi {
+-	#address-cells = <1>;
+-	#size-cells = <0>;
+-	status = "okay";
 +	/* RAM base address and size */
 +
 +	memory@c0000000 {
@@ -102,9 +114,11 @@
 +	};
 +
 +	/* Memory reserved for peripherals and IO. */
-+
+ 
+-	ports {
 +	reserved-memory {
-+		#address-cells = <1>;
+ 		#address-cells = <1>;
+-		#size-cells = <0>;
 +		#size-cells = <1>;
 +		ranges;
 +
@@ -137,7 +151,11 @@
 +			reg = <0x10048000 0x8000>;
 +			no-map;
 +		};
-+
+ 
+-		port@0 {
+-			reg = <0>;
+-			dsi_in: endpoint {
+-				remote-endpoint = <&ltdc_ep0_out>;
 +		mcuram: mcuram@30000000 {
 +			compatible = "shared-dma-pool";
 +			reg = <0x30000000 0x40000>;
@@ -187,8 +205,8 @@
 +				vsync-active = <0>;
 +				de-active = <1>;
 +				pixelclk-active = <1>;
-+			};
-+		};
+ 			};
+ 		};
 +	};
 +
 +	/* Optional USB-PHY parameters. */
@@ -213,10 +231,8 @@
 +		regulator-max-microvolt = <5000000>;
 +		regulator-always-on;
 +	};
- };
- 
--&ltdc {
--	status = "okay";
++};
++
 +/* Pinout mapping */
 +
 +&pinctrl {
@@ -267,36 +283,6 @@
 +		};
 +	};
 +
-+	/* Pins for the DCP interface. */
-+	
-+	uart5_pins_mx_z: uart5_mx-0 {
-+		pins1 {
-+			pinmux = <STM32_PINMUX('C', 12, AF8)>; /* UART5_TX */
-+			bias-disable;
-+			drive-push-pull;
-+			slew-rate = <0>;
-+		};
-+		pins2 {
-+			pinmux = <STM32_PINMUX('D', 2, AF8)>; /* UART5_RX */
-+			bias-disable;
-+		};
-+	};
-+
-+	/* Pins for the Breathing-LED. */
- 
--	port {
--		ltdc_ep0_out: endpoint@0 {
--			reg = <0>;
--			remote-endpoint = <&dsi_in>;
-+	lptim2_pwm_pins_mx_z: lptim2_pwm_mx-0 {
-+		pins {
-+			pinmux = <STM32_PINMUX('B', 13, AF4)>; /* LPTIM2_OUT */
-+			bias-disable;
-+			drive-push-pull;
-+			slew-rate = <0>;
-+		};
-+	};
-+
 +	/* Pins for the SPI used to communicate with the display controller. */
 +
 +	spi5_pins_mx_z: spi5-0 {
@@ -318,16 +304,6 @@
 +		pins {
 +			pinmux = <STM32_PINMUX('F', 9, ANALOG)>,  /* SPI5_MOSI */
 +				  <STM32_PINMUX('H', 7, ANALOG)>; /* SPI5_MISO */
-+		};
-+	};
-+
-+	/* Pins for the analogue inputs. */
-+	
-+	adc_pins_mx_z: adc_mx-0 {
-+		pins {
-+			pinmux = <STM32_PINMUX('B', 0, ANALOG)>, /* ADC1_INP9 - Light Sensor */
-+				 <STM32_PINMUX('F', 11, ANALOG)>, /* ADC1_INP2 - Battery */
-+				 <STM32_PINMUX('F', 12, ANALOG)>; /* ADC1_INP6 - Temperature */
 +		};
 +	};
 +
@@ -374,51 +350,6 @@
 +		};
 +	};
 +
-+	/* Pins for the Micro SD-card interface. */
-+
-+	sdmmc2_pins_mx_z: sdmmc2_mx-0 {
-+		pins1 {
-+			pinmux = <STM32_PINMUX('B', 3, AF9)>, /* SDMMC2_D2 */
-+				 <STM32_PINMUX('B', 4, AF9)>, /* SDMMC2_D3 */
-+				 <STM32_PINMUX('B', 7, AF10)>, /* SDMMC2_D1 */
-+				 <STM32_PINMUX('B', 14, AF9)>, /* SDMMC2_D0 */
-+				 <STM32_PINMUX('G', 6, AF10)>; /* SDMMC2_CMD */
-+			bias-disable;
-+			drive-push-pull;
-+			slew-rate = <1>;
-+		};
-+		pins2 {
-+			pinmux = <STM32_PINMUX('E', 3, AF9)>; /* SDMMC2_CK */
-+			bias-disable;
-+			drive-push-pull;
-+			slew-rate = <3>;
-+		};
-+	};
-+
-+	sdmmc2_opendrain_pins_mx_z: sdmmc2_opendrain_mx-0 {
-+		pins1 {
-+			pinmux = <STM32_PINMUX('B', 3, AF9)>, /* SDMMC2_D2 */
-+				 <STM32_PINMUX('B', 4, AF9)>, /* SDMMC2_D3 */
-+				 <STM32_PINMUX('B', 7, AF10)>, /* SDMMC2_D1 */
-+				 <STM32_PINMUX('B', 14, AF9)>; /* SDMMC2_D0 */
-+			bias-disable;
-+			drive-push-pull;
-+			slew-rate = <1>;
-+		};
-+		pins2 {
-+			pinmux = <STM32_PINMUX('E', 3, AF9)>; /* SDMMC2_CK */
-+			bias-disable;
-+			drive-push-pull;
-+			slew-rate = <3>;
-+		};
-+		pins3 {
-+			pinmux = <STM32_PINMUX('G', 6, AF10)>; /* SDMMC2_CMD */
-+			bias-disable;
-+			drive-open-drain;
-+			slew-rate = <1>;
-+		};
-+	};
-+
 +	/* Pins for the Ethernet interface */
 +	
 +	eth1_pins_mx_z: rmii-0 {
@@ -439,30 +370,6 @@
 +				 <STM32_PINMUX('A', 7, AF11)>,  /* ETH1_RMII_CRS_DV */
 +				 <STM32_PINMUX('G', 12, AF11)>; /* ETH1_PHY_INTN */
 +			bias-disable;
-+		};
-+	};
-+
-+	/* Pins for the i2C command interface of the audio codec. */
-+	
-+	i2c2_pins_mx_z: i2c2_mx-0 {
-+		pins {
-+			pinmux = <STM32_PINMUX('F', 1, AF4)>, /* I2C2_SCL */
-+				 <STM32_PINMUX('H', 5, AF4)>; /* I2C2_SDA */
-+			bias-disable;
-+			drive-open-drain;
-+			slew-rate = <0>;
-+		};
-+	};
-+
-+	/* Pins for the i2C command interface of the touch controller (CTP). */
-+
-+	i2c1_pins_mx_z: i2c1_mx-0 {
-+		pins {
-+			pinmux = <STM32_PINMUX('F', 15, AF5)>, /* I2C1_SDA */
-+				 <STM32_PINMUX('H', 11, AF5)>; /* I2C1_SCL */
-+			bias-disable;
-+			drive-open-drain;
-+			slew-rate = <0>;
 +		};
 +	};
 +
@@ -508,13 +415,10 @@
 +				 <STM32_PINMUX('E', 9, ANALOG)>, /* FMC_D6 */
 +				 <STM32_PINMUX('E', 10, ANALOG)>, /* FMC_D7 */
 +				 <STM32_PINMUX('G', 9, ANALOG)>; /* FMC_NCE */
- 		};
- 	};
- };
- 
--&dsi {
--	#address-cells = <1>;
--	#size-cells = <0>;
++		};
++	};
++};
++
 +&pinctrl_z {
 +	u-boot,dm-pre-reloc;
 +};
@@ -522,19 +426,11 @@
 +/* Activate build-in crypto engine. */
 +
 +&cryp1 {
- 	status = "okay";
++	status = "okay";
 +};
- 
--	ports {
--		#address-cells = <1>;
--		#size-cells = <0>;
++
 +/* Activate the build-in RTC. */
- 
--		port@0 {
--			reg = <0>;
--			dsi_in: endpoint {
--				remote-endpoint = <&ltdc_ep0_out>;
--			};
++
 +&rtc {
 +	status = "okay";
 +};
@@ -555,57 +451,6 @@
 +	status = "okay";
 +};
 +
-+/* Timer to drive PWM output */
-+
-+&lptimer2 {
-+	status = "okay";
-+	/delete-property/dmas;
-+	/delete-property/dma-names;
-+
-+	pwm {
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&lptim2_pwm_pins_mx_z>;
-+		status = "okay";
-+	};
-+};
-+
-+/* Analogue inputs */
-+
-+&adc {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&adc_pins_mx_z>;
-+	vdd-supply = <&vdd>;
-+	vdda-supply = <&vdd>;
-+	vref-supply = <&vrefbuf>;
-+	status = "okay";
-+	
-+	adc1: adc@0 {
-+		/* private resources for ADC1 */
-+		status = "okay";                     /* Enable ADC1 */
-+
-+		channel@0 {
-+			reg = <0>;                          /* ADC1 in0 (ANA0) channel is used for the board type */
-+			st,min-sample-time-nsec = <10000>;  /* 10µs sampling time */
-+		};
-+		channel@1 {
-+			reg = <1>;                          /* ADC1 in1 (ANA1) channel is used for the board revision */
-+			st,min-sample-time-nsec = <10000>;  /* 10µs sampling time */
-+		};
-+		channel@2 {
-+			reg = <2>;                          /* ADC1 in2 (PF11) channel is used for the battery */
-+			st,min-sample-time-nsec = <10000>;  /* 10µs sampling time */
-+		};
-+		channel@6 {
-+			reg = <6>;                          /* ADC1 in6 (PF12) channel is used for the temperature */
-+			st,min-sample-time-nsec = <10000>;  /* 10µs sampling time */
- 		};
-+		channel@9 {
-+			reg = <9>;                          /* ADC1 in9 (PB0) channel is used for the light sensor */
-+			st,min-sample-time-nsec = <10000>;  /* 10µs sampling time */
-+		};
-+	};
-+};
-+
 +/* CPU voltage supply */
 +
 +&cpu0{
@@ -623,7 +468,8 @@
 +};
 +
 +/* DMA */
-+
+ 
+-		port@1 {
 +&dma1 {
 +	sram = <&dma_pool>;
 +	status = "okay";
@@ -633,8 +479,7 @@
 +	sram = <&dma_pool>;
 +	status = "okay";
 +};
- 
--		port@1 {
++
 +&dmamux1{
 +	dma-masters = <&dma1 &dma2>;
 +	dma-channels = <16>;
@@ -700,20 +545,6 @@
 +	status = "okay";
 +};
 +
-+/* Micro-SD card interface. */
-+
-+&sdmmc2 {
-+	pinctrl-names = "default", "opendrain";
-+	pinctrl-0 = <&sdmmc2_pins_mx_z>;
-+	pinctrl-1 = <&sdmmc2_opendrain_pins_mx_z>;
-+	cd-gpios = <&gpiof 2 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
-+	disable-wp;		/* No write-protect available. */
-+	st,neg-edge;		/* Generate data and command on sdmmc clock falling edge. */
-+	bus-width = <4>;
-+	vmmc-supply = <&vdd_sd>;
-+	status = "okay";
-+};
-+
 +/* Ethernet interface (10/100). */
 +
 +&ethernet0 {
@@ -738,6 +569,14 @@
  		};
  	};
 +};
++
++/* Enable hardware hash unit. */
++
++&hash1 {
++	status = "okay";
++};
++
++/* I2C for communication with the PMIC (power controller). */
  
 -	panel_dsi: panel-dsi@0 {
 -		compatible = "raydium,rm68200";
@@ -745,38 +584,6 @@
 -		reset-gpios = <&gpiof 15 GPIO_ACTIVE_LOW>;
 -		backlight = <&panel_backlight>;
 -		power-supply = <&v3v3>;
-+/* Enable hardware hash unit. */
-+
-+&hash1 {
-+	status = "okay";
-+};
-+
-+/* I2C for sending commands to the audio codec. */
-+
-+&i2c2 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&i2c2_pins_mx_z>;
-+	/* spare dmas for other usage */
-+	status = "okay";
-+	/delete-property/dmas;
-+	/delete-property/dma-names;
-+};
-+
-+/* I2C for direct application communication with the CTP. */
-+
-+&i2c1 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&i2c1_pins_mx_z>;
-+	i2c-scl-rising-time-ns = <96>;
-+	i2c-scl-falling-time-ns = <3>;
-+	clock-frequency = <100000>;
-+	status = "okay";
-+	/delete-property/dmas;
-+	/delete-property/dma-names;
-+};
-+
-+/* I2C for communication with the PMIC (power controller). */
-+
 +&i2c4 {
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&i2c4_pins_a>;
@@ -851,7 +658,7 @@
 +				regulator-always-on;
 +				regulator-over-current-protection;
 +				regulator-initial-mode = <0>;
-+			};
+ 			};
 +
 +			vdd_sd: ldo1 {
 +				regulator-name = "vdd_sd";
@@ -909,13 +716,13 @@
 +			vbus_sw: pwr_sw2 {
 +				regulator-name = "vbus_sw";
 +				regulator-active-discharge = <1>;
- 			};
- 		};
++			};
++		};
 +
 +		watchdog {
 +			compatible = "st,stpmic1-wdt";
 +			status = "disabled";
-+		};
+ 		};
  	};
  };
  
@@ -982,16 +789,6 @@
 +&uart4 {
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&uart4_pins_mx_z>;
-+	/delete-property/dmas;
-+	/delete-property/dma-names;
-+	status = "okay";
-+};
-+
-+/* UART for DCP */
-+
-+&uart5 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&uart5_pins_mx_z>;
 +	/delete-property/dmas;
 +	/delete-property/dma-names;
 +	status = "okay";

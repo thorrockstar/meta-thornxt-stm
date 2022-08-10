@@ -31,7 +31,7 @@
 +	
 +	gpio_direction_output(83 /*PF3 Back light*/, 1);
 +
-+	udelay(1500000);
++	udelay(1250000);
 +
 +	gpio_direction_output(83 /*PF3 Back light*/, 0);
 +
