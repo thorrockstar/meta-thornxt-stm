@@ -16,6 +16,7 @@ SRC_URI += " \
 	file://dfu.patch;patch=1 \
 	file://stm32prog.patch;patch=1 \
 	file://autoboot.patch;patch=1 \
+	file://fastmap.patch;patch=1 \
 "
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
