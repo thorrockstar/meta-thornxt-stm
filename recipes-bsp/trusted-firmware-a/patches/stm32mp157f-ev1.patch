@@ -1,6 +1,6 @@
 --- a/fdts/stm32mp157f-ev1.dts
 +++ b/fdts/stm32mp157f-ev1.dts
-@@ -1,23 +1,1037 @@
+@@ -1,23 +1,1000 @@
  // SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
  /*
 - * Copyright (C) STMicroelectronics 2019 - All Rights Reserved
@@ -315,8 +315,8 @@
 +
 +		clk_hse: clk-hse {
 +		};
- 	};
- };
++	};
++};
 +
 +/* Pinouts */
 +
@@ -347,14 +347,14 @@
 +			pinmux = <STM32_PINMUX('D', 6, AF12)>; /* FMC_NWAIT */
 +			bias-pull-up;
 +		};
-+	};
+ 	};
 +
 +	/* Pins for the Debug interface. */
 +
 +	uart4_pins_mx_z: uart4-0 {
 +		pins1 {
 +			pinmux = <STM32_PINMUX('C', 8, AF6)>, /* UART4_TX */
-+			         <STM32_PINMUX('A', 13, AF14)>; /* Dummy */
++			         <STM32_PINMUX('A', 13, AF14)>; /* Errata! Dummy for using PA13 in the kernel as GPO after being used by ROMBoot as Boot failure indicator! */
 +			bias-disable;
 +			drive-push-pull;
 +			slew-rate = <0>;
@@ -362,27 +362,6 @@
 +		pins2 {
 +			pinmux = <STM32_PINMUX('C', 11, AF8)>; /* UART4_RX */
 +			bias-disable;
-+		};
-+	};
-+
-+	/* Pins for the Micro SD-card interface. */
-+
-+	sdmmc2_pins_mx_z: sdmmc2_mx-0 {
-+		pins1 {
-+			pinmux = <STM32_PINMUX('B', 3, AF9)>, /* SDMMC2_D2 */
-+				 <STM32_PINMUX('B', 4, AF9)>, /* SDMMC2_D3 */
-+				 <STM32_PINMUX('B', 7, AF10)>, /* SDMMC2_D1 */
-+				 <STM32_PINMUX('B', 14, AF9)>, /* SDMMC2_D0 */
-+				 <STM32_PINMUX('G', 6, AF10)>; /* SDMMC2_CMD */
-+			bias-disable;
-+			drive-push-pull;
-+			slew-rate = <1>;
-+		};
-+		pins2 {
-+			pinmux = <STM32_PINMUX('E', 3, AF9)>; /* SDMMC2_CK */
-+			bias-disable;
-+			drive-push-pull;
-+			slew-rate = <3>;
 +		};
 +	};
 +};
@@ -406,7 +385,7 @@
 +/* RTC oscillator 32.768kHz. */
 +
 +&clk_lse {
-+};
+ };
 +
 +/* Core 1/2 voltage */
 +
@@ -741,22 +720,6 @@
 +&tamp {
 +	status = "okay";
 +	secure-status = "okay";
-+};
-+
-+/* Micro SD card */
-+
-+&sdmmc1 {
-+	status = "disabled";
-+};
-+
-+&sdmmc2 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&sdmmc2_pins_mx_z>;
-+	disable-wp;		/* No write-protect available. */
-+	st,neg-edge;		/* Generate data and command on sdmmc clock falling edge. */
-+	bus-width = <4>;
-+	vmmc-supply = <&vdd_sd>;
-+	status = "okay";
 +};
 +
 +/* Clock calibration algorithm */
