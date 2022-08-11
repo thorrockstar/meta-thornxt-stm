@@ -1,6 +1,6 @@
 --- a/arch/arm/boot/dts/stm32mp157f-ev1.dts
 +++ b/arch/arm/boot/dts/stm32mp157f-ev1.dts
-@@ -1,84 +1,1298 @@
+@@ -1,84 +1,1318 @@
  // SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
  /*
 - * Copyright (C) STMicroelectronics 2019 - All Rights Reserved
@@ -658,8 +658,8 @@
 +
 +&mdma1{
 +	status = "okay";
-+};
-+
+ };
+ 
 +&rcc{
 +	status = "okay";
 +};
@@ -868,8 +868,8 @@
 +			#size-cells = <1>;
 +           };
 +       };
- };
- 
++};
++
 +/* CAN1 and CAN2 */
 +
 +&m_can1 {
@@ -921,23 +921,23 @@
 +	st,neg-edge;		/* Generate data and command on sdmmc clock falling edge. */
 +	bus-width = <4>;
 +	vmmc-supply = <&vdd_sd>;
- 	status = "okay";
++	status = "okay";
 +};
 +
 +/* Ethernet interface (10/100). */
- 
--	ports {
++
 +&ethernet0 {
 +	pinctrl-names = "default", "sleep";
 +	pinctrl-0 = <&eth1_pins_mx_z>;
 +	pinctrl-1 = <&eth1_sleep_pins_mx_z>;
-+	status = "okay";
+ 	status = "okay";
 +	phy-mode = "rmii";
 +	max-speed = <100>;
 +	phy-handle = <&phy0>;
 +	//nvmem-cells = <&ethernet_mac_address>;
 +	//nvmem-cell-names = "mac-address";
-+
+ 
+-	ports {
 +	mdio0 {
  		#address-cells = <1>;
  		#size-cells = <0>;
@@ -1009,6 +1009,8 @@
 +	/delete-property/dmas;
 +	/delete-property/dma-names;
 +};
++
++/* I2C for communication with the PMIC (power controller). */
  
 -	panel_dsi: panel-dsi@0 {
 -		compatible = "raydium,rm68200";
@@ -1016,8 +1018,6 @@
 -		reset-gpios = <&gpiof 15 GPIO_ACTIVE_LOW>;
 -		backlight = <&panel_backlight>;
 -		power-supply = <&v3v3>;
-+/* I2C for communication with the PMIC (power controller). */
-+
 +&i2c4 {
 +	pinctrl-names = "default", "sleep";
 +	pinctrl-0 = <&i2c4_pins_a>;
@@ -1149,7 +1149,7 @@
 +			bst_out: boost {
 +				regulator-name = "bst_out";
 +				interrupts = <IT_OCP_BOOST 0>;
-+			};
+ 			};
 +
 +			vbus_otg: pwr_sw1 {
 +				regulator-name = "vbus_otg";
@@ -1160,9 +1160,9 @@
 +				regulator-name = "vbus_sw";
 +				interrupts = <IT_OCP_SWOUT 0>;
 +				regulator-active-discharge = <1>;
-+				//regulator-always-on;
- 			};
- 		};
++				regulator-always-on;
++			};
++		};
 +
 +		onkey {
 +			compatible = "st,stpmic1-onkey";
@@ -1175,7 +1175,7 @@
 +		watchdog {
 +			compatible = "st,stpmic1-wdt";
 +			status = "okay";
-+		};
+ 		};
  	};
  };
  
@@ -1186,7 +1186,6 @@
 -		panel = <&panel_dsi>;
 -		pinctrl-0 = <&goodix_pins>;
 -		pinctrl-names = "default";
--		status = "okay";
 +/* The inter-processor communication controller (IPCC) is used to exchange data between two processors. */
 +
 +&ipcc {
@@ -1199,9 +1198,7 @@
 +	timeout-sec = <32>;
 +	status = "okay";
 +};
- 
--		interrupts = <14 IRQ_TYPE_EDGE_RISING>;
--		interrupt-parent = <&stmfx_pinctrl>;
++
 +/* Cortex M4 coprocessor. */
 +
 +&m4_rproc {
@@ -1243,7 +1240,7 @@
 +		dma-names = "tx";
 +		clocks = <&rcc SAI2_K>;
 +		clock-names = "sai_ck";
-+		status = "okay";
+ 		status = "okay";
 +		
 +		sai2a_port: port {
 +			sai2a_endpoint: endpoint {
@@ -1258,8 +1255,8 @@
 +				//dai-tdm-slot-rx-mask = <0 0>;
 +			};
 +		};
- 	};
- };
++	};
++};
 +
 +/* Reference voltage for the analogue inputs. */
 +
@@ -1283,7 +1280,9 @@
 +};
 +
 +/* Unused UART */
-+
+ 
+-		interrupts = <14 IRQ_TYPE_EDGE_RISING>;
+-		interrupt-parent = <&stmfx_pinctrl>;
 +&uart7 {
 +	/delete-property/dmas;
 +	/delete-property/dma-names;
@@ -1332,11 +1331,31 @@
 +
 +&usbphyc_port0 {
 +	phy-supply = <&vdd_usb>;
-+	//st,phy-tuning = <&usb_phy_tuning>;
++	st,phy-tuning = <&usb_phy_tuning>;
++
++	/*
++	 * Hack to keep hub active until all connected devices are suspended
++	 * otherwise the hub will be powered off as soon as the v3v3 is disabled
++	 * and it can disturb connected devices.
++	 */
++	connector {
++		compatible = "usb-a-connector";
++		vbus-supply = <&v3v3>;
++	};
 +};
 +
 +&usbphyc_port1 {
 +	phy-supply = <&vdd_usb>;
-+	//st,phy-tuning = <&usb_phy_tuning>;
-+};
++	st,phy-tuning = <&usb_phy_tuning>;
++	
++	/*
++	 * Hack to keep hub active until all connected devices are suspended
++	 * otherwise the hub will be powered off as soon as the v3v3 is disabled
++	 * and it can disturb connected devices.
++	 */
++	connector {
++		compatible = "usb-a-connector";
++		vbus-supply = <&v3v3>;
+ 	};
+ };
 +
