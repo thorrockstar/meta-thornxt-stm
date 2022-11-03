@@ -1122,8 +1122,8 @@
 +			vdd_usb: ldo4 {
 +				regulator-name = "vdd_usb";
 +				interrupts = <IT_CURLIM_LDO4 0>;
++				regulator-always-on;
 +			};
-+
 +			vdda: ldo5 {
 +				regulator-name = "vdda";
 +				regulator-min-microvolt = <2900000>;
@@ -1312,12 +1312,12 @@
 +/* This peripheral is a USB OTG high-speed controller being fixed to 'host' mode, being mainly used for USB-mass storage devices. */
 +
 +&usbotg_hs {
-+	compatible = "st,stm32-hsotg", "snps,dwc2";
++	compatible = "st,stm32mp15-hsotg", "snps,dwc2";
 +	phys = <&usbphyc_port1 0>;	/* 0: UTMI switch selects the OTG controller */
 +	phy-names = "usb2-phy";
 +	dr_mode = "host";
 +	usb-role-switch;
-+	role-switch-default-mode = "host";
++       role-switch-default-mode = "host";
 +	status = "okay";
 +};
 +
