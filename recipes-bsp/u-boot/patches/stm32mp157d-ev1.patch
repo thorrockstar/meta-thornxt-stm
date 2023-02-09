@@ -1,6 +1,6 @@
---- a/arch/arm/dts/stm32mp157f-ev1.dts
-+++ b/arch/arm/dts/stm32mp157f-ev1.dts
-@@ -1,84 +1,794 @@
+--- a/arch/arm/dts/stm32mp157d-ev1.dts
++++ b/arch/arm/dts/stm32mp157d-ev1.dts
+@@ -1,83 +1,788 @@
  // SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
  /*
 - * Copyright (C) STMicroelectronics 2019 - All Rights Reserved
@@ -14,11 +14,10 @@
 + 
  /dts-v1/;
  
--#include "stm32mp157f-ed1.dts"
+-#include "stm32mp157d-ed1.dts"
 -#include "stm32mp15xx-evx.dtsi"
--#include <dt-bindings/input/input.h>
 +#include "stm32mp151.dtsi"               /* dt-bindings/#? */
-+#include "stm32mp15xf.dtsi"              /* stm32mp15xd.dtsi */
++#include "stm32mp15xd.dtsi"              /* stm32mp15xd.dtsi */
 +#include "stm32mp15-pinctrl.dtsi"        /* Analogue, Ethernet, etc. */
 +#include "stm32mp15xxaa-pinctrl.dtsi"    /* GPIOA..Z */
 +#include "stm32mp15-m4-srm.dtsi"         /* M4 CPU, USART, timers, etc. */
@@ -31,10 +30,10 @@
 +/* Board description */
  
  / {
--	model = "STMicroelectronics STM32MP157F eval daughter on eval mother";
--	compatible = "st,stm32mp157f-ev1", "st,stm32mp157f-ed1", "st,stm32mp157";
+-	model = "STMicroelectronics STM32MP157D eval daughter on eval mother";
+-	compatible = "st,stm32mp157d-ev1", "st,stm32mp157d-ed1", "st,stm32mp157";
 +	model = "THOR Engineering E2-Board";
-+	compatible = "st,stm32mp157f-ev1", "st,stm32mp157f-thor-e2", "st,stm32mp157";
++	compatible = "st,stm32mp157d-ev1", "st,stm32mp157d-thor-e2", "st,stm32mp157";
 +
 +	aliases {
 +		ethernet0 = &ethernet0;
@@ -151,11 +150,7 @@
 +			reg = <0x10048000 0x8000>;
 +			no-map;
 +		};
- 
--		port@0 {
--			reg = <0>;
--			dsi_in: endpoint {
--				remote-endpoint = <&ltdc_ep0_out>;
++
 +		mcuram: mcuram@30000000 {
 +			compatible = "shared-dma-pool";
 +			reg = <0x30000000 0x40000>;
@@ -173,7 +168,11 @@
 +			no-map;
 +		};
 +	};
-+
+ 
+-		port@0 {
+-			reg = <0>;
+-			dsi_in: endpoint {
+-				remote-endpoint = <&ltdc_ep0_out>;
 +	/* Simple display panel */
 +
 +	backlight: backlight {
@@ -418,15 +417,10 @@
 +		};
 +	};
 +};
-+
+ 
+-		port@1 {
 +&pinctrl_z {
 +	u-boot,dm-pre-reloc;
-+};
-+
-+/* Activate build-in crypto engine. */
-+
-+&cryp1 {
-+	status = "okay";
 +};
 +
 +/* Activate the build-in RTC. */
@@ -468,8 +462,7 @@
 +};
 +
 +/* DMA */
- 
--		port@1 {
++
 +&dma1 {
 +	sram = <&dma_pool>;
 +	status = "okay";
@@ -571,12 +564,6 @@
 +};
 +
 +/* Enable hardware hash unit. */
-+
-+&hash1 {
-+	status = "okay";
-+};
-+
-+/* I2C for communication with the PMIC (power controller). */
  
 -	panel_dsi: panel-dsi@0 {
 -		compatible = "raydium,rm68200";
@@ -584,6 +571,12 @@
 -		reset-gpios = <&gpiof 15 GPIO_ACTIVE_LOW>;
 -		backlight = <&panel_backlight>;
 -		power-supply = <&v3v3>;
++&hash1 {
++	status = "okay";
++};
++
++/* I2C for communication with the PMIC (power controller). */
++
 +&i2c4 {
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&i2c4_pins_a>;
@@ -658,7 +651,7 @@
 +				regulator-always-on;
 +				regulator-over-current-protection;
 +				regulator-initial-mode = <0>;
- 			};
++			};
 +
 +			vdd_sd: ldo1 {
 +				regulator-name = "vdd_sd";
@@ -716,13 +709,13 @@
 +			vbus_sw: pwr_sw2 {
 +				regulator-name = "vbus_sw";
 +				regulator-active-discharge = <1>;
-+			};
-+		};
+ 			};
+ 		};
 +
 +		watchdog {
 +			compatible = "st,stpmic1-wdt";
 +			status = "disabled";
- 		};
++		};
  	};
  };
  
@@ -766,7 +759,9 @@
 +	vdd-supply = <&vdd>;
 +	vdd_3v3_usbfs-supply = <&vdd_usb>;
 +};
-+
+ 
+-		interrupts = <14 IRQ_TYPE_EDGE_RISING>;
+-		interrupt-parent = <&stmfx_pinctrl>;
 +/* Hardware random numbers generator. */
 +
 +&rng1 {
@@ -774,9 +769,7 @@
 +};
 +
 +/* Reference voltage for the analogue inputs. */
- 
--		interrupts = <14 IRQ_TYPE_EDGE_RISING>;
--		interrupt-parent = <&stmfx_pinctrl>;
++
 +&vrefbuf {
 +	regulator-min-microvolt = <2500000>;
 +	regulator-max-microvolt = <2500000>;

@@ -16,19 +16,24 @@
  
  #include "../../st/common/stusb160x.h"
  
-@@ -78,6 +78,569 @@
+@@ -78,6 +78,812 @@
  #define USB_START_LOW_THRESHOLD_UV	1230000
  #define USB_START_HIGH_THRESHOLD_UV	2150000
  
 +/* Vendor specific initialization command sequence for GC9503V IC */
 +
-+const unsigned char spi5_bootpic_init[] =
++// Variant 1 - Display type made by HIFAY
++const unsigned char s_gc9503cmds_1[] =
 +{
 +       1, 0x01, // Software Reset
 +       3, 0x00, // Long delay
 +
 +       // Display off
 +       1, 0x28,
++       3, 0x00, // Long delay
++
++       // Read second byte of the display ID
++       4, 0xDB,
 +
 +       // Sleep In & Booster off
 +       1, 0x10,
@@ -175,11 +180,196 @@
 +
 +       // Display on
 +       1, 0x29,
++       
++       // All pixels off
++       1, 0x22,
++
++       // Long delay
++       3, 0x00,
++
++       // Idle mode off
++       1, 0x38,
++
++       // Turn display to normal mode. This turns partial mode off.
++       1, 0x13,
++};
++
++// Variant 2 - Display type made by Chance
++const unsigned char s_gc9503cmds_2[] =
++{
++        // Sleep In & Booster off
++        1, 0x10,
++        3, 0x00, // Long delay
++
++        // EXTC Command 'Set page 0 enable register'
++        1, 0xF0, 0, 0x55, 0, 0xAA, 0, 0x52, 0, 0x08, 0, 0x00, // Unlock magic.
++
++        // OTP_CTL
++        1, 0xF6, 0, 0x5A, 0, 0x87,
++
++        //
++        1, 0xC1, 0, 0x3F,
++
++        //
++        //1, 0xC2, 0, 0x0E,
++
++        //
++        //1, 0xC6, 0, 0xF8,
++
++        //
++        1, 0xC9, 0, 0x10,
++
++        //
++        1, 0xCD, 0, 0x25,
++
++        //
++        1, 0xF8, 0, 0x8A,
++
++        //
++        1, 0xAC, 0, 0x45,
++
++        //
++        1, 0xA7, 0, 0x47,
++
++        // CHP_CTL5
++        1, 0xA0, 0, 0xDD,
++
++        // CHP_CTL1
++        1, 0x86, 0, 0x99, 0, 0xA3, 0, 0xA3, 0, 0x51,
++
++        //
++        1, 0xFA, 0, 0x08, 0, 0x08, 0, 0x00, 0, 0x04,
++
++        //
++        1, 0xA3, 0, 0x62,
++
++        //
++        1, 0xFD, 0, 0x28, 0, 0x28, 0, 0x00,
++
++        //
++        //1, 0x71, 0, 0x48,
++
++        //
++        //1, 0x72, 0, 0x48,
++
++        //
++        //1, 0x73, 0, 0x00, 0, 0x44,
++
++        //
++        //1, 0x97, 0, 0xEE,
++
++        //
++        //1, 0x83, 0, 0x93,
++
++        // VREG_CTL4
++        1, 0x9A, 0, 0x91,
++
++        // VREG_CTL5
++        1, 0x9B, 0, 0x51,
++
++        // VREG_CTL1
++        1, 0x82, 0, 0x35, 0, 0x35,
++
++        // DISPLAY_CTL
++        1, 0xB1, 0, 0x10, // 0x90
++
++        //
++        1, 0x7A, 0, 0x13, 0, 0x1A,
++
++        //
++        1, 0x7B, 0, 0x13, 0, 0x1A,
++
++        //
++        1, 0x6D, 0, 0x00, 0, 0x1F, 0, 0x19, 0, 0x1A, 0, 0x10, 0, 0x0E, 0, 0x0C, 0, 0x0A, 0, 0x02, 0, 0x08, 0, 0x1E, 0, 0x1E, 0, 0x1E, 0, 0x1E, 0, 0x1E, 0, 0x1E, 0, 0x1E, 0, 0x1E, 0, 0x1E, 0, 0x1E, 0, 0x1E, 0, 0x1E, 0, 0x07, 0, 0x01, 0, 0x09, 0, 0x0B, 0, 0x0D, 0, 0x0F, 0, 0x1B, 0, 0x1C, 0, 0x1F, 0, 0x00,
++
++        //
++        1, 0x60, 0, 0x38, 0, 0x06, 0, 0x1C, 0, 0x7A, 0, 0x38, 0, 0x05, 0, 0x1C, 0, 0x7A,
++
++        //
++        1, 0x63, 0, 0x33, 0, 0xBE, 0, 0x1C, 0, 0x7A, 0, 0x33, 0, 0xBF, 0, 0x1C, 0, 0x7A,
++
++        //
++        1, 0x64, 0, 0x38, 0, 0x04, 0, 0x03, 0, 0xBC, 0, 0x03, 0, 0x03, 0, 0x38, 0, 0x03, 0, 0x03, 0, 0xBD, 0, 0x03, 0, 0x03, 0, 0x01, 0, 0x7A, 0, 0x01, 0, 0x7A,
++
++        //
++        1, 0x65, 0, 0x38, 0, 0x02, 0, 0x03, 0, 0xBE, 0, 0x03, 0, 0x03, 0, 0x38, 0, 0x01, 0, 0x03, 0, 0xBF, 0, 0x03, 0, 0x03, 0, 0x01, 0, 0x7A, 0, 0x01, 0, 0x7A,
++
++        //
++        1, 0x66, 0, 0x30, 0, 0x00, 0, 0x03, 0, 0xC0, 0, 0x03, 0, 0x03, 0, 0x30, 0, 0x01, 0, 0x03, 0, 0xC1, 0, 0x03, 0, 0x03, 0, 0x01, 0, 0x7A, 0, 0x01, 0, 0x7A,
++
++        //
++        1, 0x67, 0, 0x30, 0, 0x02, 0, 0x03, 0, 0xC2, 0, 0x03, 0, 0x03, 0, 0x30, 0, 0x03, 0, 0x03, 0, 0xC3, 0, 0x03, 0, 0x03, 0, 0x01, 0, 0x7A, 0, 0x01, 0, 0x7A,
++
++        //
++        1, 0x68, 0, 0x3D, 0, 0x08, 0, 0x06, 0, 0x08, 0, 0x06, 0, 0x00, 0, 0x00, 0, 0x08, 0, 0x06, 0, 0x08, 0, 0x06, 0, 0x00, 0, 0x23,
++
++        //
++        1, 0x69, 0, 0x14, 0, 0x22, 0, 0x14, 0, 0x22, 0, 0x44, 0, 0x22, 0, 0x08,
++
++        //
++        1, 0x6B, 0, 0x07,
++
++        //
++        1, 0xD1, 0, 0x00, 0, 0x00, 0, 0x00, 0, 0x1A, 0, 0x00, 0, 0x42, 0, 0x00, 0, 0x62, 0, 0x00, 0, 0x7C, 0, 0x00, 0, 0xA9, 0, 0x00, 0, 0xCD, 0, 0x01, 0, 0x07, 0, 0x01, \
++                 0, 0x34, 0, 0x01, 0, 0x7F, 0, 0x01, 0, 0xBC, 0, 0x02, 0, 0x1A, 0, 0x02, 0, 0x66, 0, 0x02, 0, 0x68, 0, 0x02, 0, 0xAF, 0, 0x02, 0, 0xFB, 0, 0x03, 0, 0x2B, \
++                 0, 0x03, 0, 0x6B, 0, 0x03, 0, 0x95, 0, 0x03, 0, 0xB2, 0, 0x03, 0, 0xBF, 0, 0x03, 0, 0xD1, 0, 0x03, 0, 0xDA, 0, 0x03, 0, 0xE7, 0, 0x03, 0, 0xFB, 0, 0x03, 0, 0xFF,
++
++        //
++        1, 0xD2, 0, 0x00, 0, 0x00, 0, 0x00, 0, 0x1A, 0, 0x00, 0, 0x42, 0, 0x00, 0, 0x62, 0, 0x00, 0, 0x7C, 0, 0x00, 0, 0xA9, 0, 0x00, 0, 0xCD, 0, 0x01, 0, 0x07, 0, 0x01, \
++                 0, 0x34, 0, 0x01, 0, 0x7F, 0, 0x01, 0, 0xBC, 0, 0x02, 0, 0x1A, 0, 0x02, 0, 0x66, 0, 0x02, 0, 0x68, 0, 0x02, 0, 0xAF, 0, 0x02, 0, 0xFB, 0, 0x03, 0, 0x2B, \
++                 0, 0x03, 0, 0x6B, 0, 0x03, 0, 0x95, 0, 0x03, 0, 0xB2, 0, 0x03, 0, 0xBF, 0, 0x03, 0, 0xD1, 0, 0x03, 0, 0xDA, 0, 0x03, 0, 0xE7, 0, 0x03, 0, 0xFB, 0, 0x03, 0, 0xFF,
++
++        //
++        1, 0xD3, 0, 0x00, 0, 0x00, 0, 0x00, 0, 0x1A, 0, 0x00, 0, 0x42, 0, 0x00, 0, 0x62, 0, 0x00, 0, 0x7C, 0, 0x00, 0, 0xA9, 0, 0x00, 0, 0xCD, 0, 0x01, 0, 0x07, 0, 0x01, \
++                 0, 0x34, 0, 0x01, 0, 0x7F, 0, 0x01, 0, 0xBC, 0, 0x02, 0, 0x1A, 0, 0x02, 0, 0x66, 0, 0x02, 0, 0x68, 0, 0x02, 0, 0xAF, 0, 0x02, 0, 0xFB, 0, 0x03, 0, 0x2B, \
++                 0, 0x03, 0, 0x6B, 0, 0x03, 0, 0x95, 0, 0x03, 0, 0xB2, 0, 0x03, 0, 0xBF, 0, 0x03, 0, 0xD1, 0, 0x03, 0, 0xDA, 0, 0x03, 0, 0xE7, 0, 0x03, 0, 0xFB, 0, 0x03, 0, 0xFF,
++
++        //
++        1, 0xD4, 0, 0x00, 0, 0x00, 0, 0x00, 0, 0x1A, 0, 0x00, 0, 0x42, 0, 0x00, 0, 0x62, 0, 0x00, 0, 0x7C, 0, 0x00, 0, 0xA9, 0, 0x00, 0, 0xCD, 0, 0x01, 0, 0x07, 0, 0x01, \
++                 0, 0x34, 0, 0x01, 0, 0x7F, 0, 0x01, 0, 0xBC, 0, 0x02, 0, 0x1A, 0, 0x02, 0, 0x66, 0, 0x02, 0, 0x68, 0, 0x02, 0, 0xAF, 0, 0x02, 0, 0xFB, 0, 0x03, 0, 0x2B, \
++                 0, 0x03, 0, 0x6B, 0, 0x03, 0, 0x95, 0, 0x03, 0, 0xB2, 0, 0x03, 0, 0xBF, 0, 0x03, 0, 0xD1, 0, 0x03, 0, 0xDA, 0, 0x03, 0, 0xE7, 0, 0x03, 0, 0xFB, 0, 0x03, 0, 0xFF,
++
++        //
++        1, 0xD5, 0, 0x00, 0, 0x00, 0, 0x00, 0, 0x1A, 0, 0x00, 0, 0x42, 0, 0x00, 0, 0x62, 0, 0x00, 0, 0x7C, 0, 0x00, 0, 0xA9, 0, 0x00, 0, 0xCD, 0, 0x01, 0, 0x07, 0, 0x01, \
++                 0, 0x34, 0, 0x01, 0, 0x7F, 0, 0x01, 0, 0xBC, 0, 0x02, 0, 0x1A, 0, 0x02, 0, 0x66, 0, 0x02, 0, 0x68, 0, 0x02, 0, 0xAF, 0, 0x02, 0, 0xFB, 0, 0x03, 0, 0x2B, \
++                 0, 0x03, 0, 0x6B, 0, 0x03, 0, 0x95, 0, 0x03, 0, 0xB2, 0, 0x03, 0, 0xBF, 0, 0x03, 0, 0xD1, 0, 0x03, 0, 0xDA, 0, 0x03, 0, 0xE7, 0, 0x03, 0, 0xFB, 0, 0x03, 0, 0xFF,
++
++        //
++        1, 0xD6, 0, 0x00, 0, 0x00, 0, 0x00, 0, 0x1A, 0, 0x00, 0, 0x42, 0, 0x00, 0, 0x62, 0, 0x00, 0, 0x7C, 0, 0x00, 0, 0xA9, 0, 0x00, 0, 0xCD, 0, 0x01, 0, 0x07, 0, 0x01, \
++                 0, 0x34, 0, 0x01, 0, 0x7F, 0, 0x01, 0, 0xBC, 0, 0x02, 0, 0x1A, 0, 0x02, 0, 0x66, 0, 0x02, 0, 0x68, 0, 0x02, 0, 0xAF, 0, 0x02, 0, 0xFB, 0, 0x03, 0, 0x2B, \
++                 0, 0x03, 0, 0x6B, 0, 0x03, 0, 0x95, 0, 0x03, 0, 0xB2, 0, 0x03, 0, 0xBF, 0, 0x03, 0, 0xD1, 0, 0x03, 0, 0xDA, 0, 0x03, 0, 0xE7, 0, 0x03, 0, 0xFB, 0, 0x03, 0, 0xFF,
++
++        // Interface Pixel Format
++        1, 0x3A, 0, 0x77,
++
++        // RGB Interface Signals Control
++        1, 0xB0, 0, 0x0B, 0, 0x08, 0, 0x10, 0, 0x1E, 0, 0x1E,
++
++       // Sleep Out & Booster on
++       1, 0x11,
++
++       // Long delay
++       3, 0x00,
++
++       // Display on
++       1, 0x29,
++       
++       // All pixels off
++       1, 0x22,
++
++       // Long delay
++       3, 0x00,
++
++       // Idle mode off
++       1, 0x38,
++
++       // Turn display to normal mode. This turns partial mode off.
++       1, 0x13,
 +};
 +
 +void init_gc9503v_display_cntrl(void)
 +{
-+    int i, k;
++    int i, k, ival;
 +    int len, sze;
 +    const unsigned char* pb;
 +    unsigned char* ps;
@@ -199,27 +389,27 @@
 +    }
 +    else
 +    {
-+	gpio_direction_output(94 /*PF14 WR_DISPLAY*/, 0);
++        gpio_direction_output(94 /*PF14 WR_DISPLAY*/, 0);
 +
 +        /* Setup SPI. */
 +
-+	slave = 0;
-+	snprintf(name, sizeof(name), "generic_%d:%d", 5 /*SPI5*/, 0 /*NPCS0*/);
-+	str = strdup(name);
++        slave = 0;
++        snprintf(name, sizeof(name), "generic_%d:%d", 5 /*SPI5*/, 0 /*NPCS0*/);
++        str = strdup(name);
 +
-+	if (str)
-+	{
-+		if (spi_get_bus_and_cs(5 /*SPI5*/, 0 /*NPCS0*/, 32000000, SPI_MODE_0/*SPI_CS_HIGH*/, 
-+		                      "spi_generic_drv", str, &dev, &slave))
-+		{
-+			slave = 0;
-+		}
-+	}
-+	
++        if (str)
++        {
++            if (spi_get_bus_and_cs(5 /*SPI5*/, 0 /*NPCS0*/, 8000000/*32000000*/, SPI_MODE_0/*SPI_CS_HIGH*/, 
++                                   "spi_generic_drv", str, &dev, &slave))
++            {
++                slave = 0;
++            }
++        }
++
 +        if (slave)
 +        {
 +            /* Chip select */
-+			
++
 +            if (spi_claim_bus(slave))
 +            {
 +                printf("init_gc9503v_display_cntrl() - spi_claim_bus() failed\n");  
@@ -230,8 +420,8 @@
 +
 +                /* Transmit initialization sequence. */
 +
-+                pb  = spi5_bootpic_init;
-+                len = (sizeof(spi5_bootpic_init)) >> 1;
++                pb  = s_gc9503cmds_1;
++                len = (sizeof(s_gc9503cmds_1)) >> 1;
 +                sze = 0;
 +
 +                for (i = 0; i < len; i++)
@@ -241,7 +431,7 @@
 +                        case 3: // Delay long
 +                            mdelay(100);  // 100 ms
 +                        break;
-+						
++
 +                        case 2: // Delay short
 +                            mdelay(10);  // 10 ms
 +                        break;
@@ -254,13 +444,66 @@
 +                            spi_xfer(slave, 8, pb + 1, rxbuf, SPI_XFER_BEGIN | SPI_XFER_END);
 +                        break;
 +
-+                        case 4: // Read Data
-+                            sze = *(pb + 1);
-+                            ps  = rxbuf;
++                        case 4: // Read display identification register
++                            rxbuf[0] = 0;
 +
-+                            memset(ps, 0, sze);
++                            gpio_direction_output(94 /*PF14 WR_DISPLAY*/, 0);
 +
-+                            spi_xfer(slave, sze << 3, txbuf, rxbuf, SPI_XFER_BEGIN | SPI_XFER_END);
++                            udelay(20);
++
++                            ival = 0;
++
++                            for (k = 0; k < 3; k++)
++                            {
++                                txbuf[0] = *(pb + 1);
++                            
++                                if (spi_xfer(slave, 8, txbuf, NULL, SPI_XFER_BEGIN))
++                                {
++                                    printf("spi_xfer(tx, SPI_XFER_BEGIN) error");
++                                }
++                                else if (spi_xfer(slave, 8, NULL, rxbuf, SPI_XFER_END))
++                                {
++                                    printf("spi_xfer(rx) error");
++                                }
++
++                                mdelay(10);
++
++                                /* Check the ID indicating this to be a HIFAY display. */
++
++                                if (rxbuf[0] == 0x95)
++                                {
++                                    ival = 0;
++                                    break;
++                                }
++
++                                if (!rxbuf[0])
++                                {
++                                    ival++;
++                                }
++                            }
++
++                            // If we have detected the second display variant, proceed with the second table.
++
++                            if (ival >= 2 /* At least two out of three ID results indicate that this is a CHANCE display. */)
++                            {
++                                printf("CHANCE display detected 0x%02X\n", rxbuf[0]);
++
++                                if ((pb >= s_gc9503cmds_1) && (pb < (s_gc9503cmds_1 + sizeof(s_gc9503cmds_1))))
++                                {
++                                    pb  = s_gc9503cmds_2;
++                                    len = (sizeof(s_gc9503cmds_2)) >> 1;
++                                    i = -1;
++                                    mdelay(5);
++
++                                    // Executed loop test part immediately; control passes to the increment step.
++
++                                    continue;
++                                }
++                            }
++                            else
++                            {
++                                printf("HIFAY display detected 0x%02X\n", rxbuf[0]);
++                            }
 +                        break;
 +
 +                        case 0: // Send Data
@@ -586,7 +829,7 @@
  int board_early_init_f(void)
  {
  	/* nothing to do, only used in SPL */
-@@ -100,7 +663,7 @@
+@@ -100,7 +906,7 @@
  	else
  		mode = "basic";
  
@@ -595,7 +838,7 @@
  	fdt_compat = fdt_getprop(gd->fdt_blob, 0, "compatible",
  				 &fdt_compat_len);
  	if (fdt_compat && fdt_compat_len)
-@@ -127,57 +690,6 @@
+@@ -127,57 +933,6 @@
  	return 0;
  }
  
@@ -653,7 +896,7 @@
  int g_dnl_board_usb_cable_connected(void)
  {
  	struct udevice *dwc2_udc_otg;
-@@ -220,227 +732,6 @@
+@@ -220,227 +975,6 @@
  }
  #endif /* CONFIG_USB_GADGET_DOWNLOAD */
  
@@ -881,7 +1124,7 @@
  static void sysconf_init(void)
  {
  	u8 *syscfg;
-@@ -530,137 +821,30 @@
+@@ -530,137 +1064,30 @@
  				 1000000);
  	if (ret) {
  		pr_err("SYSCFG: I/O compensation failed, timeout.\n");
@@ -1015,17 +1258,17 @@
 -	if (CONFIG_IS_ENABLED(LED))
 -		led_default_state();
 +        /* THOR shift register IO initialization. */
-+
-+	init_board_gpios_ios();
  
 -	setup_led(LEDST_ON);
++	init_board_gpios_ios();
++
 +        /* THOR display initialization. */
 +
 +	init_gc9503v_display_cntrl();
  
  	return 0;
  }
-@@ -709,15 +893,11 @@
+@@ -709,15 +1136,11 @@
  		}
  	}
  
