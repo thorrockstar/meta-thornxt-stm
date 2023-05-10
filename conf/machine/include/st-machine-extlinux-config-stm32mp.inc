@@ -78,6 +78,7 @@ UBOOT_EXTLINUX_TARGETS_EXTRA_CONFIG[stm32mp157c-dk2] += "stm32mp157c-dk2-a7-exam
 UBOOT_EXTLINUX_TARGETS_EXTRA_CONFIG[stm32mp157f-dk2] += "stm32mp157f-dk2-a7-examples"
 UBOOT_EXTLINUX_TARGETS_EXTRA_CONFIG[stm32mp157c-ev1] += "stm32mp157c-ev1-a7-examples"
 UBOOT_EXTLINUX_TARGETS_EXTRA_CONFIG[stm32mp157f-ev1] += "stm32mp157f-ev1-a7-examples"
+UBOOT_EXTLINUX_TARGETS_EXTRA_CONFIG[stm32mp157d-ev1] += "stm32mp157d-ev1"
 
 UBOOT_EXTLINUX_TARGETS_EXTRA_CONFIG[stm32mp157c-dk2] += "stm32mp157c-dk2-m4-examples"
 UBOOT_EXTLINUX_TARGETS_EXTRA_CONFIG[stm32mp157c-ev1] += "stm32mp157c-ev1-m4-examples"
@@ -92,6 +93,7 @@ UBOOT_EXTLINUX_FDT_stm32mp157c-dk2-a7-examples = "/stm32mp157c-dk2-a7-examples.d
 UBOOT_EXTLINUX_FDT_stm32mp157c-ev1-a7-examples = "/stm32mp157c-ev1-a7-examples.dtb"
 UBOOT_EXTLINUX_FDT_stm32mp157f-dk2-a7-examples = "/stm32mp157f-dk2-a7-examples.dtb"
 UBOOT_EXTLINUX_FDT_stm32mp157f-ev1-a7-examples = "/stm32mp157f-ev1-a7-examples.dtb"
+UBOOT_EXTLINUX_FDT_stm32mp157d-ev1 = "/stm32mp157d-ev1.dtb"
 
 # -----------------------------------------------------------------------------
 # Configure M4 examples labels
