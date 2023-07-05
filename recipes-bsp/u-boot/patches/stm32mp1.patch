@@ -8,7 +8,7 @@
  #include <log.h>
  #include <malloc.h>
  #include <misc.h>
-@@ -42,6 +41,7 @@
+@@ -42,9 +41,13 @@
  #include <linux/iopoll.h>
  #include <power/regulator.h>
  #include <usb/dwc2_udc.h>
@@ -16,7 +16,13 @@
  
  #include "../../st/common/stusb160x.h"
  
-@@ -78,6 +78,812 @@
++/* Set to one if building for the Nous Mk2 board. */
++#define APP_NOUS_MK2_BOARD    0
++
+ /* SYSCFG registers */
+ #define SYSCFG_BOOTR		0x00
+ #define SYSCFG_PMCSETR		0x04
+@@ -78,6 +81,866 @@
  #define USB_START_LOW_THRESHOLD_UV	1230000
  #define USB_START_HIGH_THRESHOLD_UV	2150000
  
@@ -765,6 +771,60 @@
 +        gpio_free(100 /*PG4*/);
 +    }
 +
++    if (gpio_request(17 /*PB1*/, "IOX_PRES") == -1)
++    {
++        printf("init_board_gpios_ios() - GPIO request failed for PB1 (17)\n");
++    }
++    else
++    {
++        gpio_direction_input(17 /*PB1*/);
++        gpio_free(17 /*PB1*/);
++    }
++
++  #if APP_NOUS_MK2_BOARD
++  
++    if (gpio_request(128 /*PI0*/, "SR_DO_SB") == -1)
++    {
++        printf("init_board_gpios_ios() - GPIO request failed for PI0 (128)\n");
++    }
++    else
++    {
++        gpio_direction_input(128 /*PI0*/);
++        gpio_free(128 /*PI0*/);
++    }
++
++    if (gpio_request(129 /*PI1*/, "SR_STR_SB") == -1)
++    {
++        printf("init_board_gpios_ios() - GPIO request failed for PI1 (129)\n");
++    }
++    else
++    {
++        gpio_direction_output(129 /*PI1*/, 0);
++        gpio_free(129 /*PI1*/);
++    }
++
++    if (gpio_request(130 /*PI2*/, "SR_STR_IO") == -1)
++    {
++        printf("init_board_gpios_ios() - GPIO request failed for PI2 (130)\n");
++    }
++    else
++    {
++        gpio_direction_output(130 /*PI2*/, 0);
++        gpio_free(130 /*PI2*/);
++    }
++
++    if (gpio_request(141 /*PI13*/, "SR_DO_IO") == -1)
++    {
++        printf("init_board_gpios_ios() - GPIO request failed for PI13 (141)\n");
++    }
++    else
++    {
++        gpio_direction_input(141 /*PI13*/);
++        gpio_free(141 /*PI13*/);
++    }
++
++  #endif // #if APP_NOUS_MK2_BOARD
++
 +    if (gpio_request(35 /*PC3*/, "SR_DO_CPU") == -1)
 +    {
 +        printf("init_board_gpios_ios() - GPIO request failed for PC3 (35)\n");
@@ -829,7 +889,7 @@
  int board_early_init_f(void)
  {
  	/* nothing to do, only used in SPL */
-@@ -100,7 +906,7 @@
+@@ -100,7 +963,7 @@
  	else
  		mode = "basic";
  
@@ -838,7 +898,7 @@
  	fdt_compat = fdt_getprop(gd->fdt_blob, 0, "compatible",
  				 &fdt_compat_len);
  	if (fdt_compat && fdt_compat_len)
-@@ -127,57 +933,6 @@
+@@ -127,57 +990,6 @@
  	return 0;
  }
  
@@ -896,7 +956,7 @@
  int g_dnl_board_usb_cable_connected(void)
  {
  	struct udevice *dwc2_udc_otg;
-@@ -220,227 +975,6 @@
+@@ -220,227 +1032,6 @@
  }
  #endif /* CONFIG_USB_GADGET_DOWNLOAD */
  
@@ -1124,7 +1184,7 @@
  static void sysconf_init(void)
  {
  	u8 *syscfg;
-@@ -530,137 +1064,30 @@
+@@ -530,137 +1121,34 @@
  				 1000000);
  	if (ret) {
  		pr_err("SYSCFG: I/O compensation failed, timeout.\n");
@@ -1258,17 +1318,21 @@
 -	if (CONFIG_IS_ENABLED(LED))
 -		led_default_state();
 +        /* THOR shift register IO initialization. */
- 
--	setup_led(LEDST_ON);
++
 +	init_board_gpios_ios();
 +
 +        /* THOR display initialization. */
+ 
+-	setup_led(LEDST_ON);
++  #if !APP_NOUS_MK2_BOARD
 +
 +	init_gc9503v_display_cntrl();
++
++  #endif // #if !APP_NOUS_MK2_BOARD
  
  	return 0;
  }
-@@ -709,15 +1136,11 @@
+@@ -709,15 +1197,11 @@
  		}
  	}
  
