@@ -1306,7 +1306,7 @@
 +/* This peripheral is a USB OTG high-speed controller being fixed to 'host' mode, being mainly used for USB-mass storage devices. */
 +
 +&usbotg_hs {
-+	compatible = "st,stm32-hsotg", "snps,dwc2";
++	compatible = "st,stm32mp15-hsotg", "snps,dwc2";
 +	phys = <&usbphyc_port1 0>;	/* 0: UTMI switch selects the OTG controller */
 +	phy-names = "usb2-phy";
 +	dr_mode = "host";

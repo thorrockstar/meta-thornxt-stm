@@ -135,7 +135,9 @@ and edit the "local.conf" file. Here is an example:
 
 13/ Double check that in the kernel configuration **'General Setup->Timers subsystem->Timer tick handling'** is set to **'Periodic timer ticks'**. This should be done by the 'defconfig' but double check before building because it is cruicial.
 
-14/ Build Thor image
+14/ There is an issue with patching the file "st-machine-extlinux-config-stm32mp.inc" inside the ST-Layer at "stm/meta-st-stm32mp/conf/machine/include". So please copy that file from the THOR-layer at "meta-thornxt-stm\conf\machine\include" to the STM-layer and overwrite the original file.
+
+15/ Build Thor image
     bitbake thor-e-image
 
 Typical bitbake output
