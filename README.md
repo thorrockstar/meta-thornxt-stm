@@ -64,8 +64,11 @@ Build procedure
 7/ Initialize build directory and set compiler.  
     source oe-init-build-env
 
-8/ Add meta-thornxt-stm layer to bblayer configuration file.  
-    vi conf/bblayers.conf
+8/ Add meta-thornxt-stm layer to bblayer configuration file.
+
+**Make sure that you have no white spaces left to "BBLAYERS ?=" and the other variables when editing the text block.**
+
+    gedit conf/bblayers.conf
 
     POKY_BBLAYERS_CONF_VERSION = "2"
 
@@ -89,11 +92,15 @@ Build procedure
     BLAYERS_NON_REMOVABLE ?= " \
       ${BSPDIR}/poky/meta \
       ${BSPDIR}/poky/meta-poky \
+    "
 
 9/ Edit local.conf to specify the machine, location of source archived, package type (rpm, deb or ipk)
 Pick one MACHINE name from the "Supported SoCs / MACHINE names" chapter above
 and edit the "local.conf" file. Here is an example:  
-    vi conf/local.conf
+
+**Make sure that you have no white spaces left to "MACHINE ??=" and the other variables when editing the text block.**
+
+    gedit conf/local.conf
 
     [...]
     MACHINE ??= "stm32mp1-thor-e2"
@@ -135,7 +142,9 @@ and edit the "local.conf" file. Here is an example:
 
 13/ Double check that in the kernel configuration **'General Setup->Timers subsystem->Timer tick handling'** is set to **'Periodic timer ticks'**. This should be done by the 'defconfig' but double check before building because it is cruicial.
 
-14/ There is an issue with patching the file "st-machine-extlinux-config-stm32mp.inc" inside the ST-Layer at "stm/meta-st-stm32mp/conf/machine/include". So please copy that file from the THOR-layer at "meta-thornxt-stm\conf\machine\include" to the STM-layer and overwrite the original file.
+**VERY IMPORTANT**
+
+14/ There is an issue with patching the file "st-machine-extlinux-config-stm32mp.inc" inside the ST-Layer at "meta-st-stm32mp/conf/machine/include". So please copy that file from the THOR-layer at "meta-thornxt-stm\conf\machine\include" to the STM-layer and overwrite the original file.
 
 15/ Build Thor image
     bitbake thor-e-image
