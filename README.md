@@ -70,29 +70,29 @@ Build procedure
 
     gedit conf/bblayers.conf
 
-    POKY_BBLAYERS_CONF_VERSION = "2"
+POKY_BBLAYERS_CONF_VERSION = "2"
 
-    BBPATH = "${TOPDIR}"
-    BBFILES ?= ""
+BBPATH = "${TOPDIR}"
+BBFILES ?= ""
 
-    BSPDIR := "${@os.path.abspath(os.path.dirname(d.getVar('FILE', True)) + '/../../..')}"
+BSPDIR := "${@os.path.abspath(os.path.dirname(d.getVar('FILE', True)) + '/../../..')}"
 
-    BBLAYERS ?= " \
-      ${BSPDIR}/poky/meta \
-      ${BSPDIR}/poky/meta-poky \
-      ${BSPDIR}/poky/meta-yocto-bsp \
-      ${BSPDIR}/meta-st-stm32mp \
-      ${BSPDIR}/meta-st-openstlinux \
-      ${BSPDIR}/meta-thornxt-stm \
-      ${BSPDIR}/meta-openembedded/meta-oe \
-      ${BSPDIR}/meta-openembedded/meta-networking \
-      ${BSPDIR}/meta-openembedded/meta-python \
-    "
+BBLAYERS ?= " \
+  ${BSPDIR}/poky/meta \
+  ${BSPDIR}/poky/meta-poky \
+  ${BSPDIR}/poky/meta-yocto-bsp \
+  ${BSPDIR}/meta-st-stm32mp \
+  ${BSPDIR}/meta-st-openstlinux \
+  ${BSPDIR}/meta-thornxt-stm \
+  ${BSPDIR}/meta-openembedded/meta-oe \
+  ${BSPDIR}/meta-openembedded/meta-networking \
+  ${BSPDIR}/meta-openembedded/meta-python \
+"
 
-    BLAYERS_NON_REMOVABLE ?= " \
-      ${BSPDIR}/poky/meta \
-      ${BSPDIR}/poky/meta-poky \
-    "
+BLAYERS_NON_REMOVABLE ?= " \
+  ${BSPDIR}/poky/meta \
+  ${BSPDIR}/poky/meta-poky \
+"
 
 9/ Edit local.conf to specify the machine, location of source archived, package type (rpm, deb or ipk)
 Pick one MACHINE name from the "Supported SoCs / MACHINE names" chapter above
@@ -115,10 +115,10 @@ and edit the "local.conf" file. Here is an example:
 
 10/ Remove some unwanted recipies from the ST folders.
 
-* meta-st-openstlinux/meta-st-openstlinux/recipes-multimedia/gstreamer
-* meta-st-openstlinux/meta-st-openstlinux/recipes-webadmin
-* meta-st-openstlinux/meta-st-openstlinux/recipes-samples
-* meta-st-openstlinux/meta-st-openstlinux/recipes-qt
+* meta-st-openstlinux/recipes-multimedia/gstreamer
+* meta-st-openstlinux/recipes-webadmin
+* meta-st-openstlinux/recipes-samples
+* meta-st-openstlinux/recipes-qt
 
 11/ Remove these lines from the meta-st-stm32mp/receipes-st/images/st-image-userfs.bb file.
 
@@ -134,17 +134,22 @@ and edit the "local.conf" file. Here is an example:
 
     <meta-st-openstlinux/conf/layer.conf>
 
-    ** Remove these lines! **
+    ** Remove this line! **
 
     LAYERDEPENDS_st-openstlinux = "qt5-layer"
 
-**IMPORTANT**
-
-13/ Double check that in the kernel configuration **'General Setup->Timers subsystem->Timer tick handling'** is set to **'Periodic timer ticks'**. This should be done by the 'defconfig' but double check before building because it is cruicial.
-
 **VERY IMPORTANT**
 
-14/ There is an issue with patching the file "st-machine-extlinux-config-stm32mp.inc" inside the ST-Layer at "meta-st-stm32mp/conf/machine/include". So please copy that file from the THOR-layer at "meta-thornxt-stm\conf\machine\include" to the STM-layer and overwrite the original file.
+13/ There is an issue with patching the file "st-machine-extlinux-config-stm32mp.inc" inside the ST-Layer at "meta-st-stm32mp/conf/machine/include".
+
+    So please copy the file "st-machine-extlinux-config-stm32mp.inc"
+    from the THOR-layer at "meta-thornxt-stm/conf/machine/include"
+    to the STM-layer at "meta-st-stm32mp/conf/machine/include"
+    and overwrite the original file.
+
+**IMPORTANT**
+
+14/ Double check that in the kernel configuration **'General Setup->Timers subsystem->Timer tick handling'** is set to **'Periodic timer ticks'**. This should be done by the 'defconfig' but double check before building because it is cruicial.
 
 15/ Build Thor image
     bitbake thor-e-image
