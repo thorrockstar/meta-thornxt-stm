@@ -12,7 +12,7 @@
  
  #include "menu.h"
  #include "cli.h"
-@@ -1415,6 +1417,10 @@
+@@ -1458,6 +1460,10 @@
  	struct menu *m;
  	int err;
  
@@ -20,12 +20,12 @@
 +	
 +	udelay(50000);
 +
- #ifdef CONFIG_CMD_BMP
- 	/* display BMP if available */
- 	if (cfg->bmp) {
-@@ -1430,14 +1436,26 @@
+ 	if (IS_ENABLED(CONFIG_CMD_BMP)) {
+ 		/* display BMP if available */
+ 		if (cfg->bmp) {
+@@ -1473,14 +1479,27 @@
+ 		}
  	}
- #endif
  
 +	udelay(400000);
 +	
@@ -47,6 +47,7 @@
  
 +	if (CONFIG_IS_ENABLED(CMD_CLS))
 +		run_command("cls", 0);
++
 +
  	/*
  	 * err == 1 means we got a choice back from menu_get_choice.

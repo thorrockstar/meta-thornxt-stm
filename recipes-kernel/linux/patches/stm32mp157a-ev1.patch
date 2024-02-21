@@ -1,6 +1,6 @@
 --- a/arch/arm/boot/dts/stm32mp157a-ev1.dts
 +++ b/arch/arm/boot/dts/stm32mp157a-ev1.dts
-@@ -1,83 +1,1313 @@
+@@ -1,103 +1,1316 @@
  // SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
  /*
 - * Copyright (C) STMicroelectronics 2019 - All Rights Reserved
@@ -49,20 +49,26 @@
 +	/* Standard serial console output. */
  
  	chosen {
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+ 		ranges;
  		stdout-path = "serial0:115200n8";
- 	};
++	};
 +
 +	cpus {
 +		cpu1: cpu@1 {
 +			compatible = "arm,cortex-a7";
 +			device_type = "cpu";
 +			reg = <1>;
-+			clocks = <&scmi0_clk CK_SCMI0_MPU>;
++			clocks = <&scmi_clk CK_SCMI_MPU>;
 +			clock-names = "cpu";
 +			operating-points-v2 = <&cpu0_opp_table>;
 +		};
 +	};
-+
+ 
+-		framebuffer {
+-			compatible = "simple-framebuffer";
+-			clocks = <&rcc LTDC_PX>;
 +	arm-pmu {
 +		interrupts = <GIC_SPI 200 IRQ_TYPE_LEVEL_HIGH>,
 +			     <GIC_SPI 201 IRQ_TYPE_LEVEL_HIGH>;
@@ -77,7 +83,7 @@
 +			interrupts = <GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>,
 +				     <GIC_SPI 21 IRQ_TYPE_LEVEL_HIGH>;
 +			interrupt-names = "int0", "int1";
-+			clocks = <&scmi0_clk CK_SCMI0_HSE>, <&rcc FDCAN_K>;
++			clocks = <&scmi_clk CK_SCMI_HSE>, <&rcc FDCAN_K>;
 +			clock-names = "hclk", "cclk";
 +			bosch,mram-cfg = <0x0 0 0 32 0 0 2 2>;
 +			status = "disabled";
@@ -90,13 +96,15 @@
 +			interrupts = <GIC_SPI 20 IRQ_TYPE_LEVEL_HIGH>,
 +				     <GIC_SPI 22 IRQ_TYPE_LEVEL_HIGH>;
 +			interrupt-names = "int0", "int1";
-+			clocks = <&scmi0_clk CK_SCMI0_HSE>, <&rcc FDCAN_K>;
++			clocks = <&scmi_clk CK_SCMI_HSE>, <&rcc FDCAN_K>;
 +			clock-names = "hclk", "cclk";
 +			bosch,mram-cfg = <0x1400 0 0 32 0 0 2 2>;
-+			status = "disabled";
-+		};
-+	};
-+
+ 			status = "disabled";
+ 		};
+ 	};
+ 
+-	aliases {
+-		ethernet0 = &ethernet0;
 +	/* RAM base address and size */
 +
 +	memory@c0000000 {
@@ -157,8 +165,12 @@
 +			reg = <0xd4000000 0x4000000>;
 +			no-map;
 +		};
-+	};
-+
+ 	};
+ 
+-	panel_backlight: panel-backlight {
+-		compatible = "gpio-backlight";
+-		gpios = <&gpiod 13 GPIO_ACTIVE_LOW>;
+-		default-on;
 +	/* Support for SSM2518 audio codec. */
 +
 +	sound {
@@ -170,27 +182,41 @@
 +			"Playback", "OUTR";
 +
 +		dais = <&sai2a_port>;
-+		status = "okay";
-+	};
-+
+ 		status = "okay";
+ 	};
+-};
+ 
+-&dsi {
+-	#address-cells = <1>;
+-	#size-cells = <0>;
+-	status = "okay";
 +	/* Simple display panel */
-+
+ 
+-	ports {
+-		#address-cells = <1>;
+-		#size-cells = <0>;
 +	panel {
 +		compatible = "hifaycx,rd570", "simple-panel";
 +		power-supply = <&panel_reg>;
 +		status = "okay";
-+
-+		port@0 {
-+			reg = <0>;
+ 
+ 		port@0 {
+ 			reg = <0>;
+-			dsi_in: endpoint {
 +			#address-cells = <1>;
 +			#size-cells = <0>;
 +
 +			panel_input: endpoint {
-+				remote-endpoint = <&ltdc_ep0_out>;
-+			};
-+		};
+ 				remote-endpoint = <&ltdc_ep0_out>;
+ 			};
+ 		};
 +	};
-+
+ 
+-		port@1 {
+-			reg = <1>;
+-			dsi_out: endpoint {
+-				remote-endpoint = <&dsi_panel_in>;
+-			};
 +	panel_reg: panel_regulator {
 +		compatible = "regulator-fixed";
 +		regulator-name = "panel-power-supply";
@@ -240,16 +266,27 @@
 +		pins2 {
 +			pinmux = <STM32_PINMUX('H', 14, AF9)>; /* CAN1_RX */
 +			bias-disable;
-+		};
-+	};
-+
+ 		};
+ 	};
+ 
+-	panel_dsi: panel-dsi@0 {
+-		compatible = "raydium,rm68200";
+-		reg = <0>;
+-		reset-gpios = <&gpiof 15 GPIO_ACTIVE_LOW>;
+-		backlight = <&panel_backlight>;
+-		power-supply = <&v3v3>;
+-		status = "okay";
 +	m_can1_sleep_pins_z: m_can1-sleep-0 {
 +		pins {
 +			pinmux = <STM32_PINMUX('B', 9, ANALOG)>, /* CAN1_TX */
 +				 <STM32_PINMUX('H', 14, ANALOG)>; /* CAN1_RX */
 +		};
 +	};
-+
+ 
+-		port {
+-			dsi_panel_in: endpoint {
+-				remote-endpoint = <&dsi_out>;
+-			};
 +
 +	/* Pins for the CAN2 interface. */
 +	
@@ -643,10 +680,17 @@
 +		pins2 {
 +			pinmux = <STM32_PINMUX('D', 6, AF12)>; /* FMC_NWAIT */
 +			bias-disable;
-+		};
-+	};
-+};
-+
+ 		};
+ 	};
+ };
+ 
+-&i2c2 {
+-	gt9147: goodix_ts@5d {
+-		compatible = "goodix,gt9147";
+-		reg = <0x5d>;
+-		panel = <&panel_dsi>;
+-		pinctrl-0 = <&goodix_pins>;
+-		pinctrl-names = "default";
 +/* High-speed data transfers between memory and peripherals and memory. */
 +
 +&mdma1{
@@ -694,8 +738,8 @@
 +		pinctrl-1 = <&lptim2_pwm_sleep_pins_mx_z>;
 +		status = "okay";
 +	};
- };
- 
++};
++
 +/* Unused timers */
 +
 +&timers1 {
@@ -749,7 +793,7 @@
 +	/delete-property/dma-names;
 +	status = "disabled";
 +	timer@11 {
-+		status = "okay";
+ 		status = "okay";
 +	};
 +};
 +
@@ -816,7 +860,9 @@
 +&crc1 {
 +	status = "okay";
 +};
-+
+ 
+-		interrupts = <14 IRQ_TYPE_EDGE_RISING>;
+-		interrupt-parent = <&stmfx_pinctrl>;
 +/* DMA */
 +
 +&dma1 {
@@ -839,9 +885,9 @@
 +	dma_pool: dma_pool@0 {
 +		reg = <0x50000 0x10000>;
 +		pool;
-+	};
-+};
-+
+ 	};
+ };
+ 
 +/* Flexible Memory controller. */
 +
 +&fmc {
@@ -895,13 +941,10 @@
  			reg = <0>;
 -			remote-endpoint = <&dsi_in>;
 +			remote-endpoint = <&panel_input>;
- 		};
- 	};
- };
- 
--&dsi {
--	#address-cells = <1>;
--	#size-cells = <0>;
++		};
++	};
++};
++
 +/* Micro-SD card interface. */
 +
 +&sdmmc2 {
@@ -923,35 +966,24 @@
 +	pinctrl-names = "default", "sleep";
 +	pinctrl-0 = <&eth1_pins_mx_z>;
 +	pinctrl-1 = <&eth1_sleep_pins_mx_z>;
- 	status = "okay";
++	status = "okay";
 +	phy-mode = "rmii";
 +	max-speed = <100>;
 +	phy-handle = <&phy0>;
 +	//nvmem-cells = <&ethernet_mac_address>;
 +	//nvmem-cell-names = "mac-address";
- 
--	ports {
++
 +	mdio0 {
- 		#address-cells = <1>;
- 		#size-cells = <0>;
--
--		port@0 {
--			reg = <0>;
--			dsi_in: endpoint {
--				remote-endpoint = <&ltdc_ep0_out>;
--			};
++		#address-cells = <1>;
++		#size-cells = <0>;
 +		compatible = "snps,dwmac-mdio";
 +		phy0: ethernet-phy@1 {
 +			reg = <1>;
 +			micrel,led-mode = <1>;
- 		};
++		};
 +	};
 +};
- 
--		port@1 {
--			reg = <1>;
--			dsi_out: endpoint {
--				remote-endpoint = <&dsi_panel_in>;
++
 +/* Enable hardware hash unit. */
 +
 +&hash1 {
@@ -984,19 +1016,13 @@
 +				remote-endpoint = <&sai2a_endpoint>;
 +				format = "i2s";
 +				mclk-fs = <256>;
- 			};
- 		};
- 	};
++			};
++		};
++	};
 +};
 +
 +/* I2C for direct application communication with the CTP. */
- 
--	panel_dsi: panel-dsi@0 {
--		compatible = "raydium,rm68200";
--		reg = <0>;
--		reset-gpios = <&gpiof 15 GPIO_ACTIVE_LOW>;
--		backlight = <&panel_backlight>;
--		power-supply = <&v3v3>;
++
 +&i2c1 {
 +	pinctrl-names = "default", "sleep";
 +	pinctrl-0 = <&i2c1_pins_mx_z>;
@@ -1026,14 +1052,11 @@
 +	pmic: stpmic@33 {
 +		compatible = "st,stpmic1";
 +		reg = <0x33>;
-+		interrupts-extended = <&exti_pwr 55 IRQ_TYPE_EDGE_FALLING>;
++		interrupts-extended = <&exti 55 IRQ_TYPE_EDGE_FALLING>;
 +		interrupt-controller;
 +		#interrupt-cells = <2>;
- 		status = "okay";
- 
--		port {
--			dsi_panel_in: endpoint {
--				remote-endpoint = <&dsi_out>;
++		status = "okay";
++
 +		regulators {
 +			compatible = "st,stpmic1-regulators";
 +			buck1-supply = <&vin>;
@@ -1124,7 +1147,7 @@
 +				regulator-max-microvolt = <2900000>;
 +				interrupts = <IT_CURLIM_LDO5 0>;
 +				regulator-always-on;
- 			};
++			};
 +
 +			v1v2_unused: ldo6 {
 +				regulator-name = "v1v2_unused";
@@ -1169,17 +1192,10 @@
 +		watchdog {
 +			compatible = "st,stpmic1-wdt";
 +			status = "okay";
- 		};
- 	};
- };
- 
--&i2c2 {
--	gt9147: goodix_ts@5d {
--		compatible = "goodix,gt9147";
--		reg = <0x5d>;
--		panel = <&panel_dsi>;
--		pinctrl-0 = <&goodix_pins>;
--		pinctrl-names = "default";
++		};
++	};
++};
++
 +/* The inter-processor communication controller (IPCC) is used to exchange data between two processors. */
 +
 +&ipcc {
@@ -1234,7 +1250,7 @@
 +		dma-names = "tx";
 +		clocks = <&rcc SAI2_K>;
 +		clock-names = "sai_ck";
- 		status = "okay";
++		status = "okay";
 +		
 +		sai2a_port: port {
 +			sai2a_endpoint: endpoint {
@@ -1248,9 +1264,9 @@
 +				//dai-tdm-slot-tx-mask = <1 1>;
 +				//dai-tdm-slot-rx-mask = <0 0>;
 +			};
-+		};
-+	};
-+};
+ 		};
+ 	};
+ };
 +
 +/* Reference voltage for the analogue inputs. */
 +
@@ -1274,9 +1290,7 @@
 +};
 +
 +/* Unused UART */
- 
--		interrupts = <14 IRQ_TYPE_EDGE_RISING>;
--		interrupt-parent = <&stmfx_pinctrl>;
++
 +&uart7 {
 +	/delete-property/dmas;
 +	/delete-property/dma-names;
@@ -1350,6 +1364,6 @@
 +	connector {
 +		compatible = "usb-a-connector";
 +		vbus-supply = <&v3v3>;
- 	};
- };
++	};
++};
 +

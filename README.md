@@ -44,19 +44,19 @@ Build procedure
     cd poky
 
 1/ Clone yocto/poky git repository with the proper branch ready.  
-    git clone git://git.yoctoproject.org/poky -b dunfell
+    git clone git://git.yoctoproject.org/poky -b kirkstone
 
 2/ Clone meta-openembedded git repository with the proper branch ready.  
-    git clone git://git.openembedded.org/meta-openembedded -b dunfell
+    git clone git://git.openembedded.org/meta-openembedded -b kirkstone
 
 3/ Clone meta-st-stm32mp layer with the proper branch ready.  
-    git clone https://github.com/STMicroelectronics/meta-st-stm32mp.git -b dunfell
+    git clone https://github.com/STMicroelectronics/meta-st-stm32mp.git -b kirkstone
 
 4/ Clone meta-st-openstlinux layer with the proper branch ready.  
-    git clone https://github.com/STMicroelectronics/meta-st-openstlinux.git -b dunfell
+    git clone https://github.com/STMicroelectronics/meta-st-openstlinux.git -b kirkstone
 
 5/ Clone meta-thornxt-stm layer with the proper branch ready.  
-    git clone https://github.com/thorrockstar/meta-thornxt-stm.git -b dunfell
+    git clone https://github.com/thorrockstar/meta-thornxt-stm.git -b kirkstone
 
 6/ Enter the poky directory to configure the build system and start the build process.  
    cd poky
@@ -70,29 +70,29 @@ Build procedure
 
     gedit conf/bblayers.conf
 
-    POKY_BBLAYERS_CONF_VERSION = "2"
+POKY_BBLAYERS_CONF_VERSION = "2"
 
-    BBPATH = "${TOPDIR}"
-    BBFILES ?= ""
+BBPATH = "${TOPDIR}"
+BBFILES ?= ""
 
-    BSPDIR := "${@os.path.abspath(os.path.dirname(d.getVar('FILE', True)) + '/../../..')}"
+BSPDIR := "${@os.path.abspath(os.path.dirname(d.getVar('FILE', True)) + '/../../..')}"
 
-    BBLAYERS ?= " \
-      ${BSPDIR}/poky/meta \
-      ${BSPDIR}/poky/meta-poky \
-      ${BSPDIR}/poky/meta-yocto-bsp \
-      ${BSPDIR}/meta-st-stm32mp \
-      ${BSPDIR}/meta-st-openstlinux \
-      ${BSPDIR}/meta-thornxt-stm \
-      ${BSPDIR}/meta-openembedded/meta-oe \
-      ${BSPDIR}/meta-openembedded/meta-networking \
-      ${BSPDIR}/meta-openembedded/meta-python \
-    "
+BBLAYERS ?= " \
+  ${BSPDIR}/poky/meta \
+  ${BSPDIR}/poky/meta-poky \
+  ${BSPDIR}/poky/meta-yocto-bsp \
+  ${BSPDIR}/meta-st-stm32mp \
+  ${BSPDIR}/meta-st-openstlinux \
+  ${BSPDIR}/meta-thornxt-stm \
+  ${BSPDIR}/meta-openembedded/meta-oe \
+  ${BSPDIR}/meta-openembedded/meta-networking \
+  ${BSPDIR}/meta-openembedded/meta-python \
+"
 
-    BLAYERS_NON_REMOVABLE ?= " \
-      ${BSPDIR}/poky/meta \
-      ${BSPDIR}/poky/meta-poky \
-    "
+BLAYERS_NON_REMOVABLE ?= " \
+  ${BSPDIR}/poky/meta \
+  ${BSPDIR}/poky/meta-poky \
+"
 
 9/ Edit local.conf to specify the machine, location of source archived, package type (rpm, deb or ipk)
 Pick one MACHINE name from the "Supported SoCs / MACHINE names" chapter above
@@ -107,18 +107,35 @@ and edit the "local.conf" file. Here is an example:
     [...]
     PACKAGE_CLASSES ?= "package_rpm"
     [...]
-    USER_CLASSES ?= "buildstats image-mklibs"
+    USER_CLASSES ?= "buildstats"
     [...]
     DISTRO ?= "poky"
     [...]
     ACCEPT_EULA_$MACHINE = "1"
+    [...]
+    INIT_MANAGER = "sysvinit"
+    [...]
+    ENABLE_BINARY_LOCALE_GENERATION = "1"
+    [...]
+    GLIBC_SPLIT_LC_PACKAGES = "0"
+    [...]
+    GLIBC_GENERATE_LOCALES += "en_US.UTF-8"
+    [...]
+    IMAGE_LINGUAS += "en-us"
 
 10/ Remove some unwanted recipies from the ST folders.
+
+**meta-st-openstlinux**
 
 * meta-st-openstlinux/recipes-multimedia/gstreamer
 * meta-st-openstlinux/recipes-webadmin
 * meta-st-openstlinux/recipes-samples
 * meta-st-openstlinux/recipes-qt
+* meta-st-openstlinux/oe-core/recipes-gnome
+
+**meta-st-stm32mp**
+
+* meta-st-stm32mp/recipes-devtools/gcc
 
 11/ Remove these lines from the meta-st-stm32mp/receipes-st/images/st-image-userfs.bb file.
 
@@ -137,6 +154,7 @@ and edit the "local.conf" file. Here is an example:
     ** Remove this line! **
 
     LAYERDEPENDS_st-openstlinux = "qt5-layer"
+
 
 **VERY IMPORTANT**
 
@@ -163,29 +181,30 @@ Typical bitbake output
     NOTE: Resolving any missing task queue dependencies
 
     Build Configuration:
-    BB_VERSION           = "1.46.0"
+    BB_VERSION           = "2.0.0"
     BUILD_SYS            = "x86_64-linux"
     NATIVELSBSTRING      = "universal"
     TARGET_SYS           = "arm-poky-linux-gnueabi"
     MACHINE              = "stm32mp1-thor-e2"
     DISTRO               = "poky"
-    DISTRO_VERSION       = "3.1.18"
+    DISTRO_VERSION       = "4.0.16"
     TUNE_FEATURES        = "arm vfp cortexa7 neon vfpv4 thumb callconvention-hard"
     TARGET_FPU           = "hard"
     meta                 
     meta-poky            
-    meta-yocto-bsp       = "dunfell:d695bd0d3dc66f2111a25c6922f617be2d991071"
-    meta-st-stm32mp      = "dunfell:9beb22b032d01c98aef956b43f5ed2712078a024"
-    meta-st-openstlinux  = "dunfell:ed4cbda9145779f757d92d158ae612238d1c7078"
-    meta-thornxt-stm     = "dunfell:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    meta-yocto-bsp       = "kirkstone:0b39955d14600257a6eafc211fd68a933c69a0e9"
+    meta-st-stm32mp      = "kirkstone:996ba052798f19dce1fba6851ad738faf1f78192"
+    meta-st-openstlinux  = "kirkstone:03daeb62ccffa2e29c20ee97154dc18dda4fbd60"
+    meta-thornxt-stm     = "kirkstone:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
     meta-oe              
     meta-networking      
-    meta-python          = "dunfell:52cee67833d1975a5bd52e4556c4cd312425a017"
+    meta-python          = "kirkstone:8609de00952d65bb813a48c535c937324efeb18a"
 
-    Initialising tasks: 100%     |#############################################################################################| Time: 0:00:01
-    Sstate summary: Wanted 8 Found 0 Missed 8 Current 1949 (0% match, 99% complete)
+    Initialising tasks: 100% |##############################################################################################################################################| Time: 0:00:04
+    Sstate summary: Wanted 10 Local 0 Mirrors 0 Missed 10 Current 1790 (0% match, 99% complete)
+    Removing 10 stale sstate objects for arch stm32mp1_thor_e2: 100% |######################################################################################################| Time: 0:00:00
     NOTE: Executing Tasks
-    NOTE: Tasks Summary: Attempted 4931 tasks of which 4920 didn't need to be rerun and all succeeded.
+    NOTE: Tasks Summary: Attempted 4395 tasks of which 4370 didn't need to be rerun and all succeeded.
 
 
 Contributing

@@ -6,7 +6,7 @@ QTNAME = "qte"
 QT_DIR_NAME = "qtopia"
 QT_TOOLS_PREFIX = "$OECORE_NATIVE_SYSROOT${bindir_nativesdk}"
 
-create_sdk_files_append() {
+create_sdk_files:append() {
     mkdir -p ${SDK_OUTPUT}${SDKPATHNATIVE}/environment-setup.d/
     script=${SDK_OUTPUT}${SDKPATHNATIVE}/environment-setup.d/${QT_DIR_NAME}.sh
 
