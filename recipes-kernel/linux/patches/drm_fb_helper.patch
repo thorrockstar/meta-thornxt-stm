@@ -1,9 +1,9 @@
 --- a/drivers/gpu/drm/drm_fb_helper.c	2021-08-26 14:51:21.000000000 +0200
 +++ b/drivers/gpu/drm/drm_fb_helper.c	2022-07-22 08:10:47.713629624 +0200
-@@ -2258,10 +2258,7 @@
- 		return;
- 	}
- 
+@@ -2519,10 +2519,7 @@
+ 	 * mess, resulting in some drivers picking wrong fbdev defaults and
+ 	 * others wrong preferred_depth defaults.
+ 	 */
 -	if (!preferred_bpp)
 -		preferred_bpp = dev->mode_config.preferred_depth;
 -	if (!preferred_bpp)
