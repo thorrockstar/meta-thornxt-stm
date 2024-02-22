@@ -1,6 +1,6 @@
 --- a/arch/arm/dts/stm32mp157a-ev1.dts
 +++ b/arch/arm/dts/stm32mp157a-ev1.dts
-@@ -1,83 +1,782 @@
+@@ -1,103 +1,785 @@
  // SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
  /*
 - * Copyright (C) STMicroelectronics 2019 - All Rights Reserved
@@ -45,18 +45,21 @@
 +	/* Standard serial console output. */
  
  	chosen {
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+ 		ranges;
  		stdout-path = "serial0:115200n8";
- 	};
--};
++	};
  
--&ltdc {
--	status = "okay";
+-		framebuffer {
+-			compatible = "simple-framebuffer";
+-			clocks = <&rcc LTDC_PX>;
 +	cpus {
 +		cpu1: cpu@1 {
 +			compatible = "arm,cortex-a7";
 +			device_type = "cpu";
 +			reg = <1>;
-+			clocks = <&scmi0_clk CK_SCMI0_MPU>;
++			clocks = <&scmi_clk CK_SCMI_MPU>;
 +			clock-names = "cpu";
 +			operating-points-v2 = <&cpu0_opp_table>;
 +		};
@@ -67,11 +70,7 @@
 +			     <GIC_SPI 201 IRQ_TYPE_LEVEL_HIGH>;
 +		interrupt-affinity = <&cpu0>, <&cpu1>;
 +	};
- 
--	port {
--		ltdc_ep0_out: endpoint@0 {
--			reg = <0>;
--			remote-endpoint = <&dsi_in>;
++
 +	soc {
 +		m_can1: can@4400e000 {
 +			compatible = "bosch,m_can";
@@ -80,7 +79,7 @@
 +			interrupts = <GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>,
 +				     <GIC_SPI 21 IRQ_TYPE_LEVEL_HIGH>;
 +			interrupt-names = "int0", "int1";
-+			clocks = <&scmi0_clk CK_SCMI0_HSE>, <&rcc FDCAN_K>;
++			clocks = <&scmi_clk CK_SCMI_HSE>, <&rcc FDCAN_K>;
 +			clock-names = "hclk", "cclk";
 +			bosch,mram-cfg = <0x0 0 0 32 0 0 2 2>;
 +			status = "disabled";
@@ -93,18 +92,15 @@
 +			interrupts = <GIC_SPI 20 IRQ_TYPE_LEVEL_HIGH>,
 +				     <GIC_SPI 22 IRQ_TYPE_LEVEL_HIGH>;
 +			interrupt-names = "int0", "int1";
-+			clocks = <&scmi0_clk CK_SCMI0_HSE>, <&rcc FDCAN_K>;
++			clocks = <&scmi_clk CK_SCMI_HSE>, <&rcc FDCAN_K>;
 +			clock-names = "hclk", "cclk";
 +			bosch,mram-cfg = <0x1400 0 0 32 0 0 2 2>;
-+			status = "disabled";
+ 			status = "disabled";
  		};
  	};
--};
  
--&dsi {
--	#address-cells = <1>;
--	#size-cells = <0>;
--	status = "okay";
+-	aliases {
+-		ethernet0 = &ethernet0;
 +	/* RAM base address and size */
 +
 +	memory@c0000000 {
@@ -113,11 +109,9 @@
 +	};
 +
 +	/* Memory reserved for peripherals and IO. */
- 
--	ports {
++
 +	reserved-memory {
- 		#address-cells = <1>;
--		#size-cells = <0>;
++		#address-cells = <1>;
 +		#size-cells = <1>;
 +		ranges;
 +
@@ -126,11 +120,7 @@
 +			reg = <0x10000000 0x40000>;
 +			no-map;
 +		};
- 
--		port@0 {
--			reg = <0>;
--			dsi_in: endpoint {
--				remote-endpoint = <&ltdc_ep0_out>;
++
 +		vdev0vring0: vdev0vring0@10040000 {
 +			compatible = "shared-dma-pool";
 +			reg = <0x10040000 0x1000>;
@@ -171,17 +161,19 @@
 +			reg = <0xf6000000 0x8000000>;
 +			no-map;
 +		};
-+	};
-+
+ 	};
+ 
+-	panel_backlight: panel-backlight {
 +	/* Simple display panel */
 +
 +	backlight: backlight {
-+		compatible = "gpio-backlight";
+ 		compatible = "gpio-backlight";
+-		gpios = <&gpiod 13 GPIO_ACTIVE_LOW>;
 +		/*Use an unused CPU pin here, so that we can control the real background light manually.*/
 +		gpios = <&gpioh 8 GPIO_ACTIVE_HIGH>;
-+		default-on;
-+		status = "okay";
-+	};
+ 		default-on;
+ 		status = "okay";
+ 	};
 +
 +	panel-rgb@0 {
 +		compatible = "simple-panel";
@@ -204,8 +196,8 @@
 +				vsync-active = <0>;
 +				de-active = <1>;
 +				pixelclk-active = <1>;
- 			};
- 		};
++			};
++		};
 +	};
 +
 +	/* Optional USB-PHY parameters. */
@@ -230,13 +222,25 @@
 +		regulator-max-microvolt = <5000000>;
 +		regulator-always-on;
 +	};
-+};
-+
+ };
+ 
+-&dsi {
+-	#address-cells = <1>;
+-	#size-cells = <0>;
+-	status = "okay";
 +/* Pinout mapping */
-+
+ 
+-	ports {
+-		#address-cells = <1>;
+-		#size-cells = <0>;
 +&pinctrl {
 +	u-boot,dm-pre-reloc;
-+
+ 
+-		port@0 {
+-			reg = <0>;
+-			dsi_in: endpoint {
+-				remote-endpoint = <&ltdc_ep0_out>;
+-			};
 +	/* Pins for the CAN1 interface. */
 +	
 +	m_can1_pins_z: m-can1-0 {
@@ -245,13 +249,18 @@
 +			slew-rate = <0>;
 +			drive-push-pull;
 +			bias-disable;
-+		};
+ 		};
 +		pins2 {
 +			pinmux = <STM32_PINMUX('H', 14, AF9)>; /* CAN1_RX */
 +			bias-disable;
 +		};
 +	};
-+
+ 
+-		port@1 {
+-			reg = <1>;
+-			dsi_out: endpoint {
+-				remote-endpoint = <&dsi_panel_in>;
+-			};
 +	/* Pins for the CAN2 interface. */
 +	
 +	m_can2_pins_z: m-can2-0 {
@@ -264,11 +273,22 @@
 +		pins2 {
 +			pinmux = <STM32_PINMUX('B', 5, AF9)>; /* CAN2_RX */
 +			bias-disable;
-+		};
-+	};
-+
+ 		};
+ 	};
+ 
+-	panel_dsi: panel-dsi@0 {
+-		compatible = "raydium,rm68200";
+-		reg = <0>;
+-		reset-gpios = <&gpiof 15 GPIO_ACTIVE_LOW>;
+-		backlight = <&panel_backlight>;
+-		power-supply = <&v3v3>;
+-		status = "okay";
 +	/* Pins for the Debug interface. */
-+
+ 
+-		port {
+-			dsi_panel_in: endpoint {
+-				remote-endpoint = <&dsi_out>;
+-			};
 +	uart4_pins_mx_z: uart4-0 {
 +		pins1 {
 +			pinmux = <STM32_PINMUX('C', 8, AF6)>; /* UART4_TX */
@@ -414,10 +434,18 @@
 +				 <STM32_PINMUX('E', 9, ANALOG)>, /* FMC_D6 */
 +				 <STM32_PINMUX('E', 10, ANALOG)>, /* FMC_D7 */
 +				 <STM32_PINMUX('G', 9, ANALOG)>; /* FMC_NCE */
-+		};
-+	};
-+};
-+
+ 		};
+ 	};
+ };
+ 
+-&i2c2 {
+-	gt9147: goodix_ts@5d {
+-		compatible = "goodix,gt9147";
+-		reg = <0x5d>;
+-		panel = <&panel_dsi>;
+-		pinctrl-0 = <&goodix_pins>;
+-		pinctrl-names = "default";
+-		status = "okay";
 +&pinctrl_z {
 +	u-boot,dm-pre-reloc;
 +};
@@ -461,8 +489,7 @@
 +};
 +
 +/* DMA */
- 
--		port@1 {
++
 +&dma1 {
 +	sram = <&dma_pool>;
 +	status = "okay";
@@ -480,7 +507,9 @@
 +};
 +
 +/* Device temperature monitoring. */
-+
+ 
+-		interrupts = <14 IRQ_TYPE_EDGE_RISING>;
+-		interrupt-parent = <&stmfx_pinctrl>;
 +&dts {
 +	status = "okay";
 +};
@@ -491,9 +520,9 @@
 +	dma_pool: dma_pool@0 {
 +		reg = <0x50000 0x10000>;
 +		pool;
-+	};
-+};
-+
+ 	};
+ };
+ 
 +/* Flexible Memory controller. */
 +
 +&fmc {
@@ -532,14 +561,18 @@
 +
 +/* Display controller */
 +
-+&ltdc {
+ &ltdc {
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&ltdc_pins_mx_z>;
-+	status = "okay";
+ 	status = "okay";
 +};
 +
 +/* Ethernet interface (10/100). */
-+
+ 
+-	port {
+-		ltdc_ep0_out: endpoint@0 {
+-			reg = <0>;
+-			remote-endpoint = <&dsi_in>;
 +&ethernet0 {
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&eth1_pins_mx_z>;
@@ -555,20 +588,11 @@
 +		#size-cells = <0>;
 +		compatible = "snps,dwmac-mdio";
 +		phy0: ethernet-phy@1 {
- 			reg = <1>;
--			dsi_out: endpoint {
--				remote-endpoint = <&dsi_panel_in>;
--			};
++			reg = <1>;
  		};
  	};
-+};
- 
--	panel_dsi: panel-dsi@0 {
--		compatible = "raydium,rm68200";
--		reg = <0>;
--		reset-gpios = <&gpiof 15 GPIO_ACTIVE_LOW>;
--		backlight = <&panel_backlight>;
--		power-supply = <&v3v3>;
+ };
++
 +/* I2C for communication with the PMIC (power controller). */
 +
 +&i2c4 {
@@ -585,14 +609,11 @@
 +	pmic: stpmic@33 {
 +		compatible = "st,stpmic1";
 +		reg = <0x33>;
-+		interrupts-extended = <&exti_pwr 55 IRQ_TYPE_EDGE_FALLING>;
++		interrupts-extended = <&exti 55 IRQ_TYPE_EDGE_FALLING>;
 +		interrupt-controller;
 +		#interrupt-cells = <2>;
- 		status = "okay";
- 
--		port {
--			dsi_panel_in: endpoint {
--				remote-endpoint = <&dsi_out>;
++		status = "okay";
++
 +		regulators {
 +			compatible = "st,stpmic1-regulators";
 +			buck1-supply = <&vin>;
@@ -703,24 +724,16 @@
 +			vbus_sw: pwr_sw2 {
 +				regulator-name = "vbus_sw";
 +				regulator-active-discharge = <1>;
- 			};
- 		};
++			};
++		};
 +
 +		watchdog {
 +			compatible = "st,stpmic1-wdt";
 +			status = "disabled";
 +		};
- 	};
- };
- 
--&i2c2 {
--	gt9147: goodix_ts@5d {
--		compatible = "goodix,gt9147";
--		reg = <0x5d>;
--		panel = <&panel_dsi>;
--		pinctrl-0 = <&goodix_pins>;
--		pinctrl-names = "default";
--		status = "okay";
++	};
++};
++
 +/* The inter-processor communication controller (IPCC) is used to exchange data between two processors. */
 +
 +&ipcc {
@@ -753,9 +766,7 @@
 +	vdd-supply = <&vdd>;
 +	vdd_3v3_usbfs-supply = <&vdd_usb>;
 +};
- 
--		interrupts = <14 IRQ_TYPE_EDGE_RISING>;
--		interrupt-parent = <&stmfx_pinctrl>;
++
 +/* Hardware random numbers generator. */
 +
 +&rng1 {
@@ -822,8 +833,8 @@
 +	connector {
 +		compatible = "usb-a-connector";
 +		vbus-supply = <&v3v3>;
- 	};
- };
++	};
++};
 +
 +&usbphyc_port1 {
 +	phy-supply = <&vdd_usb>;

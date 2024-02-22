@@ -2,21 +2,18 @@
 +++ b/fdts/stm32mp157f-ev1-fw-config.dts
 @@ -1,7 +1,12 @@
 -// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
--/*
-- * Copyright (c) 2020, STMicroelectronics - All Rights Reserved
-- */
--
--#define DDR_SIZE	0x40000000 /* 1GB */
--#include "stm32mp15-fw-config.dts"
 +/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
-+/*
+ /*
+- * Copyright (c) 2020-2021, STMicroelectronics - All Rights Reserved
 + * Copyright (C) STMicroelectronics 2022 - All Rights Reserved
 + * Author: STM32CubeMX code generation for STMicroelectronics.
-+ */
-+
+  */
+ 
+-#define DDR_SIZE	0x40000000 /* 1GB */
+-#include "stm32mp15-fw-config.dtsi"
 +/* For more information on Device Tree configuration, please refer to
 + * https://wiki.st.com/stm32mpu/wiki/Category:Device_tree_configuration
 + */
 +
 +#define DDR_SIZE	0x20000000 /* 512MB */
-+#include "stm32mp15-fw-config.dts"
++#include "stm32mp15-fw-config.dtsi"

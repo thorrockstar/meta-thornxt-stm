@@ -1,0 +1,12 @@
+
+S = "${WORKDIR}/git"
+
+PROJECTS_LIST_EV1 = " \
+	STM32MP157C-EV1/Applications/OpenAMP/OpenAMP_TTY_echo \
+"
+
+PROJECTS_LIST_DK2 = " \
+	STM32MP157C-DK2/Applications/OpenAMP/OpenAMP_TTY_echo \
+"
+
+PROJECTS_LIST = "${PROJECTS_LIST_EV1} ${PROJECTS_LIST_DK2}"

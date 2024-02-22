@@ -1,6 +1,6 @@
---- a/env/common.c	2022-07-19 21:57:47.913593000 +0200
-+++ b/env/common.c	2022-07-19 22:23:37.527769648 +0200
-@@ -120,8 +120,13 @@
+--- a/env/common.c
++++ b/env/common.c
+@@ -122,8 +122,13 @@
  		memcpy(&crc, &ep->crc, sizeof(crc));
  
  		if (crc32(0, ep->data, ENV_SIZE) != crc) {
@@ -16,11 +16,10 @@
  		}
  	}
  
-@@ -175,8 +180,13 @@
- 			tmp_env2->crc;
+@@ -168,7 +173,13 @@
+ 				tmp_env2->crc;
  
  	if (!crc1_ok && !crc2_ok) {
--		env_set_default("bad CRC", 0);
 -		return -ENOMSG; /* needed for env_load() */
 +		env_set_default(NULL, 0);
 +			
@@ -32,12 +31,12 @@
  	} else if (crc1_ok && !crc2_ok) {
  		gd->env_valid = ENV_VALID;
  	} else if (!crc1_ok && crc2_ok) {
-@@ -240,7 +250,12 @@
+@@ -253,7 +264,12 @@
  		env_set_default(NULL, 0);
  #else
  		bootstage_error(BOOTSTAGE_ID_NET_CHECKSUM);
 -		env_set_default("bad CRC", 0);
-+		
++				
 +		env_set_default(NULL, 0);
 +			
 +		if (env_set("boot_device", "nand")) {

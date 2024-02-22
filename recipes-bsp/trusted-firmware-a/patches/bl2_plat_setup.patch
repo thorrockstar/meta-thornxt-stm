@@ -1,51 +1,24 @@
 --- a/plat/st/stm32mp1/bl2_plat_setup.c	2022-07-14 11:01:46.211692000 +0200
 +++ b/plat/st/stm32mp1/bl2_plat_setup.c	2022-07-14 11:42:13.230237079 +0200
-@@ -23,6 +23,7 @@
- #include <drivers/st/stm32_console.h>
- #include <drivers/st/stm32_iwdg.h>
- #include <drivers/st/stm32_uart.h>
+@@ -30,6 +30,7 @@
+ #include <drivers/st/stm32mp1_clk.h>
+ #include <drivers/st/stm32mp1_pwr.h>
+ #include <drivers/st/stm32mp1_ram.h>
 +#include <drivers/st/stm32_gpio.h>
- #include <drivers/st/stm32mp_clkfunc.h>
- #include <drivers/st/stm32mp_pmic.h>
- #include <drivers/st/stm32mp_reset.h>
-@@ -289,7 +290,7 @@
+ #include <lib/fconf/fconf.h>
+ #include <lib/fconf/fconf_dyn_cfg_getter.h>
+ #include <lib/mmio.h>
+@@ -410,6 +411,13 @@
+ 	} else {
+ 		stm32mp_io_setup();
  	}
- 
- 	if (stm32mp1_clk_init(freq_khz) < 0) {
--		panic();
-+		//panic();
- 	}
++	
++	/* Turn the breathing LED PB13 on. */
++ 
++ 	NOTICE("Turn Breathing LED on.\n");
++ 
++ 	set_gpio_config(1, 13, GPIOF_OUT_INIT_LOW, 0);
++	clk_enable(stm32_get_gpio_bank_clock(1));
  }
  
-@@ -404,11 +405,10 @@
- 		panic();
- 	}
- 
--	if (dt_pmic_status() > 0) {
--		initialize_pmic();
--	}
-+	/* Turn the breathing LED PB13 on. */
- 
--	initialize_clock();
-+	set_gpio(1, 13, 1, 0, 0, 0, 0);
-+	clk_enable(stm32_get_gpio_bank_clock(1));
- 
- #if STM32MP_USB_PROGRAMMER
- 	/* Deconfigure all UART RX pins configured by ROM code */
-@@ -466,6 +466,16 @@
- 	}
- 
- skip_console_init:
-+
-+	if (dt_pmic_status() > 0) {
-+		NOTICE("Initialize the PMIC.\n");
-+		initialize_pmic();
-+	}
-+
-+	NOTICE("Initialize the clock.\n");
-+
-+	initialize_clock();
-+
- #if !TRUSTED_BOARD_BOOT
- 	if (stm32mp_is_closed_device()) {
- 		/* Closed chip required authentication */
+ #if STM32MP13

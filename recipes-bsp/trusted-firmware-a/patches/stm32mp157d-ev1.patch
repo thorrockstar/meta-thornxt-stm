@@ -1,6 +1,6 @@
 --- a/fdts/stm32mp157d-ev1.dts
 +++ b/fdts/stm32mp157d-ev1.dts
-@@ -1,23 +1,993 @@
+@@ -1,23 +1,999 @@
  // SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
  /*
 - * Copyright (C) STMicroelectronics 2019 - All Rights Reserved
@@ -17,7 +17,7 @@
 -#include "stm32mp157d-ed1.dts"
 -#include "stm32mp15xx-evx.dtsi"
 +#include "stm32mp151.dtsi"               /* dt-bindings/#? */
-+#include "stm32mp15xd.dtsi"              /* stm32mp15xd.dtsi */
++#include "stm32mp15xf.dtsi"              /* stm32mp15xd.dtsi */
 +#include "stm32mp15-pinctrl.dtsi"        /* Analogue, Ethernet, etc. */
 +#include "stm32mp15xxac-pinctrl.dtsi"    /* GPIOA..Z */
 +
@@ -347,7 +347,7 @@
 +			pinmux = <STM32_PINMUX('D', 6, AF12)>; /* FMC_NWAIT */
 +			bias-pull-up;
 +		};
-+	};
+ 	};
 +
 +	/* Pins for the Debug interface. */
 +
@@ -385,7 +385,7 @@
 +/* RTC oscillator 32.768kHz. */
 +
 +&clk_lse {
-+};
+ };
 +
 +/* Core 1/2 voltage */
 +
@@ -550,29 +550,29 @@
 +	secure-status = "okay";
 +};
 +
-+/* Non volatile memory layout. */
++/* Non volatile memory layout. Removed! */
 +
-+&nvmem_layout {
-+	nvmem-cells = <&cfg0_otp>,
-+		      <&part_number_otp>,
-+		      <&monotonic_otp>,
-+		      <&nand_otp>,
-+		      <&uid_otp>,
-+		      <&package_otp>,
-+		      <&hw2_otp>,
-+		      <&pkh_otp>,
-+		      <&board_id>;
 +
-+	nvmem-cell-names = "cfg0_otp",
-+			   "part_number_otp",
-+			   "monotonic_otp",
-+			   "nand_otp",
-+			   "uid_otp",
-+			   "package_otp",
-+			   "hw2_otp",
-+			   "pkh_otp",
-+			   "board_id";
-+};
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
 +
 +/* Power regulators */
 +
@@ -700,8 +700,8 @@
 +		reg = <3>;
 +		cfg = <3 98 5 7 7 PQR(1,1,1)>;
 +		frac = <0x0000>;
- 	};
- };
++	};
++};
 +
 +/* Random Number Generator */
 +
@@ -910,6 +910,12 @@
 +	standby-ddr-off {
 +		regulator-off-in-suspend;
 +	};
++};
++
++/* Hardware Encryption Unit */
++
++&cryp1 {
++	status = "disabled";
 +};
 +
 +/* Unlock units */

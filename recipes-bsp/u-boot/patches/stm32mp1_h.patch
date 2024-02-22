@@ -1,13 +1,7 @@
---- a/include/configs/stm32mp1.h	2022-08-10 10:38:27.382939000 +0200
-+++ b/include/configs/stm32mp1.h	2022-08-10 14:06:51.142128143 +0200
-@@ -120,24 +120,15 @@
- /*
-  * bootcmd for stm32mp1:
-  * for serial/usb: execute the stm32prog command
-- * for mmc boot (eMMC, SD card), boot only on the same device
-- * for nand or spi-nand boot, boot with on ubifs partition on UBI partition
-- * for nor boot, use SD card = mmc0
-+ * for nand boot with on ubifs partition on UBI partition
+--- a/include/configs/stm32mp15_common.h
++++ b/include/configs/stm32mp15_common.h
+@@ -118,17 +118,12 @@
+  * for nor boot, use the default distro order in ${boot_targets}
   */
  #define STM32MP_BOOTCMD "bootcmd_stm32mp=" \
 -	"echo \"Boot over ${boot_device}${boot_instance}!\";" \
@@ -22,12 +16,10 @@
 -		"if test ${boot_device} = nand ||" \
 -		  " test ${boot_device} = spi-nand ;" \
 -		"then env set boot_targets ubifs0; fi;" \
--		"if test ${boot_device} = nor;" \
--		"then env set boot_targets mmc0; fi;" \
 -		"run distro_bootcmd;" \
 +	"else run env_check;" \
 +	"env set boot_targets ubifs0;" \
 +	"run distro_bootcmd;" \
  	"fi;\0"
  
- #include <config_distro_bootcmd.h>
+ #ifdef CONFIG_FASTBOOT_CMD_OEM_FORMAT

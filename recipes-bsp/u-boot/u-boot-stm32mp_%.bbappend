@@ -1,12 +1,12 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/patches:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/patches:"
 
 SRC_URI += " \
 	file://stm32mp157f-ev1.patch;patch=1 \
 	file://stm32mp157d-ev1.patch;patch=1 \
-	file://stm32mp157a-ev1.patch;patch=1 \
+	file://stm32mp157a-ev1_nous_mk2.patch;patch=1 \
 	file://stm32mp1.patch;patch=1 \
 	file://stm32mp1_h.patch;patch=1 \
-	file://stm32mp15_trusted_defconfig.patch;patch=1 \
+	file://stm32mp15_defconfig.patch;patch=1 \
 	file://stm32mp15-ddr3-2x4Gb-1066-binG.patch;patch=1 \
 	file://cpu.patch;patch=1 \
 	file://common.patch;patch=1 \
