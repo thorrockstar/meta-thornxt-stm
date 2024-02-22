@@ -22,7 +22,7 @@
  #endif
  
 +	unsigned long breath_time = get_timer(0);
-+	unsigned int breath_span = 67 * 1000; // Verification time required for flashing the E2.
++	unsigned int breath_span = 56 * 1000; // Verification time required for flashing the E2.
 +
 +    	ibreath = -1;
 +    	

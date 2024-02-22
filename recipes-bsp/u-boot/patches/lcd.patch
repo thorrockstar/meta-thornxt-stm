@@ -8,17 +8,37 @@
  	int bg_color;
  	__maybe_unused ulong addr;
  	static int do_splash = 1;
-@@ -200,6 +201,13 @@
- 	bg_color = CONSOLE_COLOR_BLACK;
- #endif	/* CONFIG_SYS_WHITE_ON_BLACK */
+@@ -190,15 +191,18 @@
+ 	lcd_setcolreg(CONSOLE_COLOR_WHITE, 0xFF, 0xFF, 0xFF);
+ #endif
  
+-#ifndef CONFIG_SYS_WHITE_ON_BLACK
+-	lcd_setfgcolor(CONSOLE_COLOR_BLACK);
+-	lcd_setbgcolor(CONSOLE_COLOR_WHITE);
+-	bg_color = CONSOLE_COLOR_WHITE;
+-#else
++	printf("Info: Set white text on black background.\n");
++
+ 	lcd_setfgcolor(CONSOLE_COLOR_WHITE);
+ 	lcd_setbgcolor(CONSOLE_COLOR_BLACK);
+ 	bg_color = CONSOLE_COLOR_BLACK;
+-#endif	/* CONFIG_SYS_WHITE_ON_BLACK */
++
 +	boot_device = env_get("boot_device");
 +	if (!strcmp(boot_device, "nand"))
 +	{
 +		lcd_setfgcolor(CONSOLE_COLOR_BLACK);
 +		lcd_setbgcolor(CONSOLE_COLOR_BLACK);
 +	}
-+
+ 
  #ifdef	LCD_TEST_PATTERN
  	test_pattern();
- #else
+@@ -243,7 +247,7 @@
+ 
+ static int lcd_init(void *lcdbase)
+ {
+-	debug("[LCD] Initializing LCD frambuffer at %p\n", lcdbase);
++	printf("[LCD] Initializing LCD frambuffer at %p\n", lcdbase);
+ 	lcd_ctrl_init(lcdbase);
+ 
+ 	/*
