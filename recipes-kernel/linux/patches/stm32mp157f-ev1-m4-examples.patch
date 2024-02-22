@@ -1,0 +1,13 @@
+--- a/arch/arm/boot/dts/stm32mp157f-ev1-m4-examples.dts	2024-02-21 10:36:01.143032000 +0100
++++ b/arch/arm/boot/dts/stm32mp157f-ev1-m4-examples.dts	2024-02-21 11:32:09.789009361 +0100
+@@ -142,10 +142,6 @@
+ 	status = "disabled";
+ };
+ 
+-&sound {
+-	status = "disabled";
+-};
+-
+ &timers2 {
+ 	status = "disabled";
+ };
