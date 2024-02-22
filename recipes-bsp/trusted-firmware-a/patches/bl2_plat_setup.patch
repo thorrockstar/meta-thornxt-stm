@@ -8,16 +8,17 @@
  #include <lib/fconf/fconf.h>
  #include <lib/fconf/fconf_dyn_cfg_getter.h>
  #include <lib/mmio.h>
-@@ -313,6 +314,12 @@
- 	stm32_save_boot_interface(boot_context->boot_interface_selected,
- 				  boot_context->boot_interface_instance);
- 
+@@ -410,6 +411,13 @@
+ 	} else {
+ 		stm32mp_io_setup();
+ 	}
++	
 +	/* Turn the breathing LED PB13 on. */
 + 
-+ 	set_gpio_config(1, 13, 0, 0);
-+	set_gpio_level(1, 13, GPIO_LEVEL_HIGH);
++ 	NOTICE("Turn Breathing LED on.\n");
++ 
++ 	set_gpio_config(1, 13, GPIOF_OUT_INIT_LOW, 0);
 +	clk_enable(stm32_get_gpio_bank_clock(1));
-+
- #if STM32MP_USB_PROGRAMMER && STM32MP15
- 	/* Deconfigure all UART RX pins configured by ROM code */
- 	stm32mp1_deconfigure_uart_pins();
+ }
+ 
+ #if STM32MP13
