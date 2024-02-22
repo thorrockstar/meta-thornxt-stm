@@ -1,27 +1,25 @@
-This layer provides support for the Thor-NXT platform reference boards
-======================================================================
+This layer provides support for the Thor-NX-E2 platform reference boards
+========================================================================
 
-For more information about the Thor-NXT product line see:
+For more information about the Thor-NX-E2 product line see:
 https://www.thor.engineering
 
 NeXt-Group - Open projects for lifts
 https://www.next-group.org
 
-Generic Linux & Open Source on Atmel micro controllers:
-https://www.linux4sam.org
+STM32 MPU OpenSTLinux Distribution:
+https://www.st.com/en/embedded-software/stm32-mpu-openstlinux-distribution.html
 
 
 Supported SoCs / MACHINE names
 ==============================
-- SAMA5D3 based THOR-NX-T2/3(Nova) and Nous lift controller boards
+- STM32MP157 based THOR-E2 and Nous-X lift controller boards
 
 
 Sources
 =======
-- meta-thornxt
-URI: git://github.com/thorrockstar/meta-thornxt.git
-URI: https://github.com/thorrockstar/meta-thornxt.git
-URI: ssh://git@github.com:thorrockstar/meta-thornxt.git
+- meta-thornxt-stm
+URI: https://github.com/thorrockstar/meta-thornxt-stm.git
 
 
 Dependencies
@@ -32,15 +30,11 @@ This Layer depends on:
 URI: git://git.openembedded.org/meta-openembedded
 URI: http://cgit.openembedded.org/meta-openembedded/
 
-- meta-atmel
-URI: git://github.com/linux4sam/meta-atmel.git
-URI: https://github.com/linux4sam/meta-atmel.git
+- meta-st-stm32mp layer
+URI: https://github.com/STMicroelectronics/meta-st-stm32mp.git
 
-Optionally for SDK building:
-
-- meta-qt5
-URI: git://github.com/meta-qt5/meta-qt5.git
-URI: https://github.com/meta-qt5/meta-qt5
+- meta-st-openstlinux
+URI: https://github.com/STMicroelectronics/meta-st-openstlinux.git
 
 
 Requisities
@@ -59,49 +53,44 @@ Build procedure
 ===============
 
 0/ Create a directory.  
-
-    mkdir kirkstone_sama
-    cd kirkstone_sama
+    mkdir kirkstone_stm
+    cd kirkstone_stm
 
 1/ Clone yocto/poky git repository with the proper branch ready.  
 
-    git clone https://git.yoctoproject.org/poky && cd poky && git checkout -b kirkstone yocto-4.0.13 && cd -
+    git clone git://git.yoctoproject.org/poky -b kirkstone
 
 2/ Clone meta-openembedded git repository with the proper branch ready.  
 
-    git clone git://git.openembedded.org/meta-openembedded && cd meta-openembedded && git checkout -b kirkstone 79a6f6 && cd -
+    git clone git://git.openembedded.org/meta-openembedded -b kirkstone
 
-3/ Clone meta-atmel layer with the proper branch ready.  
+3/ Clone meta-st-stm32mp layer with the proper branch ready.  
 
-    git clone https://github.com/linux4sam/meta-atmel.git -b kirkstone
+    git clone https://github.com/STMicroelectronics/meta-st-stm32mp.git -b kirkstone
 
-4/ Clone meta-arm layer with the proper branch ready
+4/ Clone meta-st-openstlinux layer with the proper branch ready.  
+    git clone https://github.com/STMicroelectronics/meta-st-openstlinux.git -b kirkstone
 
-    git clone https://git.yoctoproject.org/meta-arm && cd meta-arm && git checkout -b kirkstone yocto-4.0.1 && cd -
 
-5/ Clone meta-thornxt layer with the proper branch ready.  
+5/ Clone meta-thornxt-stm layer with the proper branch ready.  
 
-    git clone https://github.com/thorrockstar/meta-thornxt.git -b kirkstone
+    git clone https://github.com/thorrockstar/meta-thornxt-stm.git -b kirkstone
 
-6/ Enter the poky directory to configure the build system and start the build process.
+6/ Enter the poky directory to configure the build system and start the build process.  
 
     cd poky
 
-7/ Inside the .templateconf file, you will need to modify the TEMPLATECONF variable to match the path to the meta-atmel layer "conf" directory:
+7/ Initialize build directory and set compiler.  
 
-    gedit .templateconf
+    source oe-init-build-env
 
-    export TEMPLATECONF=${TEMPLATECONF:-../meta-atmel/conf}
-
-8/ Initialize build directory and set compiler.  
-
-    source oe-init-build-env build-microchip
-
-9/ Add meta-thornxt layer to bblayer configuration file.
+8/ Add meta-thornxt-stm layer to bblayer configuration file.
 
 **Make sure that you have no white spaces left to "BBLAYERS ?=" and the other variables when editing the text block.**
 
     gedit conf/bblayers.conf
+
+POKY_BBLAYERS_CONF_VERSION = "2"
 
 BBPATH = "${TOPDIR}"
 BBFILES ?= ""
@@ -112,38 +101,39 @@ BBLAYERS ?= " \
   ${BSPDIR}/poky/meta \
   ${BSPDIR}/poky/meta-poky \
   ${BSPDIR}/poky/meta-yocto-bsp \
+  ${BSPDIR}/meta-st-stm32mp \
+  ${BSPDIR}/meta-st-openstlinux \
+  ${BSPDIR}/meta-thornxt-stm \
   ${BSPDIR}/meta-openembedded/meta-oe \
   ${BSPDIR}/meta-openembedded/meta-networking \
   ${BSPDIR}/meta-openembedded/meta-python \
-  ${BSPDIR}/meta-atmel \
-  ${BSPDIR}/meta-thornxt \
-  ${BSPDIR}/meta-arm/meta-arm \
-  ${BSPDIR}/meta-arm/meta-arm-toolchain \
-  "
+"
 
 BLAYERS_NON_REMOVABLE ?= " \
   ${BSPDIR}/poky/meta \
   ${BSPDIR}/poky/meta-poky \
-  "
+"
 
-10/ Edit local.conf to specify the machine, location of source archived, package type (rpm, deb or ipk)
+9/ Edit local.conf to specify the machine, location of source archived, package type (rpm, deb or ipk)
 Pick one MACHINE name from the "Supported SoCs / MACHINE names" chapter above
 and edit the "local.conf" file. Here is an example:  
 
 **Make sure that you have no white spaces left to "MACHINE ??=" and the other variables when editing the text block.**
 
-    gedit conf/local.conf
+gedit conf/local.conf
 
 [...]  
-MACHINE ??= "sama5d3-xplained"  
+MACHINE ??= "stm32mp1-thor-e2"  
 [...]  
-PACKAGE_CLASSES ?= "package_ipk"  
+PACKAGE_CLASSES ?= "package_rpm"  
 [...]  
 USER_CLASSES ?= "buildstats"  
 [...]  
-INIT_MANAGER = "sysvinit"  
+DISTRO ?= "poky"  
 [...]  
-DISTRO ?= "poky-atmel"  
+ACCEPT_EULA_$MACHINE = "1"  
+[...]  
+INIT_MANAGER = "sysvinit"  
 [...]  
 ENABLE_BINARY_LOCALE_GENERATION = "1"  
 [...]  
@@ -153,38 +143,89 @@ GLIBC_GENERATE_LOCALES += "en_US.UTF-8"
 [...]  
 IMAGE_LINGUAS += "en-us"  
 
+10/ Remove some unwanted recipies from the ST folders.
+
+**meta-st-openstlinux**
+
+* meta-st-openstlinux/recipes-multimedia/gstreamer
+* meta-st-openstlinux/recipes-webadmin
+* meta-st-openstlinux/recipes-samples
+* meta-st-openstlinux/recipes-qt
+* meta-st-openstlinux/oe-core/recipes-gnome
+
+**meta-st-stm32mp**
+
+* meta-st-stm32mp/recipes-devtools/gcc
+
+11/ Remove these lines from the meta-st-stm32mp/receipes-st/images/st-image-userfs.bb file.
+
+    <meta-st-stm32mp/receipes-st/images/st-image-userfs.bb>
+
+    ** Remove these lines! **
+
+    PACKAGE_INSTALL += " \
+        packagegroup-st-demo \
+        "
+
+12/ Remove some lines from the meta-st-openstlinux/conf/layer.conf file.
+
+    <meta-st-openstlinux/conf/layer.conf>
+
+    ** Remove this line! **
+
+    LAYERDEPENDS_st-openstlinux = "qt5-layer"
+
+
+**VERY IMPORTANT**
+
+13/ There is an issue with patching the file "st-machine-extlinux-config-stm32mp.inc" inside the ST-Layer at "meta-st-stm32mp/conf/machine/include".
+
+    So please copy the file "st-machine-extlinux-config-stm32mp.inc"
+    from the THOR-layer at "meta-thornxt-stm/conf/machine/include"
+    to the STM-layer at "meta-st-stm32mp/conf/machine/include"
+    and overwrite the original file.
+
 **IMPORTANT**
 
-11/ Double check that in the kernel configuration **'General Setup->Timers subsystem->High Resolution Timer Support'**
-has been turned **off** as well as **'General Setup->Timers subsystem->Timer tick handling'** is set to **'Periodic timer ticks'**.
-This should be done by the 'defconfig' but double check before building because it is cruicial.
+14/ Double check that in the kernel configuration **'General Setup->Timers subsystem->Timer tick handling'** is set to **'Periodic timer ticks'**. This should be done by the 'defconfig' but double check before building because it is cruicial.
 
-12/ Build Thor demo images  
-
-    bitbake thor-nxt-image
+15/ Build Thor image
+    bitbake thor-e-image
 
 Typical bitbake output
 ======================
+    Loading cache: 100% |###########################################################################################| Time: 0:00:00
+    Loaded 3294 entries from dependency cache.
+    Parsing recipes: 100% |#########################################################################################| Time: 0:00:00
+    Parsing of 2162 .bb files complete (2161 cached, 1 parsed). 3283 targets, 127 skipped, 0 masked, 0 errors.
+    NOTE: Resolving any missing task queue dependencies
+
     Build Configuration:
     BB_VERSION           = "2.0.0"
     BUILD_SYS            = "x86_64-linux"
     NATIVELSBSTRING      = "universal"
     TARGET_SYS           = "arm-poky-linux-gnueabi"
-    MACHINE              = "sama5d3-xplained"
-    DISTRO               = "poky-atmel"
-    DISTRO_VERSION       = "4.0.13"
-    TUNE_FEATURES        = "arm vfp cortexa5 thumb callconvention-hard"
+    MACHINE              = "stm32mp1-thor-e2"
+    DISTRO               = "poky"
+    DISTRO_VERSION       = "4.0.16"
+    TUNE_FEATURES        = "arm vfp cortexa7 neon vfpv4 thumb callconvention-hard"
     TARGET_FPU           = "hard"
     meta                 
     meta-poky            
-    meta-yocto-bsp       = "kirkstone:e51bf557f596c4da38789a948a3228ba11455e3c"
+    meta-yocto-bsp       = "kirkstone:0b39955d14600257a6eafc211fd68a933c69a0e9"
+    meta-st-stm32mp      = "kirkstone:996ba052798f19dce1fba6851ad738faf1f78192"
+    meta-st-openstlinux  = "kirkstone:03daeb62ccffa2e29c20ee97154dc18dda4fbd60"
+    meta-thornxt-stm     = "kirkstone:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
     meta-oe              
     meta-networking      
-    meta-python          = "kirkstone:79a6f60dabad9e5b0e041efa91379447ef030482"
-    meta-atmel           = "kirkstone:128bf04cb75902e239a145f0e84f6147aef2ff4b"
-    meta-thornxt         = "kirkstone:96c8dcd70f12b45a8b8f6071b440e09d65fd8c06"
-    meta-arm             
-    meta-arm-toolchain   = "kirkstone:bafd1d013c2470bcec123ba4eb8232ab879b2660"
+    meta-python          = "kirkstone:8609de00952d65bb813a48c535c937324efeb18a"
+
+    Initialising tasks: 100% |##############################################################################################################################################| Time: 0:00:04
+    Sstate summary: Wanted 10 Local 0 Mirrors 0 Missed 10 Current 1790 (0% match, 99% complete)
+    Removing 10 stale sstate objects for arch stm32mp1_thor_e2: 100% |######################################################################################################| Time: 0:00:00
+    NOTE: Executing Tasks
+    NOTE: Tasks Summary: Attempted 4395 tasks of which 4370 didn't need to be rerun and all succeeded.
+
 
 Contributing
 ============
@@ -192,8 +233,8 @@ To contribute to this layer you should submit the patches for review to:
 the github pull-request facility directly. Anyway, don't forget to
 Cc the maintainers.
 
-AT91 Forum:
-http://www.at91.com/discussions/
+STM32MPU Wiki & Forum:
+https://wiki.st.com/stm32mpu/wiki/OpenSTLinux_distribution
 
 for some useful guidelines to be followed when submitting patches:
 http://www.openembedded.org/wiki/How_to_submit_a_patch_to_OpenEmbedded
@@ -201,6 +242,6 @@ http://www.openembedded.org/wiki/How_to_submit_a_patch_to_OpenEmbedded
 Maintainers:
 Roy Schneider <roy@thor.engineering>
 
-When creating patches insert the [meta-thornxt] tag in the subject, for example
+When creating patches insert the [meta-thornxt-stm] tag in the subject, for example
 use something like:
-git format-patch -s --subject-prefix='meta-thornxt][PATCH' <origin>
+git format-patch -s --subject-prefix='meta-thornxt-stm][PATCH' <origin>
