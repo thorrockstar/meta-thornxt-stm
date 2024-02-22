@@ -13,7 +13,7 @@ https://www.st.com/en/embedded-software/stm32-mpu-openstlinux-distribution.html
 
 Supported SoCs / MACHINE names
 ==============================
-- STM32MP157 based THOR-NX-E2 lift controller boards
+- STM32MP157 based THOR-E2 and Nous-X lift controller boards
 
 
 Sources
@@ -36,32 +36,52 @@ URI: https://github.com/STMicroelectronics/meta-st-stm32mp.git
 - meta-st-openstlinux
 URI: https://github.com/STMicroelectronics/meta-st-openstlinux.git
 
+
+Requisities
+===========
+
+Build has been tested under Ubuntu 22.04 LTS. Anyway you need to install these required packages:
+
+    $ sudo apt install gawk wget git diffstat unzip texinfo gcc build-essential chrpath socat cpio python3 python3-pip python3-pexpect xz-utils debianutils iputils-ping python3-git python3-jinja2 libegl1-mesa libsdl1.2-dev python3-subunit mesa-common-dev zstd liblz4-tool file locales libacl1
+    $ sudo locale-gen en_US.UTF-8
+
+    $ sudo apt install make python3-pip inkscape texlive-latex-extra
+    $ sudo pip3 install sphinx sphinx_rtd_theme pyyaml
+
+
 Build procedure
 ===============
 
 0/ Create a directory.  
-    mkdir poky  
-    cd poky
+    mkdir kirkstone_stm
+    cd kirkstone_stm
 
 1/ Clone yocto/poky git repository with the proper branch ready.  
+
     git clone git://git.yoctoproject.org/poky -b kirkstone
 
 2/ Clone meta-openembedded git repository with the proper branch ready.  
+
     git clone git://git.openembedded.org/meta-openembedded -b kirkstone
 
 3/ Clone meta-st-stm32mp layer with the proper branch ready.  
+
     git clone https://github.com/STMicroelectronics/meta-st-stm32mp.git -b kirkstone
 
 4/ Clone meta-st-openstlinux layer with the proper branch ready.  
     git clone https://github.com/STMicroelectronics/meta-st-openstlinux.git -b kirkstone
 
+
 5/ Clone meta-thornxt-stm layer with the proper branch ready.  
+
     git clone https://github.com/thorrockstar/meta-thornxt-stm.git -b kirkstone
 
 6/ Enter the poky directory to configure the build system and start the build process.  
-   cd poky
+
+    cd poky
 
 7/ Initialize build directory and set compiler.  
+
     source oe-init-build-env
 
 8/ Add meta-thornxt-stm layer to bblayer configuration file.
@@ -100,28 +120,28 @@ and edit the "local.conf" file. Here is an example:
 
 **Make sure that you have no white spaces left to "MACHINE ??=" and the other variables when editing the text block.**
 
-    gedit conf/local.conf
+gedit conf/local.conf
 
-    [...]
-    MACHINE ??= "stm32mp1-thor-e2"
-    [...]
-    PACKAGE_CLASSES ?= "package_rpm"
-    [...]
-    USER_CLASSES ?= "buildstats"
-    [...]
-    DISTRO ?= "poky"
-    [...]
-    ACCEPT_EULA_$MACHINE = "1"
-    [...]
-    INIT_MANAGER = "sysvinit"
-    [...]
-    ENABLE_BINARY_LOCALE_GENERATION = "1"
-    [...]
-    GLIBC_SPLIT_LC_PACKAGES = "0"
-    [...]
-    GLIBC_GENERATE_LOCALES += "en_US.UTF-8"
-    [...]
-    IMAGE_LINGUAS += "en-us"
+[...]  
+MACHINE ??= "stm32mp1-thor-e2"  
+[...]  
+PACKAGE_CLASSES ?= "package_rpm"  
+[...]  
+USER_CLASSES ?= "buildstats"  
+[...]  
+DISTRO ?= "poky"  
+[...]  
+ACCEPT_EULA_$MACHINE = "1"  
+[...]  
+INIT_MANAGER = "sysvinit"  
+[...]  
+ENABLE_BINARY_LOCALE_GENERATION = "1"  
+[...]  
+GLIBC_SPLIT_LC_PACKAGES = "0"  
+[...]  
+GLIBC_GENERATE_LOCALES += "en_US.UTF-8"  
+[...]  
+IMAGE_LINGUAS += "en-us"  
 
 10/ Remove some unwanted recipies from the ST folders.
 
