@@ -1,6 +1,7 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/patches:"
 
 SRC_URI += " \
+	file://Kconfig.patch;patch=1 \
 	file://stm32mp157f-ev1.patch;patch=1 \
 	file://stm32mp157d-ev1.patch;patch=1 \
 	file://stm32mp157a-ev1_nous_mk2.patch;patch=1 \
