@@ -1,0 +1,11 @@
+--- a/board/st/common/Kconfig
++++ b/board/st/common/Kconfig
+@@ -10,7 +10,7 @@
+ 	string "mtd boot partitions for nand0"
+ 	default "2m(fsbl),2m(ssbl1),2m(ssbl2)" if STM32MP15x_STM32IMAGE || \
+ 						  !TFABOOT
+-	default "512k(fsbl1),512k(fsbl2),512k(metadata1),512k(metadata2),4m(fip-a1),4m(fip-a2),4m(fip-b1),4m(fip-b2)"
++	default "2m(fsbl),4m(fip1),4m(fip2)"
+ 	depends on SYS_MTDPARTS_RUNTIME && ARCH_STM32MP
+ 	help
+ 	  This define the partitions of nand0 used to build mtparts dynamically

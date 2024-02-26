@@ -42,6 +42,7 @@ BOOTDEVICE_LABELS ??= "emmc nand-4-256 nor-sdcard sdcard"
 MACHINE_FEATURES = "usbhost usbgadget alsa screen ext2"
 MACHINE_FEATURES:append = " ${@bb.utils.contains('BOOTSCHEME_LABELS', 'optee', 'optee', '', d)} "
 MACHINE_FEATURES:append = " tpm2 "
+MACHINE_FEATURES:remove = "fw-update"
 
 # Enable installation of INITRD image on bootfs side
 MACHINE_FEATURES:append = " initrd "
@@ -54,9 +55,6 @@ MACHINE_FEATURES:append = " ${@bb.utils.contains_any('BOOTDEVICE_LABELS',  ['emm
 
 # Use FIP image for boot loaders
 MACHINE_FEATURES:append = " fip"
-
-# Enable firmware secure update feature
-MACHINE_FEATURES:append = " fw-update"
 
 # Default serial consoles (TTYs) to enable using getty
 # Before kernel 4.18, serial console are ttyS3 but after is ttySTM0
@@ -93,7 +91,7 @@ MACHINE_EXTRA_RRECOMMENDS:append = " ${@bb.utils.contains('DISTRO_FEATURES','sys
 #       -   The partition for the secondary boot loader should follow the naming
 #           rule: fip
 # -----------------------------------------------------------------------------
-ENABLE_FLASHLAYOUT_CONFIG_FWUP ?= "${@bb.utils.contains('MACHINE_FEATURES', 'fw-update', '1', '0', d)}"
+ENABLE_FLASHLAYOUT_CONFIG_FWUP ?= "0"
 # Keep the binary copy configuration for legacy flashlayout file style
 ENABLE_FLASHLAYOUT_PARTITION_BINCOPY = "${@bb.utils.contains('ENABLE_FLASHLAYOUT_CONFIG_FWUP', '1', '0', '1', d)}"
 
@@ -115,8 +113,8 @@ STM32MP_SSBL2_SIZE ?= "${STM32MP_SSBL1_SIZE}"
 STM32MP_UENV_DATA ?= ""
 STM32MP_UENV_NAME ?= "u-boot-env"
 STM32MP_UENV_SIZE ?= "512"
-STM32MP_METADATA_DATA ?= "${@bb.utils.contains('MACHINE_FEATURES', 'fw-update', 'arm-trusted-firmware/${TF_A_METADATA_BINARY}', '', d)}"
-STM32MP_METADATA_NAME ?= "${@bb.utils.contains('ENABLE_FLASHLAYOUT_CONFIG_FWUP', '1', 'metadata', '', d)}"
+STM32MP_METADATA_DATA ?= ""
+STM32MP_METADATA_NAME ?= ""
 STM32MP_METADATA_SIZE ?= "256"
 
 # Specific override for NAND device type regarding partition sizes to follow
@@ -134,48 +132,36 @@ PARTITIONS_BOOTLOADER_CONFIG += "${@bb.utils.contains('BOOTDEVICE_LABELS', 'spin
 
 # <binary_name>,<partlabel>,<size>,<type>,<copy>
 PARTITIONS_BOOTLOADER_CONFIG[emmc] ?= "\
-    ${@ '${STM32MP_FSBL1_DATA},${STM32MP_FSBL1_NAME},${STM32MP_FSBL1_SIZE},Binary,' + bb.utils.contains('ENABLE_FLASHLAYOUT_CONFIG_FWUP', '1', '2', '1', d) if '${STM32MP_FSBL1_NAME}' else ''} \
-    ${@ '${STM32MP_FSBL2_DATA},${STM32MP_FSBL2_NAME},${STM32MP_FSBL2_SIZE},Binary,1' if '${STM32MP_FSBL2_NAME}' and bb.utils.contains('ENABLE_FLASHLAYOUT_CONFIG_FWUP', '1', False, True, d) else ''} \
-    ${@ '${STM32MP_METADATA_DATA},${STM32MP_METADATA_NAME},${STM32MP_METADATA_SIZE},Binary,2' if '${STM32MP_METADATA_NAME}' else ''} \
-    ${@ '${STM32MP_SSBL1_DATA},${STM32MP_SSBL1_NAME},${STM32MP_SSBL1_SIZE},FIP,1' if '${STM32MP_SSBL1_NAME}' else ''} \
-    ${@ '${STM32MP_SSBL2_DATA},${STM32MP_SSBL2_NAME},${STM32MP_SSBL2_SIZE},FIP,1' if '${STM32MP_SSBL2_NAME}' and bb.utils.contains('ENABLE_FLASHLAYOUT_CONFIG_FWUP', '1', True, False, d) else ''} \
-    ${@ '${STM32MP_UENV_DATA},${STM32MP_UENV_NAME},${STM32MP_UENV_SIZE},Binary,1' if '${STM32MP_UENV_NAME}' else ''} \
+    ${@ '${STM32MP_FSBL1_DATA},${STM32MP_FSBL1_NAME},${STM32MP_FSBL1_SIZE},Binary,1' if '${STM32MP_FSBL1_NAME}' else ''} \
+    ${@ '${STM32MP_FSBL2_DATA},${STM32MP_FSBL2_NAME},${STM32MP_FSBL2_SIZE},Binary,1' if '${STM32MP_FSBL2_NAME}' else ''} \
+    ${@ '${STM32MP_SSBL1_DATA},${STM32MP_SSBL1_NAME},${STM32MP_SSBL1_SIZE},Binary,1' if '${STM32MP_SSBL1_NAME}' else ''} \
     "
 PARTITIONS_BOOTLOADER_CONFIG[nand-4-256] ?= "\
     ${@ '${STM32MP_FSBL1_DATA},${STM32MP_FSBL1_NAME},${STM32MP_FSBL1_SIZE_UBOOT},Binary,2' if '${STM32MP_FSBL1_NAME}' else ''} \
-    ${@ '${STM32MP_METADATA_DATA},${STM32MP_METADATA_NAME},${STM32MP_METADATA_SIZE_UBOOT},Binary,2' if '${STM32MP_METADATA_NAME}' else ''} \
-    ${@ '${STM32MP_SSBL1_DATA},${STM32MP_SSBL1_NAME},${STM32MP_SSBL1_SIZE},FIP,' + bb.utils.contains('ENABLE_FLASHLAYOUT_CONFIG_FWUP', '1', '2', '1', d) if '${STM32MP_SSBL1_NAME}' else ''} \
-    ${@ '${STM32MP_SSBL2_DATA},${STM32MP_SSBL2_NAME},${STM32MP_SSBL1_SIZE},FIP,' + bb.utils.contains('ENABLE_FLASHLAYOUT_CONFIG_FWUP', '1', '2', '1', d) if '${STM32MP_SSBL2_NAME}' else ''} \
+    ${@ '${STM32MP_SSBL1_DATA},${STM32MP_SSBL1_NAME},${STM32MP_SSBL1_SIZE},Binary,1' if '${STM32MP_SSBL1_NAME}' else ''} \
+    ${@ '${STM32MP_SSBL2_DATA},${STM32MP_SSBL2_NAME},${STM32MP_SSBL2_SIZE},Binary,1' if '${STM32MP_SSBL2_NAME}' else ''} \
     "
 PARTITIONS_BOOTLOADER_CONFIG[nor] ?= "\
-    ${@ '${STM32MP_FSBL1_DATA},${STM32MP_FSBL1_NAME},${STM32MP_FSBL1_SIZE},Binary,' + bb.utils.contains('ENABLE_FLASHLAYOUT_CONFIG_FWUP', '1', '2', '1', d) if '${STM32MP_FSBL1_NAME}' else ''} \
-    ${@ '${STM32MP_FSBL2_DATA},${STM32MP_FSBL2_NAME},${STM32MP_FSBL2_SIZE},Binary,1' if '${STM32MP_FSBL2_NAME}' and bb.utils.contains('ENABLE_FLASHLAYOUT_CONFIG_FWUP', '1', False, True, d) else ''} \
-    ${@ '${STM32MP_METADATA_DATA},${STM32MP_METADATA_NAME},${STM32MP_METADATA_SIZE},Binary,2' if '${STM32MP_METADATA_NAME}' else ''} \
-    ${@ '${STM32MP_SSBL1_DATA},${STM32MP_SSBL1_NAME},${STM32MP_SSBL1_SIZE},FIP,1' if '${STM32MP_SSBL1_NAME}' else ''} \
-    ${@ '${STM32MP_SSBL2_DATA},${STM32MP_SSBL2_NAME},${STM32MP_SSBL2_SIZE},FIP,1' if '${STM32MP_SSBL2_NAME}' and bb.utils.contains('ENABLE_FLASHLAYOUT_CONFIG_FWUP', '1', True, False, d) else ''} \
+    ${@ '${STM32MP_FSBL1_DATA},${STM32MP_FSBL1_NAME},${STM32MP_FSBL1_SIZE},Binary,1' if '${STM32MP_FSBL1_NAME}' else ''} \
+    ${@ '${STM32MP_FSBL2_DATA},${STM32MP_FSBL2_NAME},${STM32MP_FSBL2_SIZE},Binary,1' if '${STM32MP_FSBL2_NAME}' else ''} \
+    ${@ '${STM32MP_SSBL1_DATA},${STM32MP_SSBL1_NAME},${STM32MP_SSBL1_SIZE},Binary,1' if '${STM32MP_SSBL1_NAME}' else ''} \
     ${@ '${STM32MP_UENV_DATA},${STM32MP_UENV_NAME},${STM32MP_UENV_SIZE},Binary,1' if '${STM32MP_UENV_NAME}' else ''} \
     "
 PARTITIONS_BOOTLOADER_CONFIG[nor-sdcard] ?= "\
-    ${@ '${STM32MP_FSBL1_DATA},${STM32MP_FSBL1_NAME},${STM32MP_FSBL1_SIZE},Binary,' + bb.utils.contains('ENABLE_FLASHLAYOUT_CONFIG_FWUP', '1', '2', '1', d) if '${STM32MP_FSBL1_NAME}' else ''} \
-    ${@ '${STM32MP_FSBL2_DATA},${STM32MP_FSBL2_NAME},${STM32MP_FSBL2_SIZE},Binary,1' if '${STM32MP_FSBL2_NAME}' and bb.utils.contains('ENABLE_FLASHLAYOUT_CONFIG_FWUP', '1', False, True, d) else ''} \
-    ${@ '${STM32MP_METADATA_DATA},${STM32MP_METADATA_NAME},${STM32MP_METADATA_SIZE},Binary,2' if '${STM32MP_METADATA_NAME}' else ''} \
-    ${@ '${STM32MP_SSBL1_DATA},${STM32MP_SSBL1_NAME},${STM32MP_SSBL1_SIZE},FIP,1' if '${STM32MP_SSBL1_NAME}' else ''} \
-    ${@ '${STM32MP_SSBL2_DATA},${STM32MP_SSBL2_NAME},${STM32MP_SSBL2_SIZE},FIP,1' if '${STM32MP_SSBL2_NAME}' and bb.utils.contains('ENABLE_FLASHLAYOUT_CONFIG_FWUP', '1', True, False, d) else ''} \
+    ${@ '${STM32MP_FSBL1_DATA},${STM32MP_FSBL1_NAME},${STM32MP_FSBL1_SIZE},Binary,1' if '${STM32MP_FSBL1_NAME}' else ''} \
+    ${@ '${STM32MP_FSBL2_DATA},${STM32MP_FSBL2_NAME},${STM32MP_FSBL2_SIZE},Binary,1' if '${STM32MP_FSBL2_NAME}' else ''} \
+    ${@ '${STM32MP_SSBL1_DATA},${STM32MP_SSBL1_NAME},${STM32MP_SSBL1_SIZE},Binary,1' if '${STM32MP_SSBL1_NAME}' else ''} \
     ${@ '${STM32MP_UENV_DATA},${STM32MP_UENV_NAME},${STM32MP_UENV_SIZE},Binary,1' if '${STM32MP_UENV_NAME}' else ''} \
     "
 PARTITIONS_BOOTLOADER_CONFIG[sdcard] ?= "\
-    ${@ '${STM32MP_FSBL1_DATA},${STM32MP_FSBL1_NAME},${STM32MP_FSBL1_SIZE},Binary,' + bb.utils.contains('ENABLE_FLASHLAYOUT_CONFIG_FWUP', '1', '2', '1', d) if '${STM32MP_FSBL1_NAME}' else ''} \
-    ${@ '${STM32MP_FSBL2_DATA},${STM32MP_FSBL2_NAME},${STM32MP_FSBL2_SIZE},Binary,1' if '${STM32MP_FSBL2_NAME}' and bb.utils.contains('ENABLE_FLASHLAYOUT_CONFIG_FWUP', '1', False, True, d) else ''} \
-    ${@ '${STM32MP_METADATA_DATA},${STM32MP_METADATA_NAME},${STM32MP_METADATA_SIZE},Binary,2' if '${STM32MP_METADATA_NAME}' else ''} \
-    ${@ '${STM32MP_SSBL1_DATA},${STM32MP_SSBL1_NAME},${STM32MP_SSBL1_SIZE},FIP,1' if '${STM32MP_SSBL1_NAME}' else ''} \
-    ${@ '${STM32MP_SSBL2_DATA},${STM32MP_SSBL2_NAME},${STM32MP_SSBL2_SIZE},FIP,1' if '${STM32MP_SSBL2_NAME}' else ''} \
-    ${@ '${STM32MP_UENV_DATA},${STM32MP_UENV_NAME},${STM32MP_UENV_SIZE},Binary,1' if '${STM32MP_UENV_NAME}' else ''} \
+    ${@ '${STM32MP_FSBL1_DATA},${STM32MP_FSBL1_NAME},${STM32MP_FSBL1_SIZE},Binary,1' if '${STM32MP_FSBL1_NAME}' else ''} \
+    ${@ '${STM32MP_FSBL2_DATA},${STM32MP_FSBL2_NAME},${STM32MP_FSBL2_SIZE},Binary,1' if '${STM32MP_FSBL2_NAME}' else ''} \
+    ${@ '${STM32MP_SSBL1_DATA},${STM32MP_SSBL1_NAME},${STM32MP_SSBL1_SIZE},Binary,1' if '${STM32MP_SSBL1_NAME}' else ''} \
     "
 PARTITIONS_BOOTLOADER_CONFIG[spinand-2-128] ?= "\
     ${@ '${STM32MP_FSBL1_DATA},${STM32MP_FSBL1_NAME},${STM32MP_FSBL1_SIZE_UBOOT},Binary,2' if '${STM32MP_FSBL1_NAME}' else ''} \
-    ${@ '${STM32MP_METADATA_DATA},${STM32MP_METADATA_NAME},${STM32MP_METADATA_SIZE_UBOOT},Binary,2' if '${STM32MP_METADATA_NAME}' else ''} \
-    ${@ '${STM32MP_SSBL1_DATA},${STM32MP_SSBL1_NAME},${STM32MP_SSBL1_SIZE},FIP,' + bb.utils.contains('ENABLE_FLASHLAYOUT_CONFIG_FWUP', '1', '2', '1', d) if '${STM32MP_SSBL1_NAME}' else ''} \
-    ${@ '${STM32MP_SSBL2_DATA},${STM32MP_SSBL2_NAME},${STM32MP_SSBL1_SIZE},FIP,' + bb.utils.contains('ENABLE_FLASHLAYOUT_CONFIG_FWUP', '1', '2', '1', d) if '${STM32MP_SSBL2_NAME}' else ''} \
+    ${@ '${STM32MP_SSBL1_DATA},${STM32MP_SSBL1_NAME},${STM32MP_SSBL1_SIZE},Binary,1' if '${STM32MP_SSBL1_NAME}' else ''} \
+    ${@ '${STM32MP_SSBL2_DATA},${STM32MP_SSBL2_NAME},${STM32MP_SSBL2_SIZE},Binary,1' if '${STM32MP_SSBL2_NAME}' else ''} \
     "
 
 # =========================================================================
@@ -189,34 +175,25 @@ ENABLE_IMAGE_LICENSE_SUMMARY ?= "0"
 
 # Define image partition size (supposed to be set as max size in image recipe)
 
-# Proposed value for rootfs should fit our highest constraint: NAND size (1GiB)
-#   With fw-update we have the following partitions:
-#       FSBL1 + FSBL2 + METADATA1+ METADATA2 + FIP-A1 + FIP-A2 + FIP-B1 + FIP-B2 + Multivolume UBI = NAND size
-#       Multivolume UBI = 1GiB - (512KiB + 512KiB + 512KiB + 512KiB + 4MiB + 4MiB + 4MiB + 4MiB) = 1006MiB
-#   Without fw-update we have following partitions
+# Proposed value for rootfs should fit our highest constraint: NAND size (256MiB)
+# With FIP with have the maximum partitions:
 #   FSBL1 + FIP + FIP2 + Multivolume UBI = NAND size
-#       Multivolume UBI = 1GiB - (2MiB + 4MiB + 4MiB) = 1014MiB
+#   Multivolume UBI = 256MiB - (2MiB + 4MiB + 4MiB) = 246MiB
+# With FIP with have the maximum partitions:
+#   FSBL1 + FIP + FIP + Multivolume UBI = SPI NAND size
+#   Multivolume UBI = 256MiB - (2MiB + 4MiB + 4MiB) = 246MiB
 # With multivolume UBI split:
 #   Multivolume UBI > uboot_config + uboot_config_r + bootfs + vendorfs + rootfs + userfs + UBI Overhead
 # From http://www.linux-mtd.infradead.org/doc/ubi.html#L_overhead, we compute
 # the UBI overhead for our NAND:
-#   With fw-update:
-#       (20*4096/1024 + 4) * 256KiB + (256KiB - 248KiB) * (1006MiB/256KiB - 20*4096/1024 - 4) = 53024KiB
-#   Without fw-update:
-#       (20*4096/1024 + 4) * 256KiB + (256KiB - 248KiB) * (1014MiB/256KiB - 20*4096/1024 - 4) = 53280KiB
+#   (20*2048/1024 + 4) * 128KiB + (128KiB - 124KiB) * (246MiB/128KiB - 20*2048/1024 - 4) = 13328KiB
 # In addition, for each UBIFS, our NAND consummed 9 extra eraseblocks
 # So:
 #   rootfs < Multivolume UBI - (uboot_config + uboot_config_r + bootfs + vendorfs + userfs + UBI Overhead + 4 * 9*eraseblocks)
-#   With fw-update:
-#       rootfs < 1006MiB - (256KiB + 256KiB + 64MiB + 16MiB + 128MiB + 53024KiB + 4 * 9 * 256KiB)
-#       rootfs < 736.7MiB
-#   Without fw-update:
-#       rootfs < 1014MiB - (256KiB + 256KiB + 64MiB + 16MiB + 128MiB + 53280KiB + 4 * 9 * 256KiB)
-#       rootfs < 744.5MiB
-# Proposed value for rootfs is:
-#   With fw-update   : 736MiB
-#   Without fw-update: 744MiB
-STM32MP_ROOTFS_MAXSIZE_NAND ?= "${@bb.utils.contains('ENABLE_FLASHLAYOUT_CONFIG_FWUP', '1', '753664', '762336', d)}"
+#   rootfs < 246MiB - (256KiB + 256KiB + 28MiB + 10MiB + 18MiB + 13328KiB + 4 * 9 * 128KiB)
+#   rootfs < 171MiB
+# Proposed value for rootfs is 171MiB
+STM32MP_ROOTFS_MAXSIZE_NAND ?= "175104"
 
 # Default ROOTFS max size for image being built to this value
 IMAGE_ROOTFS_MAXSIZE ?= "${STM32MP_ROOTFS_MAXSIZE_NAND}"
@@ -320,7 +297,7 @@ UBINIZE_ARGS:nand_4_256 = "--min-io-size 2048 --peb-size 128KiB --sub-page-size 
 EXTRA_UBIFS_SIZE:nand_4_256 = "2304"
 # UBI Args for SPI NAND by default on MB1262 (Micron MT29F2G01ABA)
 # LEB = BLOCK_SIZE - (2 * page size): 128*1024 - (2*2048)
-MKUBIFS_ARGS:spinand_2_128 = "--min-io-size 2048 --leb-size 126976 --max-leb-cnt 2048"
+MKUBIFS_ARGS:spinand_2_128 = "--min-io-size 2048 --leb-size 126976 --max-leb-cnt 2048 --space-fixup"
 UBINIZE_ARGS:spinand_2_128 = "--min-io-size 2048 --peb-size 128KiB"
 # Set extra size required for UBIFS volume size (KiB)
 EXTRA_UBIFS_SIZE:spinand_2_128 = "1408"
@@ -596,12 +573,12 @@ TF_A_CONFIG += "${@bb.utils.contains('TF_A_SSP_ENABLE', '1', 'uart-ssp usb-ssp',
 TF_A_SIGN_ENABLE ?= "0"
 
 # Configure TF-A to build the metadata binary
-TF_A_ENABLE_METADATA ?= "${@bb.utils.contains('MACHINE_FEATURES', 'fw-update', '1', '0', d)}"
+TF_A_ENABLE_METADATA ?= "0"
 TF_A_METADATA_BINARY ?= "metadata.bin"
 
 # Configure the default MTD_START_OFFSET
 TF_A_MTD_START_OFFSET_NAND    ?= "0x00200000"
-TF_A_MTD_START_OFFSET_NOR     ?= "${@bb.utils.contains('MACHINE_FEATURES', 'fw-update', '0x00080000', '0x00100000', d)}"
+TF_A_MTD_START_OFFSET_NOR     ?= "0x00080000"
 TF_A_MTD_START_OFFSET_SPINAND ?= "0x00200000"
 
 ST_TF_A_DEBUG_TRACE ?= "${@bb.utils.contains('ST_DEBUG_TRACE', '1', '1', '0', d)}"
