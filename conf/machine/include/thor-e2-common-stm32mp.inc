@@ -42,6 +42,7 @@ BOOTDEVICE_LABELS ??= "emmc nand-4-256 nor-sdcard sdcard"
 MACHINE_FEATURES = "usbhost usbgadget alsa screen ext2"
 MACHINE_FEATURES:append = " ${@bb.utils.contains('BOOTSCHEME_LABELS', 'optee', 'optee', '', d)} "
 MACHINE_FEATURES:append = " tpm2 "
+MACHINE_FEATURES:remove = "fw-update"
 
 # Enable installation of INITRD image on bootfs side
 MACHINE_FEATURES:append = " initrd "
@@ -54,9 +55,6 @@ MACHINE_FEATURES:append = " ${@bb.utils.contains_any('BOOTDEVICE_LABELS',  ['emm
 
 # Use FIP image for boot loaders
 MACHINE_FEATURES:append = " fip"
-
-# Enable firmware secure update feature
-MACHINE_FEATURES:append = " fw-update"
 
 # Default serial consoles (TTYs) to enable using getty
 # Before kernel 4.18, serial console are ttyS3 but after is ttySTM0
@@ -189,37 +187,28 @@ ENABLE_IMAGE_LICENSE_SUMMARY ?= "0"
 
 # Define image partition size (supposed to be set as max size in image recipe)
 
-# Proposed value for rootfs should fit our highest constraint: NAND size (1GiB)
-#   With fw-update we have the following partitions:
-#       FSBL1 + FSBL2 + METADATA1+ METADATA2 + FIP-A1 + FIP-A2 + FIP-B1 + FIP-B2 + Multivolume UBI = NAND size
-#       Multivolume UBI = 1GiB - (512KiB + 512KiB + 512KiB + 512KiB + 4MiB + 4MiB + 4MiB + 4MiB) = 1006MiB
-#   Without fw-update we have following partitions
+# Proposed value for rootfs should fit our highest constraint: NAND size (256MiB)
+# With FIP with have the maximum partitions:
 #   FSBL1 + FIP + FIP2 + Multivolume UBI = NAND size
-#       Multivolume UBI = 1GiB - (2MiB + 4MiB + 4MiB) = 1014MiB
+#   Multivolume UBI = 256MiB - (2MiB + 4MiB + 4MiB) = 246MiB
+# With FIP with have the maximum partitions:
+#   FSBL1 + FIP + FIP + Multivolume UBI = SPI NAND size
+#   Multivolume UBI = 256MiB - (2MiB + 4MiB + 4MiB) = 246MiB
 # With multivolume UBI split:
 #   Multivolume UBI > uboot_config + uboot_config_r + bootfs + vendorfs + rootfs + userfs + UBI Overhead
 # From http://www.linux-mtd.infradead.org/doc/ubi.html#L_overhead, we compute
 # the UBI overhead for our NAND:
-#   With fw-update:
-#       (20*4096/1024 + 4) * 256KiB + (256KiB - 248KiB) * (1006MiB/256KiB - 20*4096/1024 - 4) = 53024KiB
-#   Without fw-update:
-#       (20*4096/1024 + 4) * 256KiB + (256KiB - 248KiB) * (1014MiB/256KiB - 20*4096/1024 - 4) = 53280KiB
+#   (20*2048/1024 + 4) * 128KiB + (128KiB - 124KiB) * (246MiB/128KiB - 20*2048/1024 - 4) = 13328KiB
 # In addition, for each UBIFS, our NAND consummed 9 extra eraseblocks
 # So:
 #   rootfs < Multivolume UBI - (uboot_config + uboot_config_r + bootfs + vendorfs + userfs + UBI Overhead + 4 * 9*eraseblocks)
-#   With fw-update:
-#       rootfs < 1006MiB - (256KiB + 256KiB + 64MiB + 16MiB + 128MiB + 53024KiB + 4 * 9 * 256KiB)
-#       rootfs < 736.7MiB
-#   Without fw-update:
-#       rootfs < 1014MiB - (256KiB + 256KiB + 64MiB + 16MiB + 128MiB + 53280KiB + 4 * 9 * 256KiB)
-#       rootfs < 744.5MiB
-# Proposed value for rootfs is:
-#   With fw-update   : 736MiB
-#   Without fw-update: 744MiB
-STM32MP_ROOTFS_MAXSIZE_NAND ?= "${@bb.utils.contains('ENABLE_FLASHLAYOUT_CONFIG_FWUP', '1', '753664', '762336', d)}"
+#   rootfs < 246MiB - (256KiB + 256KiB + 28MiB + 10MiB + 18MiB + 13328KiB + 4 * 9 * 128KiB)
+#   rootfs < 171MiB
+# Proposed value for rootfs is 171MiB
+STM32MP_ROOTFS_MAXSIZE_NAND ?= "175104"
 
 # Default ROOTFS max size for image being built to this value
-IMAGE_ROOTFS_MAXSIZE ?= "${STM32MP_ROOTFS_MAXSIZE_NAND}"
+IMAGE_ROOTFS_MAXSIZE ?= "175104"
 
 # Partitions configuration
 IMAGE_CLASSES += "st-partitions-image"
@@ -320,7 +309,7 @@ UBINIZE_ARGS:nand_4_256 = "--min-io-size 2048 --peb-size 128KiB --sub-page-size 
 EXTRA_UBIFS_SIZE:nand_4_256 = "2304"
 # UBI Args for SPI NAND by default on MB1262 (Micron MT29F2G01ABA)
 # LEB = BLOCK_SIZE - (2 * page size): 128*1024 - (2*2048)
-MKUBIFS_ARGS:spinand_2_128 = "--min-io-size 2048 --leb-size 126976 --max-leb-cnt 2048"
+MKUBIFS_ARGS:spinand_2_128 = "--min-io-size 2048 --leb-size 126976 --max-leb-cnt 2048 --space-fixup"
 UBINIZE_ARGS:spinand_2_128 = "--min-io-size 2048 --peb-size 128KiB"
 # Set extra size required for UBIFS volume size (KiB)
 EXTRA_UBIFS_SIZE:spinand_2_128 = "1408"

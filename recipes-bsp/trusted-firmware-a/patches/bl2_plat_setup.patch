@@ -15,7 +15,7 @@
 +	
 +	/* Turn the breathing LED PB13 on. */
 + 
-+ 	NOTICE("Turn Breathing LED on.\n");
++ 	NOTICE("Turn the 'Breathing LED B13' on.\n");
 + 
 + 	set_gpio_config(1, 13, GPIOF_OUT_INIT_LOW, 0);
 +	clk_enable(stm32_get_gpio_bank_clock(1));
