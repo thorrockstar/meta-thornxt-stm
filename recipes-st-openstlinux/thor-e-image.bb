@@ -98,6 +98,7 @@ fix_udev_files () {
     rm -fr $D${sysconfdir}/rc5.d/S22ofono
     rm -fr $D${sysconfdir}/rc5.d/S39alsa-state
     rm -fr $D${sysconfdir}/rc5.d/S64neard
+    rm -fr $D${sysconfdir}/rcS.d/S39alsa-state
     rm -fr $D${sysconfdir}/fw_env.config.mmc
     rm -fr $D${sysconfdir}/fw_env.config.nor
 }
