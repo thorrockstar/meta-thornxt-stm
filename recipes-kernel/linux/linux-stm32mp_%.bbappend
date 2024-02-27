@@ -10,6 +10,7 @@ SRC_URI += " \
 	file://stm32mp157a-ev1_nous_mk2.patch;patch=1 \
 	file://drm_fb_helper.patch;patch=1 \
 	file://pinctrl-stm32.patch;patch=1 \
+	file://pinctrl-stm32mp157.patch;patch=1 \
 	file://stm32_sai_sub.patch;patch=1 \
 	file://stm32mp157f-ev1-m4-examples.patch;patch=1 \
 "
