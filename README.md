@@ -139,9 +139,9 @@ ENABLE_BINARY_LOCALE_GENERATION = "1"
 [...]  
 GLIBC_SPLIT_LC_PACKAGES = "0"  
 [...]  
-GLIBC_GENERATE_LOCALES += "en_US.UTF-8"  
+GLIBC_GENERATE_LOCALES = ""  
 [...]  
-IMAGE_LINGUAS += "en-us"  
+IMAGE_LINGUAS = ""  
 
 10/ Remove some unwanted recipies from the ST folders.
 
