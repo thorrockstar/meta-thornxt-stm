@@ -14,7 +14,6 @@
 +	.vsync_start = 480 + 13,
 +	.vsync_end = 480 + 13 + 3,
 +	.vtotal = 480 + 13 + 3 + 29,
-+	//.vrefresh = 60,
 +	.flags = DRM_MODE_FLAG_NVSYNC | DRM_MODE_FLAG_NHSYNC,
 +};
 +
@@ -27,7 +26,8 @@
 +		.height = 78,
 +	},
 +	.connector_type = DRM_MODE_CONNECTOR_DPI,
-+	.bus_format = MEDIA_BUS_FMT_RGB888_1X24 | DRM_BUS_FLAG_DE_HIGH,
++	.bus_format = MEDIA_BUS_FMT_RGB888_1X24,
++	.bus_flags = DRM_BUS_FLAG_DE_HIGH,
 +};
 +
 +static const struct drm_display_mode hifaycx_rd570_mode = {
@@ -40,7 +40,6 @@
 +	.vsync_start = 960 + 16,
 +	.vsync_end = 960 + 16 + 10,
 +	.vtotal = 960 + 16 + 10 + 16,
-+	//.vrefresh = 60,
 +	.flags = DRM_MODE_FLAG_NVSYNC | DRM_MODE_FLAG_NHSYNC,
 +};
 +
@@ -53,7 +52,8 @@
 +		.height = 125,
 +	},
 +	.connector_type = DRM_MODE_CONNECTOR_DPI,
-+	.bus_format = MEDIA_BUS_FMT_RGB888_1X24 | DRM_BUS_FLAG_DE_HIGH,
++	.bus_format = MEDIA_BUS_FMT_RGB888_1X24,
++	.bus_flags = DRM_BUS_FLAG_DE_HIGH,
 +};
 +
  static const struct drm_display_mode ampire_am800480r3tmqwa1h_mode = {
