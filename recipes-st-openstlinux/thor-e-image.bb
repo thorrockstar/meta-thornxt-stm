@@ -63,6 +63,7 @@ IMAGE_INSTALL:remove = "\
     sqlite3 \
     nfc \
     zeroconf \
+    zeromq \
     "
 
 # add important components to image
@@ -70,7 +71,6 @@ IMAGE_INSTALL:append = "\
     glibc \
     glib-2.0 \
     gnutls \
-    zeromq \
     dbus \
     gdbserver \
     busybox \
