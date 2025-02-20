@@ -190,6 +190,7 @@ IMAGE_LINGUAS += "en-us"
 14/ Double check that in the kernel configuration **'General Setup->Timers subsystem->Timer tick handling'** is set to **'Periodic timer ticks'**. This should be done by the 'defconfig' but double check before building because it is cruicial.
 
 15/ Build Thor image
+
     bitbake thor-e-image
 
 Typical bitbake output
