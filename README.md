@@ -130,7 +130,7 @@ PACKAGE_CLASSES ?= "package_rpm"
 [...]  
 USER_CLASSES ?= "buildstats image-mklibs"  
 [...]  
-DISTRO ?= "poky"  
+DISTRO ?= "thor-stm"  
 [...]  
 ACCEPT_EULA_$MACHINE = "1"  
 
@@ -191,7 +191,7 @@ Typical bitbake output
     NATIVELSBSTRING      = "universal"
     TARGET_SYS           = "arm-poky-linux-gnueabi"
     MACHINE              = "stm32mp1-thor-e2"
-    DISTRO               = "poky"
+    DISTRO               = "thor-stm"
     DISTRO_VERSION       = "3.1.18"
     TUNE_FEATURES        = "arm vfp cortexa7 neon vfpv4 thumb callconvention-hard"
     TARGET_FPU           = "hard"
