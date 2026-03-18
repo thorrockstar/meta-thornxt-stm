@@ -157,7 +157,7 @@ IMAGE_LINGUAS += "en-us"
 
 11/ Remove these lines from the meta-st-stm32mp/receipes-st/images/st-image-userfs.bb file.
 
-    <meta-st-stm32mp/receipes-st/images/st-image-userfs.bb>
+    <meta-st-stm32mp/recipes-st/images/st-image-userfs.bb>
 
     ** Remove these lines! **
 
