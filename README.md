@@ -69,8 +69,8 @@ Build procedure
     git clone https://github.com/STMicroelectronics/meta-st-stm32mp.git -b kirkstone
 
 4/ Clone meta-st-openstlinux layer with the proper branch ready.  
-    git clone https://github.com/STMicroelectronics/meta-st-openstlinux.git -b kirkstone
 
+    git clone https://github.com/STMicroelectronics/meta-st-openstlinux.git -b kirkstone
 
 5/ Clone meta-thornxt-stm layer with the proper branch ready.  
 
@@ -93,25 +93,26 @@ Build procedure
 POKY_BBLAYERS_CONF_VERSION = "2"
 
 BBPATH = "${TOPDIR}"
+
 BBFILES ?= ""
 
 BSPDIR := "${@os.path.abspath(os.path.dirname(d.getVar('FILE', True)) + '/../../..')}"
 
-BBLAYERS ?= " \
-  ${BSPDIR}/poky/meta \
-  ${BSPDIR}/poky/meta-poky \
-  ${BSPDIR}/poky/meta-yocto-bsp \
-  ${BSPDIR}/meta-st-stm32mp \
-  ${BSPDIR}/meta-st-openstlinux \
-  ${BSPDIR}/meta-thornxt-stm \
-  ${BSPDIR}/meta-openembedded/meta-oe \
-  ${BSPDIR}/meta-openembedded/meta-networking \
-  ${BSPDIR}/meta-openembedded/meta-python \
+BBLAYERS ?= " \\  
+  ${BSPDIR}/poky/meta \\  
+  ${BSPDIR}/poky/meta-poky \\  
+  ${BSPDIR}/poky/meta-yocto-bsp \\  
+  ${BSPDIR}/meta-st-stm32mp \\  
+  ${BSPDIR}/meta-st-openstlinux \\  
+  ${BSPDIR}/meta-thornxt-stm \\  
+  ${BSPDIR}/meta-openembedded/meta-oe \\  
+  ${BSPDIR}/meta-openembedded/meta-networking \\  
+  ${BSPDIR}/meta-openembedded/meta-python \\  
 "
 
-BLAYERS_NON_REMOVABLE ?= " \
-  ${BSPDIR}/poky/meta \
-  ${BSPDIR}/poky/meta-poky \
+BLAYERS_NON_REMOVABLE ?= " \\  
+  ${BSPDIR}/poky/meta \\  
+  ${BSPDIR}/poky/meta-poky \\  
 "
 
 9/ Edit local.conf to specify the machine, location of source archived, package type (rpm, deb or ipk)
@@ -129,7 +130,7 @@ PACKAGE_CLASSES ?= "package_rpm"
 [...]  
 USER_CLASSES ?= "buildstats"  
 [...]  
-DISTRO ?= "poky"  
+DISTRO ?= "thor-stm"  
 [...]  
 ACCEPT_EULA_$MACHINE = "1"  
 [...]  
@@ -153,10 +154,6 @@ IMAGE_LINGUAS += "en-us"
 * meta-st-openstlinux/recipes-qt
 * meta-st-openstlinux/oe-core/recipes-gnome
 * meta-st-openstlinux/oe-core/recipes-core/systemd
-
-**meta-st-stm32mp**
-
-* meta-st-stm32mp/recipes-devtools/gcc
 
 11/ Remove these lines from the meta-st-stm32mp/receipes-st/images/st-image-userfs.bb file.
 
@@ -191,6 +188,7 @@ IMAGE_LINGUAS += "en-us"
 14/ Double check that in the kernel configuration **'General Setup->Timers subsystem->Timer tick handling'** is set to **'Periodic timer ticks'**. This should be done by the 'defconfig' but double check before building because it is cruicial.
 
 15/ Build Thor image
+
     bitbake thor-e-image
 
 Typical bitbake output
@@ -207,7 +205,7 @@ Typical bitbake output
     NATIVELSBSTRING      = "universal"
     TARGET_SYS           = "arm-poky-linux-gnueabi"
     MACHINE              = "stm32mp1-thor-e2"
-    DISTRO               = "poky"
+    DISTRO               = "thor-stm"
     DISTRO_VERSION       = "4.0.16"
     TUNE_FEATURES        = "arm vfp cortexa7 neon vfpv4 thumb callconvention-hard"
     TARGET_FPU           = "hard"
