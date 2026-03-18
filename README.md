@@ -153,6 +153,7 @@ IMAGE_LINGUAS += "en-us"
 * meta-st-openstlinux/recipes-samples
 * meta-st-openstlinux/recipes-qt
 * meta-st-openstlinux/oe-core/recipes-gnome
+* meta-st-openstlinux/oe-core/recipes-core/systemd
 
 11/ Remove these lines from the meta-st-stm32mp/receipes-st/images/st-image-userfs.bb file.
 
