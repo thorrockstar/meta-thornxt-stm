@@ -94,25 +94,26 @@ Build procedure
 POKY_BBLAYERS_CONF_VERSION = "2"
 
 BBPATH = "${TOPDIR}"
+
 BBFILES ?= ""
 
 BSPDIR := "${@os.path.abspath(os.path.dirname(d.getVar('FILE', True)) + '/../../..')}"
 
-BBLAYERS ?= " \
-  ${BSPDIR}/poky/meta \
-  ${BSPDIR}/poky/meta-poky \
-  ${BSPDIR}/poky/meta-yocto-bsp \
-  ${BSPDIR}/meta-st-stm32mp \
-  ${BSPDIR}/meta-st-openstlinux \
-  ${BSPDIR}/meta-thornxt-stm \
-  ${BSPDIR}/meta-openembedded/meta-oe \
-  ${BSPDIR}/meta-openembedded/meta-networking \
-  ${BSPDIR}/meta-openembedded/meta-python \
+BBLAYERS ?= " \\  
+  ${BSPDIR}/poky/meta \\  
+  ${BSPDIR}/poky/meta-poky \\  
+  ${BSPDIR}/poky/meta-yocto-bsp \\  
+  ${BSPDIR}/meta-st-stm32mp \\  
+  ${BSPDIR}/meta-st-openstlinux \\  
+  ${BSPDIR}/meta-thornxt-stm \\  
+  ${BSPDIR}/meta-openembedded/meta-oe \\  
+  ${BSPDIR}/meta-openembedded/meta-networking \\  
+  ${BSPDIR}/meta-openembedded/meta-python \\  
 "
 
-BLAYERS_NON_REMOVABLE ?= " \
-  ${BSPDIR}/poky/meta \
-  ${BSPDIR}/poky/meta-poky \
+BLAYERS_NON_REMOVABLE ?= " \\  
+  ${BSPDIR}/poky/meta \\  
+  ${BSPDIR}/poky/meta-poky \\  
 "
 
 9/ Edit local.conf to specify the machine, location of source archived, package type (rpm, deb or ipk)
@@ -130,7 +131,7 @@ PACKAGE_CLASSES ?= "package_rpm"
 [...]  
 USER_CLASSES ?= "buildstats image-mklibs"  
 [...]  
-DISTRO ?= "poky"  
+DISTRO ?= "thor-stm"  
 [...]  
 ACCEPT_EULA_$MACHINE = "1"  
 
@@ -191,7 +192,7 @@ Typical bitbake output
     NATIVELSBSTRING      = "universal"
     TARGET_SYS           = "arm-poky-linux-gnueabi"
     MACHINE              = "stm32mp1-thor-e2"
-    DISTRO               = "poky"
+    DISTRO               = "thor-stm"
     DISTRO_VERSION       = "3.1.18"
     TUNE_FEATURES        = "arm vfp cortexa7 neon vfpv4 thumb callconvention-hard"
     TARGET_FPU           = "hard"
