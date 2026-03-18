@@ -154,10 +154,6 @@ IMAGE_LINGUAS += "en-us"
 * meta-st-openstlinux/recipes-qt
 * meta-st-openstlinux/oe-core/recipes-gnome
 
-**meta-st-stm32mp**
-
-* meta-st-stm32mp/recipes-devtools/gcc
-
 11/ Remove these lines from the meta-st-stm32mp/receipes-st/images/st-image-userfs.bb file.
 
     <meta-st-stm32mp/receipes-st/images/st-image-userfs.bb>
