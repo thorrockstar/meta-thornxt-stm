@@ -152,6 +152,7 @@ IMAGE_LINGUAS += "en-us"
 * meta-st-openstlinux/recipes-samples
 * meta-st-openstlinux/recipes-qt
 * meta-st-openstlinux/oe-core/recipes-gnome
+* meta-st-openstlinux/oe-core/recipes-core/systemd
 
 **meta-st-stm32mp**
 
