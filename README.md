@@ -87,7 +87,7 @@ Build procedure
 
 8/ Add meta-thornxt-stm layer to bblayer configuration file.
 
-**Make sure that you have no white spaces left to "BBLAYERS ?=" and the other variables when editing the text block.**
+**When copying the text block, make sure that there are no white spaces left to "BBLAYERS ?=" and the other variables. Also, when copying the following text block directly from your text editor, make sure that there is only one backslash '\' at the end of each line, as the Markdown (.md) language requires two backslashes to show one.**
 
     gedit conf/bblayers.conf
 
@@ -124,15 +124,15 @@ and edit the "local.conf" file. Here is an example:
 
     gedit conf/local.conf
 
-[...]  
+  
 MACHINE ??= "stm32mp1-thor-e2"  
-[...]  
+  
 PACKAGE_CLASSES ?= "package_rpm"  
-[...]  
+  
 USER_CLASSES ?= "buildstats image-mklibs"  
-[...]  
+  
 DISTRO ?= "thor-stm"  
-[...]  
+  
 ACCEPT_EULA_$MACHINE = "1"  
 
 10/ Remove some unwanted recipies from the ST folders.
