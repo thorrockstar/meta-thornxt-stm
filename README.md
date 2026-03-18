@@ -69,6 +69,7 @@ Build procedure
     git clone https://github.com/STMicroelectronics/meta-st-stm32mp.git -b kirkstone
 
 4/ Clone meta-st-openstlinux layer with the proper branch ready.  
+
     git clone https://github.com/STMicroelectronics/meta-st-openstlinux.git -b kirkstone
 
 5/ Clone meta-thornxt-stm layer with the proper branch ready.  
