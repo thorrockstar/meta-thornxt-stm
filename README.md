@@ -121,7 +121,7 @@ and edit the "local.conf" file. Here is an example:
 
 **Make sure that you have no white spaces left to "MACHINE ??=" and the other variables when editing the text block.**
 
-gedit conf/local.conf
+    gedit conf/local.conf
 
 
 MACHINE ??= "stm32mp1-thor-e2"  
