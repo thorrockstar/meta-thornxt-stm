@@ -123,23 +123,23 @@ and edit the "local.conf" file. Here is an example:
 
 gedit conf/local.conf
 
-  
+
 MACHINE ??= "stm32mp1-thor-e2"  
-  
+
 PACKAGE_CLASSES ?= "package_rpm"  
-  
+
 USER_CLASSES ?= "buildstats"  
-  
+
 DISTRO ?= "thor-stm"  
-  
+
 ACCEPT_EULA_$MACHINE = "1"  
-  
+
 INIT_MANAGER = "sysvinit"  
-  
+
 ENABLE_BINARY_LOCALE_GENERATION = "1"  
-  
+
 GLIBC_SPLIT_LC_PACKAGES = "0"  
-  
+
 GLIBC_GENERATE_LOCALES += "en_US.UTF-8"  
   
 IMAGE_LINGUAS += "en-us"  
