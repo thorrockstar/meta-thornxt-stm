@@ -5,7 +5,7 @@ include recipes-st-openstlinux/thor-e.inc
 
 inherit core-image
 
-IMAGE_LINGUAS = "en-us"
+# IMAGE_LINGUAS = "en-us"
 
 #
 # INSTALL addons
