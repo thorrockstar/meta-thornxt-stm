@@ -37,8 +37,8 @@ URI: https://github.com/STMicroelectronics/meta-st-stm32mp.git
 URI: https://github.com/STMicroelectronics/meta-st-openstlinux.git
 
 
-Requisities
-===========
+Requisites
+==========
 
 Build has been tested under Ubuntu 22.04 LTS. Anyway you need to install these required packages:
 
@@ -196,38 +196,25 @@ IMAGE_LINGUAS += "en-us"
 
 Typical bitbake output
 ======================
-    Loading cache: 100% |###########################################################################################| Time: 0:00:00
-    Loaded 3294 entries from dependency cache.
-    Parsing recipes: 100% |#########################################################################################| Time: 0:00:00
-    Parsing of 2162 .bb files complete (2161 cached, 1 parsed). 3283 targets, 127 skipped, 0 masked, 0 errors.
-    NOTE: Resolving any missing task queue dependencies
-
     Build Configuration:
     BB_VERSION           = "2.0.0"
     BUILD_SYS            = "x86_64-linux"
     NATIVELSBSTRING      = "universal"
-    TARGET_SYS           = "arm-poky-linux-gnueabi"
+    TARGET_SYS           = "arm-thor-linux-gnueabi"
     MACHINE              = "stm32mp1-thor-e2"
     DISTRO               = "thor-stm"
-    DISTRO_VERSION       = "4.0.16"
+    DISTRO_VERSION       = "4.0.13"
     TUNE_FEATURES        = "arm vfp cortexa7 neon vfpv4 thumb callconvention-hard"
     TARGET_FPU           = "hard"
     meta                 
     meta-poky            
-    meta-yocto-bsp       = "kirkstone:0b39955d14600257a6eafc211fd68a933c69a0e9"
-    meta-st-stm32mp      = "kirkstone:996ba052798f19dce1fba6851ad738faf1f78192"
-    meta-st-openstlinux  = "kirkstone:03daeb62ccffa2e29c20ee97154dc18dda4fbd60"
+    meta-yocto-bsp       = "kirkstone:02c15addea7c3303552df5994ce0616b2059388c"
+    meta-st-stm32mp      = "kirkstone:fcdd9c0100ccb1317bf4c6904a1c90692891fa6d"
+    meta-st-openstlinux  = "kirkstone:7f5d2a17b52f968da5dd73f627f1634223bd427d"
     meta-thornxt-stm     = "kirkstone:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
     meta-oe              
     meta-networking      
-    meta-python          = "kirkstone:8609de00952d65bb813a48c535c937324efeb18a"
-
-    Initialising tasks: 100% |##############################################################################################################################################| Time: 0:00:04
-    Sstate summary: Wanted 10 Local 0 Mirrors 0 Missed 10 Current 1790 (0% match, 99% complete)
-    Removing 10 stale sstate objects for arch stm32mp1_thor_e2: 100% |######################################################################################################| Time: 0:00:00
-    NOTE: Executing Tasks
-    NOTE: Tasks Summary: Attempted 4395 tasks of which 4370 didn't need to be rerun and all succeeded.
-
+    meta-python          = "kirkstone:8a598a2bc9199a4fbb9008a32ab143fb509a0933"
 
 Contributing
 ============
