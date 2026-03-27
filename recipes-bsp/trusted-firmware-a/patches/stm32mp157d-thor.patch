@@ -1,21 +1,17 @@
---- a/fdts/stm32mp157d-ev1.dts
-+++ b/fdts/stm32mp157d-ev1.dts
-@@ -1,23 +1,999 @@
- // SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
- /*
-- * Copyright (C) STMicroelectronics 2019 - All Rights Reserved
-- * Author: Alexandre Torgue <alexandre.torgue@st.com> for STMicroelectronics.
-+ * Copyright (C) THOR Engineering GmbH 2022
+--- /dev/null	2026-03-26 08:13:45.003997777 +0100
++++ b/fdts/stm32mp157d-thor.dts	2026-03-26 18:20:04.306007000 +0100
+@@ -0,0 +1,1004 @@
++// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
++/*
++ * Copyright (C) THOR Engineering GmbH 2026
 + *
 + * Author: Roy Schneider <roy@thor.engineering> for THOR Engineering GmbH.
 + *
 + * Device Tree File for the THOR-E2 board for the TF-A Bootstrap.
-  */
++ */
 +
- /dts-v1/;
- 
--#include "stm32mp157d-ed1.dts"
--#include "stm32mp15xx-evx.dtsi"
++/dts-v1/;
++
 +#include "stm32mp151.dtsi"               /* dt-bindings/#? */
 +#include "stm32mp15xf.dtsi"              /* stm32mp15xd.dtsi */
 +#include "stm32mp15-pinctrl.dtsi"        /* Analogue, Ethernet, etc. */
@@ -24,6 +20,11 @@
 +#include <dt-bindings/clock/stm32mp1-clksrc.h>
 +#include <dt-bindings/power/stm32mp1-power.h>
 +#include <dt-bindings/soc/st,stm32-etzpc.h>
++#include <../plat/st/stm32mp1/stm32mp1_def.h>
++
++#ifndef DECPROT
++#define DECPROT(id, mode, lock)		(((id) << 16) | ((mode) << 8) | (lock))
++#endif
 +
 +/*
 + * DDR type: DDR3 / DDR3L
@@ -265,25 +266,20 @@
 +};
 +
 +/* Board definition */
- 
- / {
--	model = "STMicroelectronics STM32MP157D eval daughter on eval mother";
--	compatible = "st,stm32mp157d-ev1", "st,stm32mp157d-ed1", "st,stm32mp157";
++
++/ {
 +	model = "THOR Engineering E2-Board";
-+	compatible = "st,stm32mp157d-thor-e2", "st,stm32mp157";
++	compatible = "st,stm32mp157d-thor", "st,stm32mp157";
 +
 +	aliases {
 +		serial0 = &uart4;
 +		serial1 = &usart3;
 +	};
- 
- 	chosen {
- 		stdout-path = "serial0:115200n8";
- 	};
- 
--	aliases {
--		serial0 = &uart4;
--		serial1 = &usart3;
++
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
++
 +	memory@c0000000 {
 +		device_type = "memory";
 +		reg = <0xc0000000 0x20000000>; /* 512 MB */
@@ -347,7 +343,7 @@
 +			pinmux = <STM32_PINMUX('D', 6, AF12)>; /* FMC_NWAIT */
 +			bias-pull-up;
 +		};
- 	};
++	};
 +
 +	/* Pins for the Debug interface. */
 +
@@ -385,7 +381,7 @@
 +/* RTC oscillator 32.768kHz. */
 +
 +&clk_lse {
- };
++};
 +
 +/* Core 1/2 voltage */
 +

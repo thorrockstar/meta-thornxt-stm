@@ -1,23 +1,18 @@
---- a/arch/arm/dts/stm32mp157a-ev1.dts
-+++ b/arch/arm/dts/stm32mp157a-ev1.dts
-@@ -1,103 +1,785 @@
- // SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
- /*
-- * Copyright (C) STMicroelectronics 2019 - All Rights Reserved
-- * Author: Alexandre Torgue <alexandre.torgue@st.com> for STMicroelectronics.
-+ * Copyright (C) THOR Engineering GmbH 2022
-+ *
-+ * Author: Roy Schneider <roy@thor.engineering> for THOR Engineering GmbH.
-+ *
-+ * Device Tree File for the THOR-E2 board for the u-boot.
-  */
-+ 
- /dts-v1/;
- 
--#include "stm32mp157a-ed1.dts"
--#include "stm32mp15xx-evx.dtsi"
+--- /dev/null	2026-03-26 08:13:45.003997777 +0100
++++ b/arch/arm/dts/stm32mp157a-nous.dts	2026-03-26 18:52:07.698923579 +0100
+@@ -0,0 +1,812 @@
++// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
++/*
+++ * Copyright (C) THOR Engineering GmbH 2026
+++ *
+++ * Author: Roy Schneider <roy@thor.engineering> for THOR Engineering GmbH.
+++ *
+++ * Device Tree File for the THOR-E2 board for the u-boot.
++ */
++/dts-v1/;
++
 +#include "stm32mp151.dtsi"               /* dt-bindings/#? */
-+#include "stm32mp15xa.dtsi"              /* stm32mp15xa.dtsi */
++#include "stm32mp15xa.dtsi"              /* stm32mp15xd.dtsi */
 +#include "stm32mp15-pinctrl.dtsi"        /* Analogue, Ethernet, etc. */
 +#include "stm32mp15xxaa-pinctrl.dtsi"    /* GPIOA..Z */
 +#include "stm32mp15-m4-srm.dtsi"         /* M4 CPU, USART, timers, etc. */
@@ -28,12 +23,10 @@
 +#include <dt-bindings/soc/stm32-hdp.h>
 +
 +/* Board description */
- 
- / {
--	model = "STMicroelectronics STM32MP157A eval daughter on eval mother";
--	compatible = "st,stm32mp157a-ev1", "st,stm32mp157a-ed1", "st,stm32mp157";
++
++/ {
 +	model = "THOR Engineering E2-Board";
-+	compatible = "st,stm32mp157a-ev1", "st,stm32mp157a-thor-e2", "st,stm32mp157";
++	compatible = "st,stm32mp157a-nous", "st,stm32mp157";
 +
 +	aliases {
 +		ethernet0 = &ethernet0;
@@ -43,17 +36,42 @@
 +	};
 +
 +	/* Standard serial console output. */
- 
- 	chosen {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
- 		ranges;
- 		stdout-path = "serial0:115200n8";
++
++	chosen {
++		#address-cells = <1>;
++		#size-cells = <1>;
++		ranges;
++		stdout-path = "serial0:115200n8";
 +	};
- 
--		framebuffer {
--			compatible = "simple-framebuffer";
--			clocks = <&rcc LTDC_PX>;
++	
++	firmware {
++		optee: optee {
++			bootph-all;
++			compatible = "linaro,optee-tz";
++			method = "smc";
++			interrupt-parent = <&intc>;
++			interrupts = <GIC_PPI 15 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>;
++		};
++
++		scmi: scmi {
++			bootph-some-ram;
++			compatible = "linaro,scmi-optee";
++			#address-cells = <1>;
++			#size-cells = <0>;
++			linaro,optee-channel-id = <0>;
++
++			scmi_clk: protocol@14 {
++				reg = <0x14>;
++				#clock-cells = <1>;
++			};
++
++			scmi_reset: protocol@16 {
++				reg = <0x16>;
++				#reset-cells = <1>;
++			};
++		};
++	};
++
 +	cpus {
 +		cpu1: cpu@1 {
 +			compatible = "arm,cortex-a7";
@@ -95,12 +113,10 @@
 +			clocks = <&scmi_clk CK_SCMI_HSE>, <&rcc FDCAN_K>;
 +			clock-names = "hclk", "cclk";
 +			bosch,mram-cfg = <0x1400 0 0 32 0 0 2 2>;
- 			status = "disabled";
- 		};
- 	};
- 
--	aliases {
--		ethernet0 = &ethernet0;
++			status = "disabled";
++		};
++	};
++
 +	/* RAM base address and size */
 +
 +	memory@c0000000 {
@@ -161,19 +177,17 @@
 +			reg = <0xf6000000 0x8000000>;
 +			no-map;
 +		};
- 	};
- 
--	panel_backlight: panel-backlight {
++	};
++
 +	/* Simple display panel */
 +
 +	backlight: backlight {
- 		compatible = "gpio-backlight";
--		gpios = <&gpiod 13 GPIO_ACTIVE_LOW>;
++		compatible = "gpio-backlight";
 +		/*Use an unused CPU pin here, so that we can control the real background light manually.*/
 +		gpios = <&gpioh 8 GPIO_ACTIVE_HIGH>;
- 		default-on;
- 		status = "okay";
- 	};
++		default-on;
++		status = "okay";
++	};
 +
 +	panel-rgb@0 {
 +		compatible = "simple-panel";
@@ -222,25 +236,13 @@
 +		regulator-max-microvolt = <5000000>;
 +		regulator-always-on;
 +	};
- };
- 
--&dsi {
--	#address-cells = <1>;
--	#size-cells = <0>;
--	status = "okay";
++};
++
 +/* Pinout mapping */
- 
--	ports {
--		#address-cells = <1>;
--		#size-cells = <0>;
++
 +&pinctrl {
 +	u-boot,dm-pre-reloc;
- 
--		port@0 {
--			reg = <0>;
--			dsi_in: endpoint {
--				remote-endpoint = <&ltdc_ep0_out>;
--			};
++
 +	/* Pins for the CAN1 interface. */
 +	
 +	m_can1_pins_z: m-can1-0 {
@@ -249,18 +251,13 @@
 +			slew-rate = <0>;
 +			drive-push-pull;
 +			bias-disable;
- 		};
++		};
 +		pins2 {
 +			pinmux = <STM32_PINMUX('H', 14, AF9)>; /* CAN1_RX */
 +			bias-disable;
 +		};
 +	};
- 
--		port@1 {
--			reg = <1>;
--			dsi_out: endpoint {
--				remote-endpoint = <&dsi_panel_in>;
--			};
++
 +	/* Pins for the CAN2 interface. */
 +	
 +	m_can2_pins_z: m-can2-0 {
@@ -273,22 +270,11 @@
 +		pins2 {
 +			pinmux = <STM32_PINMUX('B', 5, AF9)>; /* CAN2_RX */
 +			bias-disable;
- 		};
- 	};
- 
--	panel_dsi: panel-dsi@0 {
--		compatible = "raydium,rm68200";
--		reg = <0>;
--		reset-gpios = <&gpiof 15 GPIO_ACTIVE_LOW>;
--		backlight = <&panel_backlight>;
--		power-supply = <&v3v3>;
--		status = "okay";
++		};
++	};
++
 +	/* Pins for the Debug interface. */
- 
--		port {
--			dsi_panel_in: endpoint {
--				remote-endpoint = <&dsi_out>;
--			};
++
 +	uart4_pins_mx_z: uart4-0 {
 +		pins1 {
 +			pinmux = <STM32_PINMUX('C', 8, AF6)>; /* UART4_TX */
@@ -434,18 +420,10 @@
 +				 <STM32_PINMUX('E', 9, ANALOG)>, /* FMC_D6 */
 +				 <STM32_PINMUX('E', 10, ANALOG)>, /* FMC_D7 */
 +				 <STM32_PINMUX('G', 9, ANALOG)>; /* FMC_NCE */
- 		};
- 	};
- };
- 
--&i2c2 {
--	gt9147: goodix_ts@5d {
--		compatible = "goodix,gt9147";
--		reg = <0x5d>;
--		panel = <&panel_dsi>;
--		pinctrl-0 = <&goodix_pins>;
--		pinctrl-names = "default";
--		status = "okay";
++		};
++	};
++};
++
 +&pinctrl_z {
 +	u-boot,dm-pre-reloc;
 +};
@@ -507,22 +485,20 @@
 +};
 +
 +/* Device temperature monitoring. */
- 
--		interrupts = <14 IRQ_TYPE_EDGE_RISING>;
--		interrupt-parent = <&stmfx_pinctrl>;
++
 +&dts {
 +	status = "okay";
 +};
 +
 +/* Internal SRAM. */
 +
-+&sram {
++&sram4 {
 +	dma_pool: dma_pool@0 {
 +		reg = <0x50000 0x10000>;
 +		pool;
- 	};
- };
- 
++	};
++};
++
 +/* Flexible Memory controller. */
 +
 +&fmc {
@@ -561,18 +537,14 @@
 +
 +/* Display controller */
 +
- &ltdc {
++&ltdc {
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&ltdc_pins_mx_z>;
- 	status = "okay";
++	status = "okay";
 +};
 +
 +/* Ethernet interface (10/100). */
- 
--	port {
--		ltdc_ep0_out: endpoint@0 {
--			reg = <0>;
--			remote-endpoint = <&dsi_in>;
++
 +&ethernet0 {
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&eth1_pins_mx_z>;
@@ -589,9 +561,9 @@
 +		compatible = "snps,dwmac-mdio";
 +		phy0: ethernet-phy@1 {
 +			reg = <1>;
- 		};
- 	};
- };
++		};
++	};
++};
 +
 +/* I2C for communication with the PMIC (power controller). */
 +

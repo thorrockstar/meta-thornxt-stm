@@ -1,15 +1,15 @@
---- a/arch/arm/mach-stm32mp/cpu.c	2022-07-19 09:44:18.015013000 +0200
-+++ b/arch/arm/mach-stm32mp/cpu.c	2022-07-19 10:00:35.622241873 +0200
-@@ -314,6 +314,7 @@
+--- a/arch/arm/mach-stm32mp/soc.c	2022-07-19 09:44:18.015013000 +0200
++++ b/arch/arm/mach-stm32mp/soc.c	2022-07-19 10:00:35.622241873 +0200
+@@ -21,6 +21,7 @@
  {
  	int ret;
  	int i;
 +	unsigned int seed;
- 	u32 otp[3];
- 	uchar enetaddr[6];
+ 	u32 otp[MAX_NB_OTP];
+ 	uchar enetaddr[ARP_HLEN];
  	struct udevice *dev;
-@@ -346,9 +347,15 @@
- 			enetaddr[i] = ((uint8_t *)&otp)[i + 6 * index];
+@@ -63,9 +64,15 @@
+ 			continue;
  
  		if (!is_valid_ethaddr(enetaddr)) {
 -			log_err("invalid MAC address %d in OTP %pM\n",

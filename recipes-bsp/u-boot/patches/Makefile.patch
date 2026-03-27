@@ -1,0 +1,11 @@
+--- a/arch/arm/dts/Makefile
++++ b/arch/arm/dts/Makefile
+@@ -1300,6 +1300,8 @@
+ 	stm32mp157d-dk1.dtb \
+ 	stm32mp157d-ed1.dtb \
+ 	stm32mp157d-ev1.dtb \
++	stm32mp157d-thor.dtb \
++	stm32mp157a-nous.dtb \
+ 	stm32mp157f-dk2.dtb \
+ 	stm32mp157f-ed1.dtb \
+ 	stm32mp157f-ev1.dtb \

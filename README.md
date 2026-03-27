@@ -37,10 +37,10 @@ URI: https://github.com/STMicroelectronics/meta-st-stm32mp.git
 URI: https://github.com/STMicroelectronics/meta-st-openstlinux.git
 
 
-Requisites
-==========
+Requisities
+===========
 
-Build has been tested under Ubuntu 24.04 LTS. Anyway you need to install these required packages:
+Build has been tested under Ubuntu 22.04 LTS. Anyway you need to install these required packages:
 
     $ sudo apt install gawk wget git diffstat unzip texinfo gcc build-essential chrpath socat cpio python3 python3-pip python3-pexpect xz-utils debianutils iputils-ping python3-git python3-jinja2 libegl1-mesa libsdl1.2-dev python3-subunit mesa-common-dev zstd liblz4-tool file locales libacl1
     $ sudo locale-gen en_US.UTF-8
@@ -53,29 +53,28 @@ Build procedure
 ===============
 
 0/ Create a directory.  
-
-    mkdir scarthgap_stm
-    cd scarthgap_stm
+    mkdir kirkstone_stm
+    cd kirkstone_stm
 
 1/ Clone yocto/poky git repository with the proper branch ready.  
 
-    git clone git://git.yoctoproject.org/poky -b scarthgap
+    git clone git://git.yoctoproject.org/poky -b kirkstone
 
 2/ Clone meta-openembedded git repository with the proper branch ready.  
 
-    git clone git://git.openembedded.org/meta-openembedded -b scarthgap
+    git clone git://git.openembedded.org/meta-openembedded -b kirkstone
 
 3/ Clone meta-st-stm32mp layer with the proper branch ready.  
 
-    git clone https://github.com/STMicroelectronics/meta-st-stm32mp.git -b scarthgap
+    git clone https://github.com/STMicroelectronics/meta-st-stm32mp.git -b kirkstone
 
 4/ Clone meta-st-openstlinux layer with the proper branch ready.  
 
-    git clone https://github.com/STMicroelectronics/meta-st-openstlinux.git -b scarthgap
+    git clone https://github.com/STMicroelectronics/meta-st-openstlinux.git -b kirkstone
 
 5/ Clone meta-thornxt-stm layer with the proper branch ready.  
 
-    git clone https://github.com/thorrockstar/meta-thornxt-stm.git -b scarthgap
+    git clone https://github.com/thorrockstar/meta-thornxt-stm.git -b kirkstone
 
 6/ Enter the poky directory to configure the build system and start the build process.  
 
@@ -87,7 +86,7 @@ Build procedure
 
 8/ Add meta-thornxt-stm layer to bblayer configuration file.
 
-    gnome-text-editor conf/bblayers.conf
+    gedit conf/bblayers.conf
 
 ```
 # POKY_BBLAYERS_CONF_VERSION is increased each time build/conf/bblayers.conf
@@ -123,9 +122,9 @@ and edit the "local.conf" file. Here is an example:
 
 **Make sure that you have no white spaces left to "MACHINE ??=" and the other variables when editing the text block.**
 
-    gnome-text-editor conf/local.conf
+    gedit conf/local.conf
 
-```
+
 MACHINE ??= "stm32mp1-thor-e2"  
 
 PACKAGE_CLASSES ?= "package_rpm"  
@@ -145,7 +144,6 @@ GLIBC_SPLIT_LC_PACKAGES = "0"
 GLIBC_GENERATE_LOCALES += "en_US.UTF-8"  
 
 IMAGE_LINGUAS += "en-us"  
-```
 
 10/ Remove some unwanted recipies from the ST folders.
 
@@ -196,25 +194,38 @@ IMAGE_LINGUAS += "en-us"
 
 Typical bitbake output
 ======================
+    Loading cache: 100% |###########################################################################################| Time: 0:00:00
+    Loaded 3294 entries from dependency cache.
+    Parsing recipes: 100% |#########################################################################################| Time: 0:00:00
+    Parsing of 2162 .bb files complete (2161 cached, 1 parsed). 3283 targets, 127 skipped, 0 masked, 0 errors.
+    NOTE: Resolving any missing task queue dependencies
+
     Build Configuration:
     BB_VERSION           = "2.0.0"
     BUILD_SYS            = "x86_64-linux"
     NATIVELSBSTRING      = "universal"
-    TARGET_SYS           = "arm-thor-linux-gnueabi"
+    TARGET_SYS           = "arm-poky-linux-gnueabi"
     MACHINE              = "stm32mp1-thor-e2"
     DISTRO               = "thor-stm"
-    DISTRO_VERSION       = "5.0.4"
+    DISTRO_VERSION       = "4.0.16"
     TUNE_FEATURES        = "arm vfp cortexa7 neon vfpv4 thumb callconvention-hard"
     TARGET_FPU           = "hard"
     meta                 
     meta-poky            
-    meta-yocto-bsp       = "scarthgap:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-    meta-st-stm32mp      = "scarthgap:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-    meta-st-openstlinux  = "scarthgap:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-    meta-thornxt-stm     = "scarthgap:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    meta-yocto-bsp       = "kirkstone:0b39955d14600257a6eafc211fd68a933c69a0e9"
+    meta-st-stm32mp      = "kirkstone:996ba052798f19dce1fba6851ad738faf1f78192"
+    meta-st-openstlinux  = "kirkstone:03daeb62ccffa2e29c20ee97154dc18dda4fbd60"
+    meta-thornxt-stm     = "kirkstone:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
     meta-oe              
     meta-networking      
-    meta-python          = "scarthgap:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    meta-python          = "kirkstone:8609de00952d65bb813a48c535c937324efeb18a"
+
+    Initialising tasks: 100% |##############################################################################################################################################| Time: 0:00:04
+    Sstate summary: Wanted 10 Local 0 Mirrors 0 Missed 10 Current 1790 (0% match, 99% complete)
+    Removing 10 stale sstate objects for arch stm32mp1_thor_e2: 100% |######################################################################################################| Time: 0:00:00
+    NOTE: Executing Tasks
+    NOTE: Tasks Summary: Attempted 4395 tasks of which 4370 didn't need to be rerun and all succeeded.
+
 
 Contributing
 ============

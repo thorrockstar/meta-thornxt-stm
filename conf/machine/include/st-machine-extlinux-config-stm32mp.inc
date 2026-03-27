@@ -13,18 +13,24 @@ UBOOT_EXTLINUX_INITRD ?= "${@bb.utils.contains('COMBINED_FEATURES', 'initrd', '/
 UBOOT_EXTLINUX_SPLASH ?= "${UBOOT_SPLASH_LANDSCAPE_IMAGE}"
 UBOOT_EXTLINUX_SPLASH:stm32mp15 ?= "${UBOOT_SPLASH_PORTRAIT_IMAGE}"
 UBOOT_EXTLINUX_SPLASH:stm32mp13 ?= "${UBOOT_SPLASH_LANDSCAPE_IMAGE}"
+UBOOT_EXTLINUX_SPLASH:stm32mp2m33tdcommon ?= "${@bb.utils.contains('MACHINE_FEATURES', 'splashscreen', '${UBOOT_SPLASH_LANDSCAPE_IMAGE}', '', d)}"
 
 UBOOT_EXTLINUX_KERNEL_ARGS ?= "rootwait rw"
 UBOOT_EXTLINUX_KERNEL_ARGS:append = " ${@bb.utils.contains('ST_DEBUG_TRACE', '1', '', '${ST_CMD_LINE_DEBUG_TRACE}', d)} "
+UBOOT_EXTLINUX_KERNEL_ARGS:append:stm32mp2common = " earlycon"
 
 # -----------------------------------------------------------------------------
 # Configurations
 # -----------------------------------------------------------------------------
 # Define additional targets to use
-UBOOT_EXTLINUX_TARGETS += "${@bb.utils.contains_any('BOOTDEVICE_LABELS', [ 'sdcard', 'nor-sdcard' ], 'target-sdcard', '', d)}"
+UBOOT_EXTLINUX_TARGETS += "${@bb.utils.contains_any('BOOTDEVICE_LABELS', [ 'sdcard', 'nor-sdcard', 'nor-nor-sdcard' ], 'target-sdcard', '', d)}"
 UBOOT_EXTLINUX_TARGETS += "${@bb.utils.contains('BOOTDEVICE_LABELS', 'nor', 'target-nor', '', d)}"
-UBOOT_EXTLINUX_TARGETS += "${@bb.utils.contains('BOOTDEVICE_LABELS', 'emmc', 'target-emmc', '', d)}"
-UBOOT_EXTLINUX_TARGETS += "${@bb.utils.contains_any('BOOTDEVICE_LABELS', [ 'nand-4-256', 'nor-nand-4-256' ], 'target-nand', '', d)}"
+UBOOT_EXTLINUX_TARGETS += "${@bb.utils.contains_any('BOOTDEVICE_LABELS', [ 'emmc', 'nor-emmc', 'nor-nor-emmc' ], 'target-emmc', '', d)}"
+UBOOT_EXTLINUX_TARGETS += "${@bb.utils.contains_any('BOOTDEVICE_LABELS', [ 'nand-4-256-1024', 'nand-4-256-1024-sdcard' ], 'target-nand', '', d)}"
+UBOOT_EXTLINUX_TARGETS += "${@bb.utils.contains_any('BOOTDEVICE_LABELS', [ 'nand-4-256-512', 'nand-4-256-512-sdcard' ], 'target-nand', '', d)}"
+UBOOT_EXTLINUX_TARGETS += "${@bb.utils.contains_any('BOOTDEVICE_LABELS', [ 'nand-2-128-256', 'nand-2-128-256-sdcard' ], 'target-nand', '', d)}"
+UBOOT_EXTLINUX_TARGETS += "${@bb.utils.contains_any('BOOTDEVICE_LABELS', [ 'nand-custom', 'nand-custom-sdcard' ], 'target-nand', '', d)}"
+
 # Define labels for each target
 # (mandatory to allow specific var override if needed)
 UBOOT_EXTLINUX_LABELS:target-sdcard += "rootfs"
@@ -63,15 +69,10 @@ UBOOT_EXTLINUX_MENU_DESCRIPTION:rootfs = "OpenSTLinux"
 # the 'newlabel1' and 'newlabel2' labels.
 # -----------------------------------------------------------------------------
 # Define additional extra targets to consider
-UBOOT_EXTLINUX_TARGETS_EXTRA_CONFIG:target-sdcard += "${STM32MP_DT_FILES_DK}"
-UBOOT_EXTLINUX_TARGETS_EXTRA_CONFIG:target-sdcard += "${STM32MP_DT_FILES_ED}"
-UBOOT_EXTLINUX_TARGETS_EXTRA_CONFIG:target-sdcard += "${STM32MP_DT_FILES_EV}"
-UBOOT_EXTLINUX_TARGETS_EXTRA_CONFIG:target-emmc += "${STM32MP_DT_FILES_ED}"
-UBOOT_EXTLINUX_TARGETS_EXTRA_CONFIG:target-emmc += "${STM32MP_DT_FILES_EV}"
-UBOOT_EXTLINUX_TARGETS_EXTRA_CONFIG:target-nand += "${STM32MP_DT_FILES_ED}"
-UBOOT_EXTLINUX_TARGETS_EXTRA_CONFIG:target-nand += "${STM32MP_DT_FILES_EV}"
-UBOOT_EXTLINUX_TARGETS_EXTRA_CONFIG:target-nor += "${STM32MP_DT_FILES_ED}"
-UBOOT_EXTLINUX_TARGETS_EXTRA_CONFIG:target-nor += "${STM32MP_DT_FILES_EV}"
+UBOOT_EXTLINUX_TARGETS_EXTRA_CONFIG:target-sdcard += "${STM32MP_DT_FILES_SDCARD}"
+UBOOT_EXTLINUX_TARGETS_EXTRA_CONFIG:target-emmc += "${STM32MP_DT_FILES_EMMC}"
+UBOOT_EXTLINUX_TARGETS_EXTRA_CONFIG:target-nand += "${STM32MP_DT_FILES_NAND}"
+UBOOT_EXTLINUX_TARGETS_EXTRA_CONFIG:target-nor += "${STM32MP_DT_FILES_NOR}"
 # Define extra label configuration
 UBOOT_EXTLINUX_TARGETS_EXTRA_CONFIG[stm32mp157d-dk1] += "stm32mp157d-dk1-a7-examples"
 UBOOT_EXTLINUX_TARGETS_EXTRA_CONFIG[stm32mp157c-dk2] += "stm32mp157c-dk2-a7-examples"
@@ -89,6 +90,12 @@ UBOOT_EXTLINUX_TARGETS_EXTRA_CONFIG[stm32mp157f-ev1] += "stm32mp157f-ev1-m4-exam
 
 UBOOT_EXTLINUX_TARGETS_EXTRA_CONFIG[stm32mp135f-dk] += "stm32mp135f-dk-a7-examples"
 
+# Add entry on extlinux for stm32mp257f-ev1 with psci example
+UBOOT_EXTLINUX_TARGETS_EXTRA_CONFIG[stm32mp257f-ev1] += "${@bb.utils.contains('EXTERNAL_DT_ENABLED', '1', 'stm32mp257f-ev1-psci-osi-examples', '', d)}"
+# Add entry on extlinux for stm32mp215f-dk with psci example
+UBOOT_EXTLINUX_TARGETS_EXTRA_CONFIG[stm32mp215f-dk] += "${@bb.utils.contains('EXTERNAL_DT_ENABLED', '1', 'stm32mp215f-dk-psci-osi-examples', '', d)}"
+
+
 # -----------------------------------------------------------------------------
 # Configure A7 examples labels
 # -----------------------------------------------------------------------------
@@ -102,6 +109,11 @@ UBOOT_EXTLINUX_FDT:stm32mp157d-ev1 = "/stm32mp157d-ev1.dtb"
 UBOOT_EXTLINUX_FDT:stm32mp157a-ev1 = "/stm32mp157a-ev1.dtb"
 
 UBOOT_EXTLINUX_FDT:stm32mp135f-dk-a7-examples = "/stm32mp135f-dk-a7-examples.dtb"
+
+# Define devicetree for stm32mp257f-ev1 psci example
+UBOOT_EXTLINUX_FDT:stm32mp257f-ev1-psci-osi-examples = "/stm32mp257f-ev1-psci-osi.dtb"
+# Define devicetree for stm32mp215f-dk psci example
+UBOOT_EXTLINUX_FDT:stm32mp215f-dk-psci-osi-examples = "/stm32mp215f-dk-psci-osi.dtb"
 
 # -----------------------------------------------------------------------------
 # Configure M4 examples labels

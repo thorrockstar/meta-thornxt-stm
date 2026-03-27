@@ -1,0 +1,195 @@
+--- /dev/null	2026-03-26 08:13:45.003997777 +0100
++++ b/arch/arm/dts/stm32mp157a-nous-u-boot.dtsi	2026-03-26 18:52:07.698923579 +0100
+@@ -0,0 +1,192 @@
++// SPDX-License-Identifier: GPL-2.0-or-later OR BSD-3-Clause
++/*
++ * Copyright : STMicroelectronics 2022
++ */
++
++/ {
++	aliases {
++		gpio0 = &gpioa;
++		gpio1 = &gpiob;
++		gpio2 = &gpioc;
++		gpio3 = &gpiod;
++		gpio4 = &gpioe;
++		gpio5 = &gpiof;
++		gpio6 = &gpiog;
++		gpio7 = &gpioh;
++		gpio8 = &gpioi;
++		gpio9 = &gpioj;
++		gpio10 = &gpiok;
++		gpio25 = &gpioz;
++		pinctrl0 = &pinctrl;
++		pinctrl1 = &pinctrl_z;
++	};
++
++	binman: binman {
++		multiple-images;
++	};
++
++	soc {
++		ddr: ddr@5a003000 {
++			bootph-all;
++
++			compatible = "st,stm32mp1-ddr";
++
++			reg = <0x5a003000 0x550
++			       0x5a004000 0x234>;
++
++			status = "okay";
++		};
++	};
++};
++
++/* temp = waiting kernel update */
++&m4_rproc {
++	resets = <&scmi_reset RST_SCMI_MCU>,
++		 <&scmi_reset RST_SCMI_MCU_HOLD_BOOT>;
++	reset-names = "mcu_rst", "hold_boot";
++};
++
++&usart1 {
++	resets = <&scmi_reset RST_SCMI_USART1>;
++};
++
++&usart2 {
++	resets = <&rcc USART2_R>;
++};
++
++&usart3 {
++	resets = <&rcc USART3_R>;
++};
++
++&uart4 {
++	resets = <&rcc UART4_R>;
++};
++
++&uart5 {
++	resets = <&rcc UART5_R>;
++};
++
++&usart6 {
++	resets = <&rcc USART6_R>;
++};
++
++&uart7 {
++	resets = <&rcc UART7_R>;
++};
++
++&uart8{
++	resets = <&rcc UART8_R>;
++};
++
++/ {
++	aliases {
++		i2c3 = &i2c4;
++	};
++
++	config {
++		u-boot,boot-led = "heartbeat";
++		u-boot,error-led = "error";
++		u-boot,mmc-env-partition = "u-boot-env";
++		st,fastboot-gpios = <&gpioa 13 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
++		st,stm32prog-gpios = <&gpioa 14 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
++	};
++
++	led {
++		led-red {
++			label = "error";
++			gpios = <&gpioa 13 GPIO_ACTIVE_LOW>;
++		};
++	};
++};
++
++&uart4_pins_a {
++	pins2 {
++		/* pull-up on rx to avoid floating level */
++		bias-pull-up;
++	};
++};
++
++/ {
++	aliases {
++		
++		i2c1 = &i2c2;
++		i2c4 = &i2c5;
++		
++		spi0 = &qspi;
++		usb0 = &usbotg_hs;
++	};
++
++	fwu-mdata {
++		compatible = "u-boot,fwu-mdata-gpt";
++		fwu-mdata-store = <&sdmmc1>;
++	};
++};
++
++&fmc {
++	nand-controller@4,0 {
++		nand@0 {
++			partitions {
++				compatible = "fixed-partitions";
++				#address-cells = <1>;
++				#size-cells = <1>;
++
++#if defined(CONFIG_STM32MP15X_STM32IMAGE) || defined(CONFIG_SPL)
++				partition@0 {
++					label = "fsbl";
++					reg = <0x00000000 0x00200000>;
++				};
++				partition@200000 {
++					label = "ssbl1";
++					reg = <0x00200000 0x00200000>;
++				};
++				partition@400000 {
++					label = "ssbl2";
++					reg = <0x00400000 0x00200000>;
++				};
++				partition@600000 {
++					label = "UBI";
++					reg = <0x00600000 0x3fa00000>;
++				};
++#else
++				partition@0 {
++					label = "fsbl1";
++					reg = <0x00000000 0x00080000>;
++				};
++				partition@80000 {
++					label = "fsbl2";
++					reg = <0x00080000 0x00080000>;
++				};
++				partition@100000 {
++					label = "metadata1";
++					reg = <0x00100000 0x00080000>;
++				};
++				partition@180000 {
++					label = "metadata2";
++					reg = <0x00180000 0x00080000>;
++				};
++				partition@200000 {
++					label = "fip-a1";
++					reg = <0x00200000 0x00400000>;
++				};
++				partition@600000 {
++					label = "fip-a2";
++					reg = <0x00600000 0x00400000>;
++				};
++				partition@a00000 {
++					label = "fip-b1";
++					reg = <0x00a00000 0x00400000>;
++				};
++				partition@e00000 {
++					label = "fip-b2";
++					reg = <0x00e00000 0x00400000>;
++				};
++				partition@1200000 {
++					label = "UBI";
++					reg = <0x01200000 0x3ee00000>;
++				};
++#endif
++			};
++		};
++	};
++};
++

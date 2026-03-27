@@ -1,6 +1,6 @@
 --- a/include/configs/stm32mp15_common.h
 +++ b/include/configs/stm32mp15_common.h
-@@ -118,17 +118,12 @@
+@@ -79,17 +79,12 @@
   * for nor boot, use the default distro order in ${boot_targets}
   */
  #define STM32MP_BOOTCMD "bootcmd_stm32mp=" \
@@ -22,4 +22,4 @@
 +	"run distro_bootcmd;" \
  	"fi;\0"
  
- #ifdef CONFIG_FASTBOOT_CMD_OEM_FORMAT
+ #define STM32MP_EXTRA \
