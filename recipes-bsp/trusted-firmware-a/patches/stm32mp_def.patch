@@ -1,15 +1,19 @@
 --- a/plat/st/stm32mp1/stm32mp1_def.h	2022-07-14 11:01:46.211692000 +0200
 +++ b/plat/st/stm32mp1/stm32mp1_def.h	2022-07-14 11:42:13.230237079 +0200
-@@ -7,6 +7,8 @@
+@@ -7,6 +7,12 @@
  #ifndef STM32MP1_DEF_H
  #define STM32MP1_DEF_H
  
 +
 +
++
++
++
++
  #include <common/tbbr/tbbr_img_def.h>
  #include <drivers/st/stm32mp1_rcc.h>
  #include <dt-bindings/clock/stm32mp1-clks.h>
-@@ -289,11 +291,11 @@
+@@ -289,11 +295,11 @@
  #if STM32MP15
  /* UART4 on HSI@64MHz, TX on GPIOG11 Alternate 6 */
  #define STM32MP_DEBUG_USART_CLK_FRQ	64000000
