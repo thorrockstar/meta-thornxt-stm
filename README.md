@@ -59,11 +59,11 @@ Build procedure
 
 1/ Clone yocto/poky git repository with the proper branch ready.  
 
-    git clone git://git.yoctoproject.org/poky -b kirkstone
+    git clone https://git.yoctoproject.org/poky -b kirkstone
 
 2/ Clone meta-openembedded git repository with the proper branch ready.  
 
-    git clone git://git.openembedded.org/meta-openembedded -b kirkstone
+    git clone https://git.openembedded.org/meta-openembedded -b kirkstone
 
 3/ Clone meta-st-stm32mp layer with the proper branch ready.  
 
