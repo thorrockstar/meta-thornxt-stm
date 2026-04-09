@@ -566,25 +566,6 @@
 		CLK_RTC_LSE
 		CLK_MCO1_DISABLED
 		CLK_MCO2_DISABLED
-	>;
-
-	st,clkdiv = <
-		DIV(DIV_MPU, 1)
-		DIV(DIV_AXI, 0)
-		DIV(DIV_MCU, 0)
-		DIV(DIV_APB1, 1)
-		DIV(DIV_APB2, 1)
-		DIV(DIV_APB3, 1)
-		DIV(DIV_APB4, 1)
-		DIV(DIV_APB5, 2)
-		DIV(DIV_RTC, 23)
-		DIV(DIV_MCO1, 0)
-		DIV(DIV_MCO2, 0)
-	>;
-
-	/* Peripheral Kernel Clock Selection */
-
-	st,pkcs = <
 		CLK_CKPER_HSE
 		CLK_FMC_ACLK
 		CLK_QSPI_ACLK
@@ -620,6 +601,20 @@
 		CLK_LPTIM1_PCLK1
 		CLK_LPTIM23_PCLK3
 		CLK_LPTIM45_LSE
+	>;
+
+	st,clkdiv = <
+		DIV(DIV_MPU, 1)
+		DIV(DIV_AXI, 0)
+		DIV(DIV_MCU, 0)
+		DIV(DIV_APB1, 1)
+		DIV(DIV_APB2, 1)
+		DIV(DIV_APB3, 1)
+		DIV(DIV_APB4, 1)
+		DIV(DIV_APB5, 2)
+		DIV(DIV_RTC, 23)
+		DIV(DIV_MCO1, 0)
+		DIV(DIV_MCO2, 0)
 	>;
 
 	/* VCO = 1066.0 MHz => P = 266 (AXI), Q = 533 (GPU), R = 533 (DDR) */
