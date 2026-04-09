@@ -14,11 +14,41 @@
 #include "stm32mp15xxaa-pinctrl.dtsi"    /* GPIOA..Z */
 #include "stm32mp15-m4-srm.dtsi"         /* M4 CPU, USART, timers, etc. */
 #include "stm32mp15-m4-srm-pinctrl.dtsi" /* M4 CPU pinout */
-#include "stm32mp157d-thor-scmi.dtsi"
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/mfd/st,stpmic1.h>
 #include <dt-bindings/soc/stm32-hdp.h>
+
+/* Define CPUs before SCMI include file. */
+
+/ {
+	cpus {
+		cpu1: cpu@1 {
+			compatible = "arm,cortex-a7";
+			device_type = "cpu";
+			reg = <1>;
+			clock-names = "cpu";
+			operating-points-v2 = <&cpu0_opp_table>;
+		};
+	};
+
+	arm-pmu {
+		interrupts = <GIC_SPI 200 IRQ_TYPE_LEVEL_HIGH>,
+			     <GIC_SPI 201 IRQ_TYPE_LEVEL_HIGH>;
+		interrupt-affinity = <&cpu0>, <&cpu1>;
+	};
+
+	timer {
+		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
+			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
+			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
+			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>;
+	};
+};
+
+/* SCMI/OPTEE */
+
+#include "stm32mp157d-thor-scmi.dtsi"
 
 /* Board description */
 
@@ -68,30 +98,6 @@
 				#reset-cells = <1>;
 			};
 		};
-	};
-
-	cpus {
-		cpu1: cpu@1 {
-			compatible = "arm,cortex-a7";
-			device_type = "cpu";
-			reg = <1>;
-			clocks = <&scmi_clk CK_SCMI_MPU>;
-			clock-names = "cpu";
-			operating-points-v2 = <&cpu0_opp_table>;
-		};
-	};
-
-	arm-pmu {
-		interrupts = <GIC_SPI 200 IRQ_TYPE_LEVEL_HIGH>,
-			     <GIC_SPI 201 IRQ_TYPE_LEVEL_HIGH>;
-		interrupt-affinity = <&cpu0>, <&cpu1>;
-	};
-
-	timer {
-		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
-			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
-			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
-			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>;
 	};
 
 	/* RAM base address and size */
@@ -480,16 +486,6 @@
 	status = "okay";
 };
 
-/* CPU voltage supply */
-
-&cpu0 {
-	cpu-supply = <&vddcore>;
-};
-
-&cpu1 {
-	cpu-supply = <&vddcore>;
-};
-
 /* Hardware CRC unit. */
 
 &crc1 {
@@ -857,3 +853,14 @@
 		};
 	};
 };
+
+/* CPU voltage supply */
+
+&cpu0 {
+	cpu-supply = <&vddcore>;
+};
+
+&cpu1 {
+	cpu-supply = <&vddcore>;
+};
+
