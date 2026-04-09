@@ -14,6 +14,76 @@
 #include "stm32mp15-pinctrl.dtsi"        /* Analogue, Ethernet, etc. */
 #include "stm32mp15xxac-pinctrl.dtsi"    /* GPIOA..Z */
 
+/* Define CPUs before SCMI include file. */
+
+/ {
+	cpus {
+		cpu1: cpu@1 {
+			compatible = "arm,cortex-a7";
+			device_type = "cpu";
+			reg = <1>;
+			clock-names = "cpu";
+			operating-points-v2 = <&cpu0_opp_table>;
+		};
+	};
+
+	arm-pmu {
+		interrupts = <GIC_SPI 200 IRQ_TYPE_LEVEL_HIGH>,
+			     <GIC_SPI 201 IRQ_TYPE_LEVEL_HIGH>;
+		interrupt-affinity = <&cpu0>, <&cpu1>;
+	};
+
+	timer {
+		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
+			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
+			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
+			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>;
+	};
+};
+
+/* CAN1/2 via the Extended TrustZone Peripherals Controller */
+
+&etzpc {
+
+	/* CAN1 */
+
+	m_can1: can@4400e000 {
+		compatible = "bosch,m_can";
+		reg = <0x4400e000 0x400>, <0x44011000 0x1400>;
+		reg-names = "m_can", "message_ram";
+		interrupts = <GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>,
+			     <GIC_SPI 21 IRQ_TYPE_LEVEL_HIGH>;
+		interrupt-names = "int0", "int1";
+		clocks = <&rcc CK_HSE>, <&rcc FDCAN_K>;
+		clock-names = "hclk", "cclk";
+		bosch,mram-cfg = <0x0 0 0 32 0 0 2 2>;
+		access-controllers = <&etzpc 62>;
+		status = "disabled";
+	};
+
+	/* CAN2 */
+
+	m_can2: can@4400f000 {
+		compatible = "bosch,m_can";
+		reg = <0x4400f000 0x400>, <0x44011000 0x2800>;
+		reg-names = "m_can", "message_ram";
+		interrupts = <GIC_SPI 20 IRQ_TYPE_LEVEL_HIGH>,
+			     <GIC_SPI 22 IRQ_TYPE_LEVEL_HIGH>;
+		interrupt-names = "int0", "int1";
+		clocks = <&rcc CK_HSE>, <&rcc FDCAN_K>;
+		clock-names = "hclk", "cclk";
+		bosch,mram-cfg = <0x1400 0 0 32 0 0 2 2>;
+		access-controllers = <&etzpc 62>;
+		status = "disabled";
+	};
+};
+
+/* SCMI/OPTEE include. */
+
+#include "stm32mp157a-nous-scmi.dtsi"
+
+/* DT-Bindings */
+
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/mfd/st,stpmic1.h>
 #include <dt-bindings/rtc/rtc-stm32.h>
@@ -44,23 +114,6 @@
 		stdout-path = "serial0:115200n8";
 	};
 
-	cpus {
-		cpu1: cpu@1 {
-			compatible = "arm,cortex-a7";
-			device_type = "cpu";
-			reg = <1>;
-			clocks = <&scmi_clk CK_SCMI_MPU>;
-			clock-names = "cpu";
-			operating-points-v2 = <&cpu0_opp_table>;
-		};
-	};
-
-	arm-pmu {
-		interrupts = <GIC_SPI 200 IRQ_TYPE_LEVEL_HIGH>,
-			     <GIC_SPI 201 IRQ_TYPE_LEVEL_HIGH>;
-		interrupt-affinity = <&cpu0>, <&cpu1>;
-	};
-
 	scmi_sram: sram@2ffff000 {
 		compatible = "mmio-sram";
 		reg = <0x2ffff000 0x1000>;
@@ -74,31 +127,6 @@
 		};
 	};
 
-	firmware {
-		optee {
-			compatible = "linaro,optee-tz";
-			method = "smc";
-		};
-
-		scmi: scmi {
-			compatible = "linaro,scmi-optee";
-			#address-cells = <1>;
-			#size-cells = <0>;
-			linaro,optee-channel-id = <0>;
-			shmem = <&scmi_shm>;
-
-			scmi_clk: protocol@14 {
-				reg = <0x14>;
-				#clock-cells = <1>;
-			};
-
-			scmi_reset: protocol@16 {
-				reg = <0x16>;
-				#reset-cells = <1>;
-			};
-		};
-	};
-
 	soc {
 		sram: sram@10000000 {
 			compatible = "mmio-sram";
@@ -106,32 +134,6 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges = <0 0x10000000 0x60000>;
-		};
-
-		m_can1: can@4400e000 {
-			compatible = "bosch,m_can";
-			reg = <0x4400e000 0x400>, <0x44011000 0x1400>;
-			reg-names = "m_can", "message_ram";
-			interrupts = <GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>,
-				     <GIC_SPI 21 IRQ_TYPE_LEVEL_HIGH>;
-			interrupt-names = "int0", "int1";
-			clocks = <&scmi_clk CK_SCMI_HSE>, <&rcc FDCAN_K>;
-			clock-names = "hclk", "cclk";
-			bosch,mram-cfg = <0x0 0 0 32 0 0 2 2>;
-			status = "disabled";
-		};
-
-		m_can2: can@4400f000 {
-			compatible = "bosch,m_can";
-			reg = <0x4400f000 0x400>, <0x44011000 0x2800>;
-			reg-names = "m_can", "message_ram";
-			interrupts = <GIC_SPI 20 IRQ_TYPE_LEVEL_HIGH>,
-				     <GIC_SPI 22 IRQ_TYPE_LEVEL_HIGH>;
-			interrupt-names = "int0", "int1";
-			clocks = <&scmi_clk CK_SCMI_HSE>, <&rcc FDCAN_K>;
-			clock-names = "hclk", "cclk";
-			bosch,mram-cfg = <0x1400 0 0 32 0 0 2 2>;
-			status = "disabled";
 		};
 	};
 
@@ -259,6 +261,12 @@
 		regulator-max-microvolt = <5000000>;
 		regulator-always-on;
 	};
+};
+
+/* DDR Performance Monitor */
+
+&ddrperfm {
+	status = "okay";
 };
 
 /* Pinout mapping */
