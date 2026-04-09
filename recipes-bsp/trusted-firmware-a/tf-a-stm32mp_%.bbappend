@@ -5,6 +5,7 @@ SRC_URI += " \
 	file://stm32mp157d-thor-fw-config.dts \
 	file://stm32mp157a-nous.dts \
 	file://stm32mp157a-nous-fw-config.dts \
+	file://bl2_plat_setup.patch;patch=1 \
 	file://stm32mp_def.patch;patch=1 \
 "
 

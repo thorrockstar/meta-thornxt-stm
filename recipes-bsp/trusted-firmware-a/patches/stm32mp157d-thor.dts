@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
 /*
- * Copyright (C) THOR Engineering GmbH 2022
+ * Copyright (C) THOR Engineering GmbH 2026
  *
  * Author: Roy Schneider <roy@thor.engineering> for THOR Engineering GmbH.
  *
@@ -16,7 +16,6 @@
 
 #include <dt-bindings/clock/stm32mp1-clksrc.h>
 #include <dt-bindings/power/stm32mp1-power.h>
-#include <dt-bindings/soc/st,stm32-etzpc.h>
 
 /*
  * DDR type: DDR3 / DDR3L
@@ -137,6 +136,10 @@
 	st,mem-speed = <DDR_MEM_SPEED>;
 	st,mem-size = <DDR_MEM_SIZE>;
 
+	vdd-supply = <&vdd_ddr>;
+	vtt-supply = <&vtt_ddr>;
+	vref-supply = <&vref_ddr>;
+
 	st,ctl-reg = <
 		DDR_MSTR
 		DDR_MRCTRL0
@@ -247,8 +250,8 @@
 	compatible = "st,stm32mp157d-thor-e2", "st,stm32mp157";
 
 	aliases {
-		serial0 = &uart4;
-		serial1 = &usart3;
+		serial0 = &uart4;   /* Debug console */
+		serial1 = &usart3;  /* Unsed auxiliary serial port. */
 	};
 
 	chosen {
@@ -267,7 +270,6 @@
 			reg = <1>;
 			clocks = <&rcc CK_MPU>;
 			clock-names = "cpu";
-			operating-points-v2 = <&cpu0_opp_table>;
 		};
 	};
 
@@ -391,7 +393,6 @@
 		interrupt-controller;
 		#interrupt-cells = <2>;
 		status = "okay";
-		secure-status = "okay";
 
 		regulators {
 			compatible = "st,stpmic1-regulators";
@@ -548,9 +549,13 @@
 
 &rcc {
 	compatible = "st,stm32mp1-rcc-secure", "st,stm32mp1-rcc", "syscon";
+	
 	st,hsi-cal;
 	st,csi-cal;
 	st,cal-sec = <60>;
+	
+	/* Clock Source Selection */
+	
 	st,clksrc = <
 		CLK_MPU_PLL1P
 		CLK_AXI_PLL2P
@@ -564,18 +569,19 @@
 	>;
 
 	st,clkdiv = <
-		1 /*MPU*/
-		0 /*AXI*/
-		0 /*MCU*/
-		1 /*APB1*/
-		1 /*APB2*/
-		1 /*APB3*/
-		1 /*APB4*/
-		2 /*APB5*/
-		23 /*RTC*/
-		0 /*MCO1*/
-		0 /*MCO2*/
-	>;
+		DIV(DIV_MPU, 1)
+		DIV(DIV_AXI, 0)
+		DIV(DIV_MCU, 0)
+		DIV(DIV_APB1, 1)
+		DIV(DIV_APB2, 1)
+		DIV(DIV_APB3, 1)
+		DIV(DIV_APB4, 1)
+		DIV(DIV_APB5, 2)
+		DIV(DIV_RTC, 23)
+		DIV(DIV_MCO1, 0)
+		DIV(DIV_MCO2, 0)
+
+	/* Peripheral Kernel Clock Selection */
 
 	st,pkcs = <
 		CLK_CKPER_HSE
