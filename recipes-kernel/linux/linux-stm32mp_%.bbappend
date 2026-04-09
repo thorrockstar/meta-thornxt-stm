@@ -21,8 +21,8 @@ do_configure:prepend() {
 }
 
 do_configure:append() {
-    cp ${WORKDIR}/stm32mp157a-nous.dts ${TMPDIR}/work-shared/stm32mp1-thor-e2/kernel-source/arch/arm/boot/dts/stm32mp157a-nous.dts
-    cp ${WORKDIR}/stm32mp157d-thor.dts ${TMPDIR}/work-shared/stm32mp1-thor-e2/kernel-source/arch/arm/boot/dts/stm32mp157d-thor.dts
+    cp ${WORKDIR}/stm32mp157a-nous.dts ${TMPDIR}/work-shared/stm32mp1-thor-e2/kernel-source/arch/arm/boot/dts/st/stm32mp157a-nous.dts
+    cp ${WORKDIR}/stm32mp157d-thor.dts ${TMPDIR}/work-shared/stm32mp1-thor-e2/kernel-source/arch/arm/boot/dts/st/stm32mp157d-thor.dts
 
     cp ${WORKDIR}/defconfig ${WORKDIR}/build/.config
 }
