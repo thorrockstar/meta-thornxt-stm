@@ -580,6 +580,7 @@
 		DIV(DIV_RTC, 23)
 		DIV(DIV_MCO1, 0)
 		DIV(DIV_MCO2, 0)
+	>;
 
 	/* Peripheral Kernel Clock Selection */
 
