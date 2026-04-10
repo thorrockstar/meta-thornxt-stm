@@ -1,7 +1,6 @@
 --- /dev/null
 +++ b/fdts/stm32mp1_thor_ddr_1x4Gb.dtsi
-@@ -0,0 +1,113 @@
-+
+@@ -0,0 +1,99 @@
 +/*
 + * DDR type: DDR3 / DDR3L
 + * DDR width: 16bits
@@ -13,9 +12,7 @@
 +
 +#define DDR_MEM_NAME	"DDR3-DDR3L 16bits 533000kHz"
 +#define DDR_MEM_SPEED	533000
-+#define DDR_MEM_SIZE	0x20000000 /* 512 MB */
-+
-+/*#define DDR_PHY_CAL_SKIP*/
++#define DDR_MEM_SIZE	0x20000000 /*512 MB*/
 +
 +#define DDR_MSTR 0x00041401
 +#define DDR_MRCTRL0 0x00000010
@@ -98,19 +95,8 @@
 +#define DDR_ODTCR 0x00010000
 +#define DDR_ZQ0CR1 0x00000038
 +#define DDR_DX0GCR 0x0000CE81
-+#define DDR_DX0DLLCR 0x40000000
-+#define DDR_DX0DQTR 0xFFFFFFFF
-+#define DDR_DX0DQSTR 0x3DB02000
 +#define DDR_DX1GCR 0x0000CE81
-+#define DDR_DX1DLLCR 0x40000000
-+#define DDR_DX1DQTR 0xFFFFFFFF
-+#define DDR_DX1DQSTR 0x3DB02000
 +#define DDR_DX2GCR 0x0000CE80
-+#define DDR_DX2DLLCR 0x40000000
-+#define DDR_DX2DQTR 0xFFFFFFFF
-+#define DDR_DX2DQSTR 0x3DB02000
 +#define DDR_DX3GCR 0x0000CE80
-+#define DDR_DX3DLLCR 0x40000000
-+#define DDR_DX3DQTR 0xFFFFFFFF
-+#define DDR_DX3DQSTR 0x3DB02000
 +
++#include "stm32mp15-ddr.dtsi"
