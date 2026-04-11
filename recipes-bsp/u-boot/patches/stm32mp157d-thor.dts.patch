@@ -1,5 +1,5 @@
 --- /dev/null
-+++ b/arch/arm/stm32mp157d-thor.dts
++++ b/arch/arm/dts/stm32mp157d-thor.dts
 @@ -0,0 +1,866 @@
 +// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
 +/*
