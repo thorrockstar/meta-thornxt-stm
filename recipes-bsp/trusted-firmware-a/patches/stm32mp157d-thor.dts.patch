@@ -1,6 +1,6 @@
 --- /dev/null	2026-04-10 09:17:36.938000228 +0200
 +++ b/fdts/stm32mp157d-thor.dts	2026-04-10 12:21:22.402031185 +0200
-@@ -0,0 +1,652 @@
+@@ -0,0 +1,650 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
 +/*
 + * Copyright (C) THOR Engineering GmbH 2026
@@ -300,9 +300,7 @@
 +		CLK_MPU_PLL1P
 +		CLK_AXI_PLL2P
 +		CLK_MCU_PLL3P
-+		CLK_PLL12_HSE
-+		CLK_PLL3_HSE
-+		CLK_PLL4_HSE
++		CLK_STGEN_HSE
 +		CLK_RTC_LSE
 +		CLK_MCO1_DISABLED
 +		CLK_MCO2_DISABLED
@@ -312,7 +310,6 @@
 +		CLK_ETH_PLL4P
 +		CLK_SDMMC12_PLL4P
 +		CLK_DSI_DSIPLL
-+		CLK_STGEN_HSE
 +		CLK_USBPHY_HSE
 +		CLK_SPI2S1_PLL3Q
 +		CLK_SPI2S23_PLL3Q
@@ -373,6 +370,7 @@
 +		pll4_vco_594Mhz: pll4-vco-594Mhz {
 +			src = <CLK_PLL4_HSE>;
 +			divmn = <3 98>;
++			frac = <0x0000>;
 +		};
 +	};
 +
