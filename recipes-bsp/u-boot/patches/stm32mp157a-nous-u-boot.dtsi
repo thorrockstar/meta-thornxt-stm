@@ -130,10 +130,13 @@
 				#address-cells = <1>;
 				#size-cells = <1>;
 
-#if defined(CONFIG_STM32MP15X_STM32IMAGE) || defined(CONFIG_SPL)
 				partition@0 {
-					label = "fsbl";
-					reg = <0x00000000 0x00200000>;
+					label = "fsbl1";
+					reg = <0x00000000 0x00100000>;
+				};
+				partition@100000 {
+					label = "fsbl2";
+					reg = <0x00100000 0x00100000>;
 				};
 				partition@200000 {
 					label = "ssbl1";
@@ -145,46 +148,8 @@
 				};
 				partition@600000 {
 					label = "UBI";
-					reg = <0x00600000 0x3fa00000>;
+					reg = <0x00600000 0x0FA00000>;
 				};
-#else
-				partition@0 {
-					label = "fsbl1";
-					reg = <0x00000000 0x00080000>;
-				};
-				partition@80000 {
-					label = "fsbl2";
-					reg = <0x00080000 0x00080000>;
-				};
-				partition@100000 {
-					label = "metadata1";
-					reg = <0x00100000 0x00080000>;
-				};
-				partition@180000 {
-					label = "metadata2";
-					reg = <0x00180000 0x00080000>;
-				};
-				partition@200000 {
-					label = "fip-a1";
-					reg = <0x00200000 0x00400000>;
-				};
-				partition@600000 {
-					label = "fip-a2";
-					reg = <0x00600000 0x00400000>;
-				};
-				partition@a00000 {
-					label = "fip-b1";
-					reg = <0x00a00000 0x00400000>;
-				};
-				partition@e00000 {
-					label = "fip-b2";
-					reg = <0x00e00000 0x00400000>;
-				};
-				partition@1200000 {
-					label = "UBI";
-					reg = <0x01200000 0x3ee00000>;
-				};
-#endif
 			};
 		};
 	};

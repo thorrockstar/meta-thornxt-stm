@@ -1,6 +1,6 @@
---- /dev/null
-+++ b/arch/arm/dts/stm32mp157d-thor.dts
-@@ -0,0 +1,866 @@
+--- /dev/null	2026-04-13 08:56:51.565002273 +0200
++++ b/arch/arm/dts/stm32mp157d-thor.dts	2026-04-13 16:58:08.154852889 +0200
+@@ -0,0 +1,796 @@
 +// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
 +/*
 + * Copyright (C) THOR Engineering GmbH 2026
@@ -11,7 +11,7 @@
 + */
 +/dts-v1/;
 +
-+#include "stm32mp151.dtsi"               /* dt-bindings/#? */
++#include "stm32mp153.dtsi"               /* dt-bindings/#? */
 +#include "stm32mp15xd.dtsi"              /* stm32mp15xd.dtsi */
 +#include "stm32mp15-pinctrl.dtsi"        /* Analogue, Ethernet, etc. */
 +#include "stm32mp15xxaa-pinctrl.dtsi"    /* GPIOA..Z */
@@ -21,33 +21,6 @@
 +#include <dt-bindings/gpio/gpio.h>
 +#include <dt-bindings/mfd/st,stpmic1.h>
 +#include <dt-bindings/soc/stm32-hdp.h>
-+
-+/* Define CPUs before SCMI include file. */
-+
-+/ {
-+	cpus {
-+		cpu1: cpu@1 {
-+			compatible = "arm,cortex-a7";
-+			device_type = "cpu";
-+			reg = <1>;
-+			clock-names = "cpu";
-+			operating-points-v2 = <&cpu0_opp_table>;
-+		};
-+	};
-+
-+	arm-pmu {
-+		interrupts = <GIC_SPI 200 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 201 IRQ_TYPE_LEVEL_HIGH>;
-+		interrupt-affinity = <&cpu0>, <&cpu1>;
-+	};
-+
-+	timer {
-+		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
-+			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
-+			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
-+			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>;
-+	};
-+};
 +
 +/* SCMI/OPTEE */
 +
@@ -73,34 +46,6 @@
 +		#size-cells = <1>;
 +		ranges;
 +		stdout-path = "serial0:115200n8";
-+	};
-+
-+	firmware {
-+		optee: optee {
-+			bootph-all;
-+			compatible = "linaro,optee-tz";
-+			method = "smc";
-+			interrupt-parent = <&intc>;
-+			interrupts = <GIC_PPI 15 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>;
-+		};
-+
-+		scmi: scmi {
-+			bootph-some-ram;
-+			compatible = "linaro,scmi-optee";
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			linaro,optee-channel-id = <0>;
-+
-+			scmi_clk: protocol@14 {
-+				reg = <0x14>;
-+				#clock-cells = <1>;
-+			};
-+
-+			scmi_reset: protocol@16 {
-+				reg = <0x16>;
-+				#reset-cells = <1>;
-+			};
-+		};
 +	};
 +
 +	/* RAM base address and size */
@@ -190,6 +135,10 @@
 +		/*enable-gpios = <&gpioe 13 0>;*/
 +		status = "okay";
 +
++		panel_input: endpoint {
++			remote-endpoint = <&ltdc_ep0_out>;
++		};
++
 +		display-timings {
 +			timing@0 {
 +				clock-frequency = <33011000>;
@@ -243,38 +192,6 @@
 +
 +&hdp {
 +	status = "disabled";
-+};
-+
-+/* Extended TrustZone Peripherals Controller */
-+
-+&etzpc {
-+	m_can1: can@4400e000 {
-+		compatible = "bosch,m_can";
-+		reg = <0x4400e000 0x400>, <0x44011000 0x1400>;
-+		reg-names = "m_can", "message_ram";
-+		interrupts = <GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 21 IRQ_TYPE_LEVEL_HIGH>;
-+		interrupt-names = "int0", "int1";
-+		clocks = <&rcc CK_HSE>, <&rcc FDCAN_K>;
-+		clock-names = "hclk", "cclk";
-+		bosch,mram-cfg = <0x0 0 0 32 0 0 2 2>;
-+		access-controllers = <&etzpc 62>;
-+		status = "disabled";
-+	};
-+
-+	m_can2: can@4400f000 {
-+		compatible = "bosch,m_can";
-+		reg = <0x4400f000 0x400>, <0x44011000 0x2800>;
-+		reg-names = "m_can", "message_ram";
-+		interrupts = <GIC_SPI 20 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 22 IRQ_TYPE_LEVEL_HIGH>;
-+		interrupt-names = "int0", "int1";
-+		clocks = <&rcc CK_HSE>, <&rcc FDCAN_K>;
-+		clock-names = "hclk", "cclk";
-+		bosch,mram-cfg = <0x1400 0 0 32 0 0 2 2>;
-+		access-controllers = <&etzpc 62>;
-+		status = "disabled";
-+	};
 +};
 +
 +/* Pinout mapping */
@@ -570,6 +487,16 @@
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&ltdc_pins_mx_z>;
 +	status = "okay";
++	
++	port {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		ltdc_ep0_out: endpoint@0 {
++			reg = <0>;
++			remote-endpoint = <&panel_input>;
++		};
++	};
 +};
 +
 +/* Ethernet interface (10/100). */
@@ -709,21 +636,24 @@
 +				regulator-always-on;
 +			};
 +
-+			vref_ddr: vref_ddr {
++			vref_ddr: vref-ddr {
 +				regulator-name = "vref_ddr";
 +				regulator-always-on;
 +			};
 +
 +			bst_out: boost {
 +				regulator-name = "bst_out";
++				interrupts = <IT_OCP_BOOST 0>;
 +			};
 +
-+			vbus_otg: pwr_sw1 {
++			vbus_otg: pwr-sw1 {
 +				regulator-name = "vbus_otg";
++				interrupts = <IT_OCP_OTG 0>;
 +			};
 +
-+			vbus_sw: pwr_sw2 {
++			vbus_sw: pwr-sw2 {
 +				regulator-name = "vbus_sw";
++				interrupts = <IT_OCP_SWOUT 0>;
 +				regulator-active-discharge = <1>;
 +			};
 +		};
