@@ -8,5 +8,6 @@ SRC_URI += " \
 	file://stm32mp157a-nous-fw-config.dts.patch \
 	file://bl2_plat_setup.patch \
 	file://stm32mp_def.patch \
+	file://stm32mp_pmic.patch \
 "
 
