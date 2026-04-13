@@ -150,20 +150,11 @@ GLIBC_GENERATE_LOCALES += "en_US.UTF-8"
 IMAGE_LINGUAS += "en-us"  
 ```
 
-**VERY IMPORTANT**
-
-10/ There is an issue with patching the file "st-machine-extlinux-config-stm32mp.inc" inside the ST-Layer at "meta-st-stm32mp/conf/machine/include".
-
-    So please copy the file "st-machine-extlinux-config-stm32mp.inc"
-    from the THOR-layer at "meta-thornxt-stm/conf/machine/include"
-    to the STM-layer at "meta-st-stm32mp/conf/machine/include"
-    and overwrite the original file.
-
 **IMPORTANT**
 
-11/ Double check that in the kernel configuration **'General Setup->Timers subsystem->Timer tick handling'** is set to **'Periodic timer ticks'**. This should be done by the 'defconfig' but double check before building because it is cruicial.
+10/ Double check that in the kernel configuration **'General Setup->Timers subsystem->Timer tick handling'** is set to **'Periodic timer ticks'**. This should be done by the 'defconfig' but double check before building because it is cruicial.
 
-12/ Build Thor image
+11/ Build Thor image
 
     bitbake thor-e-image
 
