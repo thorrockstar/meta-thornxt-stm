@@ -50,19 +50,6 @@
 		stdout-path = "serial0:115200n8";
 	};
 
-	scmi_sram: sram@2ffff000 {
-		compatible = "mmio-sram";
-		reg = <0x2ffff000 0x1000>;
-		#address-cells = <1>;
-		#size-cells = <1>;
-		ranges = <0 0x2ffff000 0x1000>;
-
-		scmi_shm: scmi_shm@0 {
-			compatible = "arm,scmi-shmem";
-			reg = <0 0x80>;
-		};
-	};
-
 	soc {
 		sram: sram@10000000 {
 			compatible = "mmio-sram";
@@ -111,7 +98,7 @@
 			no-map;
 		};
 
-		mcu_rsc_table: mcu_rsc_table@10048000 {
+		mcu_rsc_table: mcu-rsc-table@10048000 {
 			compatible = "shared-dma-pool";
 			reg = <0x10048000 0x8000>;
 			no-map;
@@ -133,11 +120,21 @@
 			reg = <0xd4000000 0x4000000>;
 			no-map;
 		};
+
+		/* Global autoconfigured region for contiguous allocations */
+		
+		linux,cma {
+			compatible = "shared-dma-pool";
+			reusable;
+			size = <0x8000000>;
+			alignment = <0x2000>;
+			linux,cma-default;
+		};
 	};
 
 	/* Support for SSM2518 audio codec. */
 
-	sound {
+	sound: sound {
 		compatible = "audio-graph-card";
 		label = "ssm2518-hifi";
 		
@@ -151,7 +148,7 @@
 
 	/* Simple display panel */
 
-	panel {
+	panel: panel {
 		compatible = "eastrising,ertft050", "simple-panel";
 		power-supply = <&panel_reg>;
 		status = "okay";
@@ -1103,12 +1100,12 @@
 				interrupts = <IT_OCP_BOOST 0>;
 			};
 
-			vbus_otg: pwr_sw1 {
+			vbus_otg: pwr-sw1 {
 				regulator-name = "vbus_otg";
 				interrupts = <IT_OCP_OTG 0>;
 			};
 
-			vbus_sw: pwr_sw2 {
+			vbus_sw: pwr-sw2 {
 				regulator-name = "vbus_sw";
 				interrupts = <IT_OCP_SWOUT 0>;
 				regulator-active-discharge = <1>;
