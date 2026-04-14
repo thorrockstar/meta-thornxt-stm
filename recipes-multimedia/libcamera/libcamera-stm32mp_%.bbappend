@@ -1,2 +1,2 @@
-INSANE_SKIP:${PN} += "32bit-time"
+INSANE_SKIP += "32bit-time"
 
