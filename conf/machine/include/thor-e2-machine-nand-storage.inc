@@ -42,13 +42,6 @@ UBINIZE_ARGS_nand_4_256_1024 = "--min-io-size 2048 --peb-size 128KiB --sub-page-
 # Set extra size required for UBIFS volume size (KiB)
 EXTRA_UBIFS_SIZE_nand_4_256_1024 = "2304"
 
-# UBI Args for NAND by default Micron MT29F2G08ABAEAWP
-# LEB = BLOCK_SIZE - (2 * page size): 128*1024 - (2*2048)
-MKUBIFS_ARGS:nand_4_256 = "--min-io-size 2048 --leb-size 126976 --max-leb-cnt 2048 --space-fixup"
-UBINIZE_ARGS:nand_4_256 = "--min-io-size 2048 --peb-size 128KiB --sub-page-size 2048 --vid-hdr-offset 2048"
-# Set extra size required for UBIFS volume size (KiB)
-EXTRA_UBIFS_SIZE:nand_4_256 = "2304"
-
 # ------------------------------------------
 # -------- nand-4-256-512 ------------------
 # UBI Args for SPI NAND by default on MB1262 (Micron MT29F2G01ABA) 256MB

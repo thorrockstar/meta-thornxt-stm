@@ -6,12 +6,9 @@ require conf/machine/include/st-machine-features-stm32mp.inc
 require conf/machine/include/st-machine-flashlayout-stm32mp.inc
 require conf/machine/include/st-machine-flashlayout-deleteall-stm32mp.inc
 require conf/machine/include/st-machine-flashlayout-extensible-stm32mp.inc
-require conf/machine/include/thor-e2-machine-image-partition-stm32mp.inc
+require conf/machine/include/st-machine-image-partition-stm32mp.inc
 require conf/machine/include/st-machine-storage-device-stm32mp.inc
 require conf/machine/include/st-machine-sdk-stm32mp.inc
-
-# Remove unwanted M4 examples.
-M4COPRO_IMAGE_INSTALL:remove = '${M4COPRO_LIST}'
 
 # Define specific common layer name
 MACHINEOVERRIDES =. "stm32mpcommon:"
@@ -198,7 +195,7 @@ ST_DEVICE_OVERLAY_ADDONS ??= ""
 # =========================================================================
 # Flashlayout configuration
 # =========================================================================
-ENABLE_FLASHLAYOUT_CONFIG_FWUP ?= "0"
+ENABLE_FLASHLAYOUT_CONFIG_FWUP ?= "${@bb.utils.contains('MACHINE_FEATURES', 'fw-update', '1', '0', d)}"
 
 # =========================================================================
 # Image
@@ -207,9 +204,9 @@ ENABLE_FLASHLAYOUT_CONFIG_FWUP ?= "0"
 IMAGE_ROOTFS_ALIGNMENT ?= "4"
 
 # Enable licence summary and configure License content generation
-ENABLE_IMAGE_LICENSE_SUMMARY ?= "0"
+ENABLE_IMAGE_LICENSE_SUMMARY ?= "1"
 # Enable cve summary
-ENABLE_IMAGE_CVE_SUMMARY ?= "0"
+ENABLE_IMAGE_CVE_SUMMARY ?= "1"
 
 ST_MAIN_COMPONENTS:stm32mp1common = "tf-a-stm32mp, optee-os-stm32mp, u-boot-stm32mp, linux-stm32mp"
 ST_MAIN_COMPONENTS:stm32mp2common = "tf-a-stm32mp, tf-m-stm32mp, optee-os-stm32mp, u-boot-stm32mp, linux-stm32mp"
@@ -438,13 +435,13 @@ TF_A_SIGN_SUFFIX ?= "${@bb.utils.contains('SIGN_ENABLE', '1', '${SIGN_SUFFIX}', 
 TF_A_ENCRYPT_SUFFIX ?= "${@bb.utils.contains('ENCRYPT_ENABLE', '1', '${ENCRYPT_SUFFIX}', '', d)}"
 
 # Configure TF-A to build the metadata binary
-TF_A_ENABLE_METADATA ?= "0"
+TF_A_ENABLE_METADATA ?= "${@bb.utils.contains('MACHINE_FEATURES', 'fw-update', '1', '0', d)}"
 TF_A_METADATA_BINARY ?= "metadata.bin"
 
 # Configure the default MTD_START_OFFSET
-TF_A_MTD_START_OFFSET_NAND    ?= "0x00200000"
-TF_A_MTD_START_OFFSET_NOR     ?= "0x00080000"
-TF_A_MTD_START_OFFSET_SPINAND ?= "0x00200000"
+TF_A_MTD_START_OFFSET_NAND    ?= "${@bb.utils.contains('ENABLE_FLASHLAYOUT_CONFIG_FWUP', '0', '0x00100000', '0x00200000', d)}"
+TF_A_MTD_START_OFFSET_NOR     ?= "${@bb.utils.contains('ENABLE_FLASHLAYOUT_CONFIG_FWUP', '0', '0x00080000', '0x00100000', d)}"
+TF_A_MTD_START_OFFSET_SPINAND ?= "${@bb.utils.contains('ENABLE_FLASHLAYOUT_CONFIG_FWUP', '0', '0x00100000', '0x00200000', d)}"
 
 ST_TF_A_DEBUG_TRACE ?= "${@bb.utils.contains('ST_DEBUG_TRACE', '1', '1', '0', d)}"
 
