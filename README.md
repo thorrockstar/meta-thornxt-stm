@@ -125,13 +125,13 @@ BLAYERS_NON_REMOVABLE ?= " \
     gnome-text-editor conf/local.conf
 
 ```
-MACHINE ??= "stm32mp1-thor-e2"  
+MACHINE = "stm32mp1-thor-e2"  
 
-PACKAGE_CLASSES ?= "package_rpm"  
+PACKAGE_CLASSES = "package_rpm"  
 
-USER_CLASSES ?= "buildstats"  
+USER_CLASSES = "buildstats"  
 
-DISTRO ?= "thor-stm"  
+DISTRO = "thor-stm"  
 
 ACCEPT_EULA_$MACHINE = "1"  
 
