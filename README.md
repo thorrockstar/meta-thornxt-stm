@@ -42,13 +42,11 @@ Requisites
 
 Build has been tested under Ubuntu 24.04 LTS. Anyway you need to install these required packages:
 
-    $ sudo apt install build-essential chrpath cpio debianutils diffstat file gawk gcc git iputils-ping libacl1 liblz4-tool locales python3 python3-git python3-jinja2 python3-pexpect python3-pip python3-subunit socat texinfo unzip wget xz-utils zstd
+    sudo apt install build-essential chrpath cpio debianutils diffstat file gawk gcc git iputils-ping libacl1 liblz4-tool locales python3 python3-git python3-jinja2 python3-pexpect python3-pip python3-subunit socat texinfo unzip wget xz-utils zstd
 
-    $ sudo locale-gen en_US.UTF-8
+    sudo locale-gen en_US.UTF-8
 
-    $ sudo apt install fonts-freefont-otf latexmk tex-gyre texlive-fonts-extra texlive-fonts-recommended texlive-lang-all texlive-latex-extra texlive-latex-recommended texlive-xetex
-
-    $ sudo apt install git librsvg2-bin locales make python3-saneyaml python3-sphinx-rtd-theme sphinx
+    sudo apt install git librsvg2-bin locales make python3-saneyaml python3-sphinx-rtd-theme sphinx
 
 
 
