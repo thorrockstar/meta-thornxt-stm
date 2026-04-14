@@ -118,9 +118,7 @@ BLAYERS_NON_REMOVABLE ?= " \
 "
 ```
 
-9/ Edit local.conf to specify the machine, location of source archived, package type (rpm, deb or ipk)
-Pick one MACHINE name from the "Supported SoCs / MACHINE names" chapter above
-and edit the "local.conf" file. Here is an example:  
+9/ Edit local.conf by appending the block below at the very end of the file.
 
 **Make sure that you have no white spaces left to "MACHINE ??=" and the other variables when editing the text block.**
 
