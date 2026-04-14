@@ -127,10 +127,6 @@ BLAYERS_NON_REMOVABLE ?= " \
 ```
 MACHINE = "stm32mp1-thor-e2"  
 
-PACKAGE_CLASSES = "package_rpm"  
-
-USER_CLASSES = "buildstats"  
-
 DISTRO = "thor-stm"  
 
 ACCEPT_EULA_$MACHINE = "1"  
