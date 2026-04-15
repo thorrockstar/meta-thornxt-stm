@@ -808,8 +808,8 @@
 +/* Internal SRAM. */
 +
 +&sram4 {
-+	dcmi_pool: dcmi-pool@0 {
-+		reg = <0x0 0x8000>;
++	dma_pool: dma_pool@0 {
++		reg = <0x50000 0x10000>;
 +		pool;
 +	};
 +};

@@ -254,12 +254,6 @@
 	};
 };
 
-/* Random Number generator */
-
-&rng1 {
-	status = "okay";
-};
-
 /* Cyclic Redundancy Check (CRC) unit */
 
 &crc1 {
@@ -304,6 +298,11 @@
 &iwdg1 {
 	timeout-sec = <32>;
 	status = "okay";
+};
+
+&iwdg2 {
+	timeout-sec = <32>;
+	status = "disabled";
 };
 
 /* Oscilator calibration. */
@@ -607,7 +606,7 @@
 
 	/* Hardware Number Random Generator */
 
-	DECPROT(STM32MP1_ETZPC_RNG1_ID, DECPROT_S_RW, DECPROT_UNLOCK)
+	DECPROT(STM32MP1_ETZPC_RNG1_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
 
 	/* Hardware Hash */
 
@@ -687,12 +686,11 @@
 
 	/* Internal SRAM memory */
 	
-	DECPROT(STM32MP1_ETZPC_BKPSRAM_ID, DECPROT_S_RW, DECPROT_LOCK)
+	DECPROT(STM32MP1_ETZPC_BKPSRAM_ID, DECPROT_S_RW, DECPROT_UNLOCK)
 	
-	/* TrustZone security */
+	/* Watchdog */
 	
-	/*DECPROT(STM32MP1_ETZPC_IWDG1_ID, DECPROT_S_RW, DECPROT_LOCK)*/
-	
+	DECPROT(STM32MP1_ETZPC_IWDG1_ID, DECPROT_S_RW, DECPROT_UNLOCK)	
 	>;
 };
 
