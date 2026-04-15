@@ -15,6 +15,10 @@
 	};
 };
 
+&ltdc {
+	clocks = <&rcc LTDC_PX>, <&scmi_clk CK_SCMI_HSE>, <&rcc LTDC_R>;
+};
+
 &cpu0 {
 	clocks = <&scmi_clk CK_SCMI_MPU>;
 };

@@ -194,8 +194,6 @@
 /* Pinout mapping */
 
 &pinctrl {
-	u-boot,dm-pre-reloc;
-
 	/* Pins for the CAN1 interface. */
 	
 	m_can1_pins_z: m-can1-0 {
@@ -378,7 +376,6 @@
 };
 
 &pinctrl_z {
-	u-boot,dm-pre-reloc;
 };
 
 /* Activate the build-in RTC. */
@@ -390,7 +387,6 @@
 /* SPI for display initialization */
 
 &spi5 {
-	u-boot,dm-spl;
 	pinctrl-names = "default", "sleep";
 	pinctrl-0 = <&spi5_pins_mx_z>;
 	pinctrl-1 = <&spi5_sleep_pins_mx_z>;

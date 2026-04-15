@@ -464,9 +464,3 @@
 	};
 };
 
-/* Random Number Generator */
-
-&rng1 {
-	status = "okay";
-};
-

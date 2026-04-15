@@ -50,16 +50,16 @@
 		stdout-path = "serial0:115200n8";
 	};
 
-	soc {
-		sram: sram@10000000 {
-			compatible = "mmio-sram";
-			reg = <0x10000000 0x60000>;
-			#address-cells = <1>;
-			#size-cells = <1>;
-			ranges = <0 0x10000000 0x60000>;
+	cpus {
+		cpu0: cpu@0 {
+			clock-frequency = <650000000>;
+		};
+		
+		cpu1: cpu@1 {
+			clock-frequency = <650000000>;
 		};
 	};
-
+	
 	/* RAM base address and size */
 
 	memory@c0000000 {
@@ -130,7 +130,7 @@
 			alignment = <0x2000>;
 			linux,cma-default;
 		};
-};
+	};
 
 	/* Support for SSM2518 audio codec. */
 
@@ -796,16 +796,6 @@
 	status = "okay";
 };
 
-/* DMA */
-
-&dma1 {
-	sram = <&dma_pool>;
-};
-
-&dma2 {
-	sram = <&dma_pool>;
-};
-
 /* Device temperature monitoring. */
 
 &dts {
@@ -814,9 +804,9 @@
 
 /* Internal SRAM. */
 
-&sram {
-	dma_pool: dma_pool@0 {
-		reg = <0x50000 0x10000>;
+&sram4 {
+	dcmi_pool: dcmi-pool@0 {
+		reg = <0x0 0x8000>;
 		pool;
 	};
 };
@@ -1134,13 +1124,6 @@
 	status = "okay";
 };
 
-/* Watchdog */
-
-&iwdg2 {
-	timeout-sec = <32>;
-	status = "okay";
-};
-
 /* Cortex M4 coprocessor. */
 
 &m4_rproc {
@@ -1159,12 +1142,6 @@
 &pwr_regulators {
 	vdd-supply = <&vdd>;
 	vdd_3v3_usbfs-supply = <&vdd_usb>;
-};
-
-/* Hardware random numbers generator. */
-
-&rng1 {
-	status = "okay";
 };
 
 /* Audio controller */
@@ -1297,5 +1274,18 @@
 		compatible = "usb-a-connector";
 		vbus-supply = <&v3v3>;
 	};
+};
+
+/* Watchdog */
+
+&iwdg2 {
+	timeout-sec = <32>;
+	status = "okay";
+};
+
+/* Random Number generator */
+
+&rng1 {
+	status = "okay";
 };
 

@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/arch/arm/dts/stm32mp157a-nous.dts
-@@ -0,0 +1,796 @@
+@@ -0,0 +1,792 @@
 +// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
 +/*
 + * Copyright (C) THOR Engineering GmbH 2026
@@ -197,8 +197,6 @@
 +/* Pinout mapping */
 +
 +&pinctrl {
-+	u-boot,dm-pre-reloc;
-+
 +	/* Pins for the CAN1 interface. */
 +	
 +	m_can1_pins_z: m-can1-0 {
@@ -381,7 +379,6 @@
 +};
 +
 +&pinctrl_z {
-+	u-boot,dm-pre-reloc;
 +};
 +
 +/* Activate the build-in RTC. */
@@ -393,7 +390,6 @@
 +/* SPI for display initialization */
 +
 +&spi5 {
-+	u-boot,dm-spl;
 +	pinctrl-names = "default", "sleep";
 +	pinctrl-0 = <&spi5_pins_mx_z>;
 +	pinctrl-1 = <&spi5_sleep_pins_mx_z>;
