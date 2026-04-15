@@ -6,7 +6,7 @@ require conf/machine/include/st-machine-features-stm32mp.inc
 require conf/machine/include/st-machine-flashlayout-stm32mp.inc
 require conf/machine/include/st-machine-flashlayout-deleteall-stm32mp.inc
 require conf/machine/include/st-machine-flashlayout-extensible-stm32mp.inc
-require conf/machine/include/st-machine-image-partition-stm32mp.inc
+require conf/machine/include/thor-e2-machine-image-partition-stm32mp.inc
 require conf/machine/include/st-machine-storage-device-stm32mp.inc
 require conf/machine/include/st-machine-sdk-stm32mp.inc
 
