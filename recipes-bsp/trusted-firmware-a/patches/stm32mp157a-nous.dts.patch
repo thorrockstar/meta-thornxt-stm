@@ -1,6 +1,6 @@
 --- /dev/null	2026-04-10 09:17:36.938000228 +0200
 +++ b/fdts/stm32mp157a-nous.dts	2026-04-10 12:21:22.402031185 +0200
-@@ -0,0 +1,460 @@
+@@ -0,0 +1,458 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
 +/*
 + * Copyright (C) THOR Engineering GmbH 2026
@@ -455,9 +455,7 @@
 +	};
 +};
 +
-+
-+
-+
-+
-+
++&rng1 {
++	status = "okay";
++};
 +
