@@ -1,10 +1,18 @@
 --- a/drivers/spi/spidev.c
 +++ b/drivers/spi/spidev.c
-@@ -744,6 +744,7 @@
+@@ -716,6 +716,7 @@
+ 	{ .name = "spi-authenta" },
+ 	{ .name = "em3581" },
+ 	{ .name = "si3210" },
++	{ .name = "thore2" },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(spi, spidev_spi_ids);
+@@ -744,6 +745,7 @@
  	{ .compatible = "rohm,bh2228fv", .data = &spidev_of_check },
  	{ .compatible = "rohm,dh2228fv", .data = &spidev_of_check },
  	{ .compatible = "semtech,sx1301", .data = &spidev_of_check },
-+	{ .compatible = "linux,spidev", .data = &spidev_of_check },
++	{ .compatible = "thor,thore2", .data = &spidev_of_check },
  	{ .compatible = "silabs,em3581", .data = &spidev_of_check },
  	{ .compatible = "silabs,si3210", .data = &spidev_of_check },
  	{},

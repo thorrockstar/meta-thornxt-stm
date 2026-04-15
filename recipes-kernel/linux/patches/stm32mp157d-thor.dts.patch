@@ -152,7 +152,7 @@
 +	/* Simple display panel */
 +
 +	panel: panel {
-+		compatible = "hifaycx,rd570", "simple-panel";
++		compatible = "hifaycx,rd570", "panel-simple";
 +		power-supply = <&panel_reg>;
 +		status = "okay";
 +
@@ -657,7 +657,7 @@
 +	/* Make the SPI available in user-space. */
 +
 +        spidev@0 {
-+                compatible = "linux,spidev";
++                compatible = "thor,thore2";
 +                reg = <0>; /* CS #0 */
 +                spi-max-frequency = <10000000>;
 +        };
