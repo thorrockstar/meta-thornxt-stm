@@ -5,7 +5,7 @@
  		panic();
  	}
 -
-+#if 0
++#if 0 /* Prevents power sources from being turned on. */
  	if (stpmic1_powerctrl_on() < 0) {
  		panic();
  	}

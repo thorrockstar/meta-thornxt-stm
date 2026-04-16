@@ -30,7 +30,7 @@
 +
 +/ {
 +	model = "THOR Engineering E2-Board";
-+	compatible = "st,stm32mp157d-thor-e2", "st,stm32mp157";
++	compatible = "st,stm32mp157d-thor", "st,stm32mp157";
 +
 +	aliases {
 +		ethernet0 = &ethernet0;

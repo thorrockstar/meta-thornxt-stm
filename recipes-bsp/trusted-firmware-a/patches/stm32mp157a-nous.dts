@@ -22,8 +22,8 @@
 /* Board definition */
 
 / {
-	model = "THOR Engineering E2-Board";
-	compatible = "st,stm32mp157a-thor-e2", "st,stm32mp157";
+	model = "THOR Engineering Nous-X-Board";
+	compatible = "st,stm32mp157a-nous", "st,stm32mp157";
 
 	memory@c0000000 {
 		device_type = "memory";
@@ -251,7 +251,7 @@
 
 &iwdg1 {
 	timeout-sec = <32>;
-	status = "okay";
+	status = "disabled";
 };
 
 /* Declare the MCU internal power regulator. */

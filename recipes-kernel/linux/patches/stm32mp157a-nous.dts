@@ -27,8 +27,8 @@
 /* Board description */
 
 / {
-	model = "THOR Engineering E2-Board";
-	compatible = "st,stm32mp157a-thor-e2", "st,stm32mp157";
+	model = "THOR Engineering Nous-X-Board";
+	compatible = "st,stm32mp157a-nous", "st,stm32mp157";
 
 	aliases {
 		ethernet0 = &ethernet0;
@@ -153,6 +153,7 @@
 		label = "ertft050";
 		power-supply = <&panel_reg>;
 		status = "okay";
+		data-mapping = "rgb24";
 
 		port@0 {
 			reg = <0>;
@@ -1291,13 +1292,6 @@
 		compatible = "usb-a-connector";
 		vbus-supply = <&v3v3>;
 	};
-};
-
-/* Watchdog */
-
-&iwdg2 {
-	timeout-sec = <32>;
-	status = "okay";
 };
 
 /* Random Number generator */

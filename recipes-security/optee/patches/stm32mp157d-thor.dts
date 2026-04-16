@@ -28,7 +28,7 @@
 
 / {
 	model = "THOR Engineering E2-Board";
-	compatible = "st,stm32mp157d-thor-e2", "st,stm32mp157";
+	compatible = "st,stm32mp157d-thor", "st,stm32mp157";
 
 	aliases {
 		serial0 = &uart4;
@@ -191,7 +191,7 @@
 
 &iwdg1 {
 	timeout-sec = <32>;
-	status = "okay";
+	status = "disabled";
 };
 
 &iwdg2 {

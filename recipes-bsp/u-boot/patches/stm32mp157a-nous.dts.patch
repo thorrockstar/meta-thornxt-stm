@@ -29,8 +29,8 @@
 +/* Board description */
 +
 +/ {
-+	model = "THOR Engineering E2-Board";
-+	compatible = "st,stm32mp157d-thor-e2", "st,stm32mp157";
++	model = "THOR Engineering Nous-X-Board";
++	compatible = "st,stm32mp157a-nous", "st,stm32mp157";
 +
 +	aliases {
 +		ethernet0 = &ethernet0;

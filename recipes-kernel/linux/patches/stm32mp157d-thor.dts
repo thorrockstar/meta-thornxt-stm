@@ -28,7 +28,7 @@
 
 / {
 	model = "THOR Engineering E2-Board";
-	compatible = "st,stm32mp157d-thor-e2", "st,stm32mp157";
+	compatible = "st,stm32mp157d-thor", "st,stm32mp157";
 
 	aliases {
 		ethernet0 = &ethernet0;
@@ -153,6 +153,7 @@
 		label = "hifaycx_rd570";
 		power-supply = <&panel_reg>;
 		status = "okay";
+		data-mapping = "rgb24";
 
 		port@0 {
 			reg = <0>;
@@ -931,7 +932,7 @@
 
 /* I2C for sending commands to the audio codec. */
 
-&i2c2 {
+&i2c2 {	
 	pinctrl-names = "default", "sleep";
 	pinctrl-0 = <&i2c2_pins_mx_z>;
 	pinctrl-1 = <&i2c2_sleep_pins_mx_z>;
@@ -1291,13 +1292,6 @@
 		compatible = "usb-a-connector";
 		vbus-supply = <&v3v3>;
 	};
-};
-
-/* Watchdog */
-
-&iwdg2 {
-	timeout-sec = <32>;
-	status = "okay";
 };
 
 /* Random Number generator */

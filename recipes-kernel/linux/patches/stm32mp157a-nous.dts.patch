@@ -1,6 +1,6 @@
 --- a/dev/null	2026-04-13 20:53:12.625000009 +0200
-+++ b/arch/arm/boot/dts/st/stm32mp157a-nous.dts	2026-04-13 21:22:46.389232700 +0200
-@@ -0,0 +1,1308 @@
++++ b/arch/arm/boot/dts/st/stm32mp157a-nous.dts	2026-04-11 01:31:22.260109880 +0200
+@@ -0,0 +1,1302 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
 +/*
 + * Copyright (C) THOR Engineering GmbH 2022
@@ -30,8 +30,8 @@
 +/* Board description */
 +
 +/ {
-+	model = "THOR Engineering E2-Board";
-+	compatible = "st,stm32mp157a-thor-e2", "st,stm32mp157";
++	model = "THOR Engineering Nous-X-Board";
++	compatible = "st,stm32mp157a-nous", "st,stm32mp157";
 +
 +	aliases {
 +		ethernet0 = &ethernet0;
@@ -156,6 +156,7 @@
 +		label = "ertft050";
 +		power-supply = <&panel_reg>;
 +		status = "okay";
++		data-mapping = "rgb24";
 +
 +		port@0 {
 +			reg = <0>;
@@ -1294,13 +1295,6 @@
 +		compatible = "usb-a-connector";
 +		vbus-supply = <&v3v3>;
 +	};
-+};
-+
-+/* Watchdog */
-+
-+&iwdg2 {
-+	timeout-sec = <32>;
-+	status = "okay";
 +};
 +
 +/* Random Number generator */
