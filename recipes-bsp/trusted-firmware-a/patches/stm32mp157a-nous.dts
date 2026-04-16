@@ -92,8 +92,7 @@
 
 	uart4_pins_mx_z: uart4-0 {
 		pins1 {
-			pinmux = <STM32_PINMUX('C', 8, AF6)>, /* UART4_TX */
-			         <STM32_PINMUX('A', 13, AF14)>; /* Errata! Dummy for using PA13 in the kernel as GPO after being used by ROMBoot as Boot failure indicator! */
+			pinmux = <STM32_PINMUX('C', 8, AF6)>; /* UART4_TX */
 			bias-disable;
 			drive-push-pull;
 			slew-rate = <0>;
