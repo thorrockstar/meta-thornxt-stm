@@ -267,7 +267,7 @@
 +/* Clock and Reset Generator */
 +
 +&rcc {
-+	compatible = "st,stm32mp1-rcc-secure", "st,stm32mp1-rcc", "syscon";
++	status = "okay";
 +	
 +	/* Clock Source Selection */
 +	

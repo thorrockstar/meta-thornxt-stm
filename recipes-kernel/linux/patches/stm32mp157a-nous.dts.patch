@@ -1,6 +1,6 @@
 --- a/dev/null	2026-04-13 20:53:12.625000009 +0200
 +++ b/arch/arm/boot/dts/st/stm32mp157a-nous.dts	2026-04-13 21:22:46.389232700 +0200
-@@ -0,0 +1,1291 @@
+@@ -0,0 +1,1308 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
 +/*
 + * Copyright (C) THOR Engineering GmbH 2022
@@ -137,7 +137,7 @@
 +
 +	/* Support for SSM2518 audio codec. */
 +
-+	sound: sound {
++	sound {
 +		compatible = "audio-graph-card";
 +		label = "ssm2518-hifi";
 +		
@@ -151,8 +151,9 @@
 +
 +	/* Simple display panel */
 +
-+	panel: panel {
-+		compatible = "eastrising,ertft050", "panel-simple";
++	panel {
++		compatible = "thor,thor_nousx", "panel-dpi";
++		label = "ertft050";
 +		power-supply = <&panel_reg>;
 +		status = "okay";
 +
@@ -164,6 +165,22 @@
 +			panel_input: endpoint {
 +				remote-endpoint = <&ltdc_ep0_out>;
 +			};
++		};
++		
++		panel-timing {
++			clock-frequency = <33333333>;
++			hactive = <800>;
++			vactive = <480>;
++			hfront-porch = <40>;
++			hback-porch = <40>;
++			hsync-len = <48>;
++			vfront-porch = <13>;
++			vback-porch = <29>;
++			vsync-len = <3>;
++			hsync-active = <0>;
++			vsync-active = <0>;
++			de-active = <1>;
++			pixelclk-active = <1>;
 +		};
 +	};
 +
