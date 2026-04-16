@@ -23,7 +23,7 @@
  	if (IS_ENABLED(CONFIG_CMD_BMP)) {
  		/* display BMP if available */
  		if (cfg->bmp) {
-@@ -1473,14 +1479,27 @@
+@@ -1473,11 +1479,24 @@
  		}
  	}
  
@@ -40,15 +40,12 @@
  		return;
  
 -	err = menu_get_choice(m, &choice);
-+	err = 1;
-+	menu_default_choice(m, &choice);
++	menu_default_set(m, "1");
++	err = menu_default_choice(m, &choice);
++	
++	if (err != 1) {
++		err = menu_get_choice(m, &choice);
++	}
  
  	menu_destroy(m);
  
-+	if (CONFIG_IS_ENABLED(CMD_CLS))
-+		run_command("cls", 0);
-+
-+
- 	/*
- 	 * err == 1 means we got a choice back from menu_get_choice.
- 	 *
