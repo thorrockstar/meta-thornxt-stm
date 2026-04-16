@@ -685,9 +685,9 @@
 +	
 +	/* Reference clock used by the Arm® Cortex®-A7 generic timer for its counters, including the system tick generation. */
 +	
-+	DECPROT(STM32MP1_ETZPC_STGENC_ID, DECPROT_S_RW, DECPROT_LOCK)
++	DECPROT(STM32MP1_ETZPC_STGENC_ID, DECPROT_S_RW, DECPROT_UNLOCK)
 +
-+	/* Internal SRAM memory */
++	/* Internal Backup SRAM memory */
 +	
 +	DECPROT(STM32MP1_ETZPC_BKPSRAM_ID, DECPROT_S_RW, DECPROT_UNLOCK)
 +	
