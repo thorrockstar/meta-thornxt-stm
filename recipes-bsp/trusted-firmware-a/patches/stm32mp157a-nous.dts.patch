@@ -218,7 +218,7 @@
 +				regulator-name = "vdda";
 +				regulator-min-microvolt = <2900000>;
 +				regulator-max-microvolt = <2900000>;
-+				regulator-boot-on;
++				regulator-always-on;
 +			};
 +
 +			v1v2_unused: ldo6 {

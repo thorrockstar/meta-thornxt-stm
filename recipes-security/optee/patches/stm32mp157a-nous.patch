@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/core/arch/arm/dts/stm32mp157a-nous.dts
-@@ -0,0 +1,782 @@
+@@ -0,0 +1,750 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
 +/*
 + * Copyright (C) THOR Engineering GmbH 2026
@@ -99,7 +99,22 @@
 +		regulator-max-microvolt = <5000000>;
 +		regulator-always-on;
 +	};
-+};
++
++	/* Support for SSM2518 audio codec. */
++
++	sound {
++		compatible = "audio-graph-card";
++		label = "ssm2518-hifi";
++		
++		routing =
++			"Playback", "OUTL",
++			"Playback", "OUTR";
++
++		dais = <&sai2a_port>;
++		status = "disabled";
++	};
++
++}; /* root */
 +
 +/* Boot and Security Configuration */
 +
@@ -129,6 +144,48 @@
 +		pins2 {
 +			pinmux = <STM32_PINMUX_NSEC('C', 11, AF8)>; /* UART4_RX */
 +			bias-disable;
++		};
++	};
++
++	/* Pins for the i2C command interface of the audio codec. */
++	
++	i2c2_pins_mx_z: i2c2_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX_NSEC('F', 1, AF4)>, /* I2C2_SCL */
++				 <STM32_PINMUX_NSEC('H', 5, AF4)>; /* I2C2_SDA */
++			bias-disable;
++			drive-open-drain;
++			slew-rate = <0>;
++		};
++	};
++
++	i2c2_sleep_pins_mx_z: i2c2_sleep_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX_NSEC('F', 1, ANALOG)>, /* I2C2_SCL */
++				 <STM32_PINMUX_NSEC('H', 5, ANALOG)>; /* I2C2_SDA */
++		};
++	};
++
++	/* Pins for the audio controller interface. */
++	
++	sai2a_pins_mx_z: sai2a-0 {
++		pins {
++			pinmux = <STM32_PINMUX_NSEC('D', 13, AF10)>, /* SAI2_SCK_A */
++					 <STM32_PINMUX_NSEC('I', 4, AF10)>, /* SAI2_MCLK_A */
++					 <STM32_PINMUX_NSEC('I', 6, AF10)>, /* SAI2_SD_A */
++					 <STM32_PINMUX_NSEC('I', 7, AF10)>; /* SAI2_FS_A */
++			slew-rate = <0>;
++			drive-push-pull;
++			bias-disable;
++		};
++	};
++
++	sai2a_sleep_pins_mx_z: sai2a-sleep-0 {
++		pins {
++			pinmux = <STM32_PINMUX_NSEC('D', 13, ANALOG)>, /* SAI2_SCK_A */
++					 <STM32_PINMUX_NSEC('I', 4, ANALOG)>, /* SAI2_MCLK_A */
++					 <STM32_PINMUX_NSEC('I', 6, ANALOG)>, /* SAI2_SD_A */
++					 <STM32_PINMUX_NSEC('I', 7, ANALOG)>; /* SAI2_FS_A */
 +		};
 +	};
 +};
@@ -169,11 +226,6 @@
 +	status = "disabled";
 +};
 +
-+/* External clocks sources */
-+
-+&clk_hse {
-+};
-+
 +/* CPU core voltage */
 +
 +&cpu0 {
@@ -196,11 +248,6 @@
 +	timeout-sec = <32>;
 +	status = "disabled";
 +};
-+
-+
-+
-+
-+
 +
 +/* Oscilator calibration. */
 +
@@ -471,7 +518,8 @@
 +				regulator-min-microvolt = <2900000>;
 +				regulator-max-microvolt = <2900000>;
 +				interrupts = <IT_CURLIM_LDO5 0>;
-+				regulator-boot-on;
++				regulator-always-on;
++				st,mask-reset;
 +			};
 +
 +			v1v2_unused: ldo6 {
@@ -574,6 +622,10 @@
 +	
 +	DECPROT(STM32MP1_ETZPC_I2C4_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
 +
++	/* ADC controller. */
++	
++	DECPROT(STM32MP1_ETZPC_ADC_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
++
 +	/* Single channel low-power timer unit */
 +	
 +	DECPROT(STM32MP1_ETZPC_LPTIM2_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
@@ -612,7 +664,7 @@
 +	
 +	/* Watchdog */
 +	
-+	DECPROT(STM32MP1_ETZPC_IWDG1_ID, DECPROT_S_RW, DECPROT_UNLOCK)
++	/*DECPROT(STM32MP1_ETZPC_IWDG1_ID, DECPROT_S_RW, DECPROT_UNLOCK)*/
 +	>;
 +};
 +
@@ -636,150 +688,66 @@
 +	access-controllers-conf-load = <&etzpc DECPROT(STM32MP1_ETZPC_RETRAM_ID, DECPROT_S_RW, DECPROT_UNLOCK)>;
 +};
 +
-+&ethernet0 {
++/* Audio controller */
++
++&sai2 {
++	clock-names = "pclk", "x8k", "x11k";
++	clocks = <&rcc SAI2>, <&rcc PLL3_Q>, <&rcc PLL3_R>;
++	pinctrl-names = "default", "sleep";
++	pinctrl-0 = <&sai2a_pins_mx_z>;
++	pinctrl-1 = <&sai2a_sleep_pins_mx_z>;
 +	status = "disabled";
-+};
-+
-+/* Low-power states of regulators */
-+
-+&v1v2_unused {
-+	standby-ddr-sr {
-+		regulator-off-in-suspend;
-+	};
-+	standby-ddr-off {
-+		regulator-off-in-suspend;
-+	};
-+};
-+
-+&vdd_sd {
-+	standby-ddr-sr {
-+		regulator-off-in-suspend;
-+	};
-+	standby-ddr-off {
-+		regulator-off-in-suspend;
-+	};
-+};
-+
-+&v3v3 {
-+	lp-stop {
-+		regulator-suspend-microvolt = <3300000>;
-+		regulator-on-in-suspend;
-+	};
-+	lplv-stop {
-+		regulator-suspend-microvolt = <3300000>;
-+		regulator-on-in-suspend;
-+	};
-+	standby-ddr-sr {
-+		regulator-off-in-suspend;
-+	};
-+	standby-ddr-off {
-+		regulator-off-in-suspend;
++	
++	sai2a: audio-controller@4400b004 {
++		#clock-cells = <0>;
++		dma-names = "tx";
++		clocks = <&rcc SAI2_K>;
++		clock-names = "sai_ck";
++		status = "disabled";
++		
++		sai2a_port: port {
++			sai2a_endpoint: endpoint {
++				remote-endpoint = <&ssm2518_tx_endpoint>;
++				format = "i2s";
++				mclk-fs = <256>;
++				frame-master;
++				bitclock-master;
++				//dai-tdm-slot-num = <2>;
++				//dai-tdm-slot-width = <16>;
++				//dai-tdm-slot-tx-mask = <1 1>;
++				//dai-tdm-slot-rx-mask = <0 0>;
++			};
++		};
 +	};
 +};
 +
-+&v3v3_unused {
-+	standby-ddr-sr {
-+		regulator-off-in-suspend;
-+	};
-+	standby-ddr-off {
-+		regulator-off-in-suspend;
++/* I2C for sending commands to the audio codec. */
++
++&i2c2 {	
++	pinctrl-names = "default", "sleep";
++	pinctrl-0 = <&i2c2_pins_mx_z>;
++	pinctrl-1 = <&i2c2_sleep_pins_mx_z>;
++	i2c-scl-rising-time-ns = <96>;
++	i2c-scl-falling-time-ns = <3>;
++	clock-frequency = <100000>;
++	/delete-property/dmas;
++	/delete-property/dma-names;
++	status = "disabled";
++
++	ssm2518: ssm2518@34 {
++		compatible = "adi,ssm2518";
++		reg = <0x34>;
++		gpios = <&gpiog 8 0>;
++		status = "disabled";
++
++		#sound-dai-cells = <0>;
++		
++		ssm2518_port: port {
++			ssm2518_tx_endpoint: endpoint {
++				format = "i2s";
++				mclk-fs = <256>;
++			};
++		};
 +	};
 +};
 +
-+&vdd {
-+	lp-stop {
-+		regulator-suspend-microvolt = <3300000>;
-+		regulator-on-in-suspend;
-+	};
-+	standby-ddr-sr {
-+		regulator-suspend-microvolt = <3300000>;
-+		regulator-on-in-suspend;
-+	};
-+	standby-ddr-off {
-+		regulator-suspend-microvolt = <3300000>;
-+		regulator-on-in-suspend;
-+	};
-+};
-+
-+&vdda {
-+	standby-ddr-sr {
-+		regulator-off-in-suspend;
-+	};
-+	standby-ddr-off {
-+		regulator-off-in-suspend;
-+	};
-+};
-+
-+&vddcore {
-+	lp-stop {
-+		regulator-on-in-suspend;
-+		regulator-suspend-microvolt = <1200000>;
-+	};
-+	lplv-stop {
-+		regulator-on-in-suspend;
-+		regulator-suspend-microvolt = <900000>;
-+	};
-+	standby-ddr-sr {
-+		regulator-off-in-suspend;
-+	};
-+	standby-ddr-off {
-+		regulator-off-in-suspend;
-+	};
-+};
-+
-+&vdd_ddr {
-+	lp-stop {
-+		regulator-suspend-microvolt = <1350000>;
-+		regulator-on-in-suspend;
-+	};
-+	lplv-stop {
-+		regulator-suspend-microvolt = <1350000>;
-+		regulator-on-in-suspend;
-+	};
-+	standby-ddr-sr {
-+		regulator-suspend-microvolt = <1350000>;
-+		regulator-on-in-suspend;
-+	};
-+	standby-ddr-off {
-+		regulator-off-in-suspend;
-+	};
-+};
-+
-+&vdd_usb {
-+	standby-ddr-sr {
-+		regulator-off-in-suspend;
-+	};
-+	standby-ddr-off {
-+		regulator-off-in-suspend;
-+	};
-+};
-+
-+&vref_ddr {
-+	lp-stop {
-+		regulator-on-in-suspend;
-+	};
-+	lplv-stop {
-+		regulator-on-in-suspend;
-+	};
-+	standby-ddr-sr {
-+		regulator-on-in-suspend;
-+	};
-+	standby-ddr-off {
-+		regulator-off-in-suspend;
-+	};
-+};
-+
-+&vtt_ddr {
-+	lp-stop {
-+		regulator-off-in-suspend;
-+	};
-+	lplv-stop {
-+		regulator-off-in-suspend;
-+	};
-+	standby-ddr-sr {
-+		regulator-off-in-suspend;
-+	};
-+	standby-ddr-off {
-+		regulator-off-in-suspend;
-+	};
-+};

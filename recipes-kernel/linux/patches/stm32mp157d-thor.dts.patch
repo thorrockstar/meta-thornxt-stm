@@ -1,6 +1,6 @@
 --- a/dev/null	2026-04-13 20:53:12.625000009 +0200
 +++ b/arch/arm/boot/dts/st/stm32mp157d-thor.dts	2026-04-11 01:31:22.260109880 +0200
-@@ -0,0 +1,1447 @@
+@@ -0,0 +1,1303 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
 +/*
 + * Copyright (C) THOR Engineering GmbH 2022
@@ -1081,7 +1081,7 @@
 +				regulator-min-microvolt = <2900000>;
 +				regulator-max-microvolt = <2900000>;
 +				interrupts = <IT_CURLIM_LDO5 0>;
-+				regulator-boot-on;
++				regulator-always-on;
 +			};
 +
 +			v1v2_unused: ldo6 {
@@ -1302,149 +1302,5 @@
 +
 +&rng1 {
 +	status = "okay";
-+};
-+
-+/* Low-power states of regulators */
-+
-+&v1v2_unused {
-+	standby-ddr-sr {
-+		regulator-off-in-suspend;
-+	};
-+	standby-ddr-off {
-+		regulator-off-in-suspend;
-+	};
-+};
-+
-+&vdd_sd {
-+	standby-ddr-sr {
-+		regulator-off-in-suspend;
-+	};
-+	standby-ddr-off {
-+		regulator-off-in-suspend;
-+	};
-+};
-+
-+&v3v3 {
-+	lp-stop {
-+		regulator-suspend-microvolt = <3300000>;
-+		regulator-on-in-suspend;
-+	};
-+	lplv-stop {
-+		regulator-suspend-microvolt = <3300000>;
-+		regulator-on-in-suspend;
-+	};
-+	standby-ddr-sr {
-+		regulator-off-in-suspend;
-+	};
-+	standby-ddr-off {
-+		regulator-off-in-suspend;
-+	};
-+};
-+
-+&v3v3_unused {
-+	standby-ddr-sr {
-+		regulator-off-in-suspend;
-+	};
-+	standby-ddr-off {
-+		regulator-off-in-suspend;
-+	};
-+};
-+
-+&vdd {
-+	lp-stop {
-+		regulator-suspend-microvolt = <3300000>;
-+		regulator-on-in-suspend;
-+	};
-+	standby-ddr-sr {
-+		regulator-suspend-microvolt = <3300000>;
-+		regulator-on-in-suspend;
-+	};
-+	standby-ddr-off {
-+		regulator-suspend-microvolt = <3300000>;
-+		regulator-on-in-suspend;
-+	};
-+};
-+
-+&vdda {
-+	standby-ddr-sr {
-+		regulator-off-in-suspend;
-+	};
-+	standby-ddr-off {
-+		regulator-off-in-suspend;
-+	};
-+};
-+
-+&vddcore {
-+	lp-stop {
-+		regulator-on-in-suspend;
-+		regulator-suspend-microvolt = <1200000>;
-+	};
-+	lplv-stop {
-+		regulator-on-in-suspend;
-+		regulator-suspend-microvolt = <900000>;
-+	};
-+	standby-ddr-sr {
-+		regulator-off-in-suspend;
-+	};
-+	standby-ddr-off {
-+		regulator-off-in-suspend;
-+	};
-+};
-+
-+&vdd_ddr {
-+	lp-stop {
-+		regulator-suspend-microvolt = <1350000>;
-+		regulator-on-in-suspend;
-+	};
-+	lplv-stop {
-+		regulator-suspend-microvolt = <1350000>;
-+		regulator-on-in-suspend;
-+	};
-+	standby-ddr-sr {
-+		regulator-suspend-microvolt = <1350000>;
-+		regulator-on-in-suspend;
-+	};
-+	standby-ddr-off {
-+		regulator-off-in-suspend;
-+	};
-+};
-+
-+&vdd_usb {
-+	standby-ddr-sr {
-+		regulator-off-in-suspend;
-+	};
-+	standby-ddr-off {
-+		regulator-off-in-suspend;
-+	};
-+};
-+
-+&vref_ddr {
-+	lp-stop {
-+		regulator-on-in-suspend;
-+	};
-+	lplv-stop {
-+		regulator-on-in-suspend;
-+	};
-+	standby-ddr-sr {
-+		regulator-on-in-suspend;
-+	};
-+	standby-ddr-off {
-+		regulator-off-in-suspend;
-+	};
-+};
-+
-+&vtt_ddr {
-+	lp-stop {
-+		regulator-off-in-suspend;
-+	};
-+	lplv-stop {
-+		regulator-off-in-suspend;
-+	};
-+	standby-ddr-sr {
-+		regulator-off-in-suspend;
-+	};
-+	standby-ddr-off {
-+		regulator-off-in-suspend;
-+	};
 +};
 +
