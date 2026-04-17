@@ -22,8 +22,8 @@
 /* Board definition */
 
 / {
-	model = "THOR Engineering E2-Board";
-	compatible = "st,stm32mp157a-thor-e2", "st,stm32mp157";
+	model = "THOR Engineering Nous-X-Board";
+	compatible = "st,stm32mp157a-nous", "st,stm32mp157";
 
 	memory@c0000000 {
 		device_type = "memory";
@@ -92,8 +92,7 @@
 
 	uart4_pins_mx_z: uart4-0 {
 		pins1 {
-			pinmux = <STM32_PINMUX('C', 8, AF6)>, /* UART4_TX */
-			         <STM32_PINMUX('A', 13, AF14)>; /* Errata! Dummy for using PA13 in the kernel as GPO after being used by ROMBoot as Boot failure indicator! */
+			pinmux = <STM32_PINMUX('C', 8, AF6)>; /* UART4_TX */
 			bias-disable;
 			drive-push-pull;
 			slew-rate = <0>;
@@ -216,7 +215,7 @@
 				regulator-name = "vdda";
 				regulator-min-microvolt = <2900000>;
 				regulator-max-microvolt = <2900000>;
-				regulator-boot-on;
+				regulator-always-on;
 			};
 
 			v1v2_unused: ldo6 {
@@ -248,10 +247,16 @@
 	};
 };
 
-/* Watchdog unit */
+/* Watchdog units */
 
 &iwdg1 {
 	timeout-sec = <32>;
+	status = "disabled";
+};
+
+&iwdg2 {
+	timeout-sec = <32>;
+	secure-timeout-sec = <2>;
 	status = "okay";
 };
 
@@ -265,7 +270,7 @@
 /* Clock and Reset Generator */
 
 &rcc {
-	compatible = "st,stm32mp1-rcc-secure", "st,stm32mp1-rcc", "syscon";
+	status = "okay";
 	
 	/* Clock Source Selection */
 	

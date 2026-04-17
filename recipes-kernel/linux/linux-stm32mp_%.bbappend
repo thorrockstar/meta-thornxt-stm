@@ -1,17 +1,24 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/patches:"
 
+KERNEL_CONFIG_FRAGMENTS:append = "${WORKDIR}/fragments/${LINUX_VERSION}/fragment-custom.config"
+
+SRC_URI:append = " file://${LINUX_VERSION}/fragment-custom.config;subdir=fragments "
+
 SRC_URI += " \
 	file://stm32mp157a-nous.dts.patch \
 	file://stm32mp157a-nous-scmi.dtsi.patch \
 	file://stm32mp157d-thor.dts.patch \
 	file://stm32mp157d-thor-scmi.dtsi.patch \
-	file://defconfig \
+	file://stmmac_platform.patch \
 	file://stm32_sai_sub.patch \
 	file://drm_fb_helper.patch \
 	file://spidev.patch \
-	file://panel-simple.patch \
-	file://pinctrl-stm32mp157.patch \
+	file://defconfig \
 	file://Kconfig.patch \
+	file://gpiolib.patch \
+	file://mtdblock.patch \
+	file://pinctrl-stm32mp157.patch \
+	file://pinctrl-stm32.patch \
 "
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"

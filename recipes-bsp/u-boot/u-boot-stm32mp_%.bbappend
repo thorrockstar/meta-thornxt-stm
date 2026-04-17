@@ -17,7 +17,7 @@ SRC_URI += " \
 	file://stm32prog.patch \
 	file://autoboot.patch \
 	file://fastmap.patch \
+	file://pxe_utils.patch \
 	file://Makefile.patch \
 "
-# file://pxe_utils.patch
 
