@@ -1,0 +1,12 @@
+--- a/drivers/gpio/gpiolib.c	2025-11-02 14:14:42.000000000 +0100
++++ b/drivers/gpio/gpiolib.c	2026-04-18 00:21:36.606611185 +0200
+@@ -830,9 +830,6 @@
+ 		 * a poison instead.
+ 		 */
+ 		gc->base = base;
+-	} else {
+-		dev_warn(&gdev->dev,
+-			 "Static allocation of GPIO base is deprecated, use dynamic allocation.\n");
+ 	}
+ 	gdev->base = base;
+ 
