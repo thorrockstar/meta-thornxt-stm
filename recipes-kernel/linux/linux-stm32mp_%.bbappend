@@ -9,12 +9,15 @@ SRC_URI += " \
 	file://stm32mp157a-nous-scmi.dtsi.patch \
 	file://stm32mp157d-thor.dts.patch \
 	file://stm32mp157d-thor-scmi.dtsi.patch \
+	file://stmmac_platform.patch \
 	file://stm32_sai_sub.patch \
 	file://drm_fb_helper.patch \
 	file://spidev.patch \
 	file://defconfig \
-	file://pinctrl-stm32mp157.patch \
 	file://Kconfig.patch \
+	file://gpiolib.patch \
+	file://mtdblock.patch \
+	file://pinctrl-stm32mp157.patch \
 	file://pinctrl-stm32.patch \
 "
 

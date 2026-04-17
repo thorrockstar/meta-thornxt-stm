@@ -60,25 +60,23 @@ PARTITIONS_PROGRAMMER_CONFIG = "\
 #           rule: fip
 # -----------------------------------------------------------------------------
 STM32MP_FSBL1_DATA ?= "arm-trusted-firmware/tf-a-<TYPE>-<BOOTSCHEME>-<DEVICE>${TF_A_ENCRYPT_SUFFIX}${TF_A_SIGN_SUFFIX}.stm32"
-STM32MP_FSBL1_NAME ?= "${@bb.utils.contains('ENABLE_FLASHLAYOUT_CONFIG_FWUP', '1', 'fsbl', 'fsbl1', d)}"
-STM32MP_FSBL1_NAME:stm32mp2common ?= "fsbla"
+STM32MP_FSBL1_NAME ?= "fsbl1"
 STM32MP_FSBL1_SIZE ?= "256"
 STM32MP_FSBL2_DATA ?= "${STM32MP_FSBL1_DATA}"
 STM32MP_FSBL2_NAME ?= "fsbl2"
-STM32MP_FSBL2_NAME:stm32mp2common ?= "fsbla2"
 STM32MP_FSBL2_SIZE ?= "${STM32MP_FSBL1_SIZE}"
 STM32MP_SSBL1_DATA ?= "fip/fip-<TYPE>-<BOOTSCHEME>-<DEVICE>${FIP_ENCRYPT_SUFFIX}${FIP_SIGN_SUFFIX}.bin"
-STM32MP_SSBL1_NAME ?= "${@bb.utils.contains('ENABLE_FLASHLAYOUT_CONFIG_FWUP', '1', 'fip-a', 'fip', d)}"
-STM32MP_SSBL1_SIZE ?= "${@bb.utils.contains('ENABLE_FLASHLAYOUT_CONFIG_FWUP', '1', '4096', '2048', d)}"
-STM32MP_SSBL2_DATA ?= "${@bb.utils.contains('ENABLE_FLASHLAYOUT_CONFIG_FWUP', '1', '', '${STM32MP_SSBL1_DATA}', d)}"
-STM32MP_SSBL2_NAME ?= "${@bb.utils.contains('ENABLE_FLASHLAYOUT_CONFIG_FWUP', '1', 'fip-b', 'fip2', d)}"
+STM32MP_SSBL1_NAME ?= "ssbl1"
+STM32MP_SSBL1_SIZE ?= "2048"
+STM32MP_SSBL2_DATA ?= "${STM32MP_SSBL1_DATA}"
+STM32MP_SSBL2_NAME ?= "ssbl2"
 STM32MP_SSBL2_SIZE ?= "${STM32MP_SSBL1_SIZE}"
 STM32MP_UENV_DATA ?= ""
 STM32MP_UENV_NAME ?= "u-boot-env"
 STM32MP_UENV_SIZE ?= "512"
 STM32MP_METADATA_DATA ?= ""
 STM32MP_METADATA_NAME ?= ""
-STM32MP_METADATA_ENABLE ?= "${@bb.utils.contains('ENABLE_FLASHLAYOUT_CONFIG_FWUP', '1', '1', '0', d)}"
+STM32MP_METADATA_ENABLE ?= "0"
 STM32MP_METADATA_SIZE ?= "256"
 
 # =========================================================================
@@ -108,7 +106,7 @@ STM32MP_M33PS_SIZE ?= "1024"
 
 # Specific override for NAND device type regarding partition sizes to follow
 # the hard coded configuration on U-Boot source code
-STM32MP_FSBL1_SIZE_UBOOT ?= "${@bb.utils.contains('ENABLE_FLASHLAYOUT_CONFIG_FWUP', '1', '512', '1024', d)}"
+STM32MP_FSBL1_SIZE_UBOOT ?= "1024"
 STM32MP_METADATA_SIZE_UBOOT ?= "512"
 
 # Bootloader Partitions configuration
@@ -144,9 +142,10 @@ PARTITIONS_BOOTLOADER_CONFIG[nand-4-256-512] ?= "\
     ${@ '${STM32MP_SSBL2_DATA},${STM32MP_SSBL2_NAME},${STM32MP_SSBL1_SIZE},FIP,' + '1' if '${STM32MP_SSBL2_NAME}' else ''} \
     "
 PARTITIONS_BOOTLOADER_CONFIG[nand-4-256-1024] ?= "\
-    ${@ '${STM32MP_FSBL1_DATA},${STM32MP_FSBL1_NAME},${STM32MP_FSBL1_SIZE_UBOOT},Binary,2' if '${STM32MP_FSBL1_NAME}' else ''} \
-    ${@ '${STM32MP_SSBL1_DATA},${STM32MP_SSBL1_NAME},${STM32MP_SSBL1_SIZE},FIP,' + '1' if '${STM32MP_SSBL1_NAME}' else ''} \
-    ${@ '${STM32MP_SSBL2_DATA},${STM32MP_SSBL2_NAME},${STM32MP_SSBL1_SIZE},FIP,' + '1' if '${STM32MP_SSBL2_NAME}' else ''} \
+    ${@ '${STM32MP_FSBL1_DATA},${STM32MP_FSBL1_NAME},${STM32MP_FSBL1_SIZE_UBOOT},Binary,1' if '${STM32MP_FSBL1_NAME}' else ''} \
+    ${@ '${STM32MP_FSBL1_DATA},${STM32MP_FSBL2_NAME},${STM32MP_FSBL1_SIZE_UBOOT},Binary,1' if '${STM32MP_FSBL2_NAME}' else ''} \
+    ${@ '${STM32MP_SSBL1_DATA},${STM32MP_SSBL1_NAME},${STM32MP_SSBL1_SIZE},FIP,1' if '${STM32MP_SSBL1_NAME}' else ''} \
+    ${@ '${STM32MP_SSBL2_DATA},${STM32MP_SSBL2_NAME},${STM32MP_SSBL1_SIZE},FIP,1' if '${STM32MP_SSBL2_NAME}' else ''} \
     "
 PARTITIONS_BOOTLOADER_CONFIG[nand-custom] ?= "\
     ${@ '${STM32MP_FSBL1_DATA},${STM32MP_FSBL1_NAME},${STM32MP_FSBL1_SIZE_UBOOT},Binary,2' if '${STM32MP_FSBL1_NAME}' else ''} \
@@ -243,8 +242,6 @@ STM32MP_VENDORFS_LABEL      ?= "vendorfs"
 STM32MP_VENDORFS_MOUNTPOINT ?= "/vendor"
 # Proposed value for vendorfs is 10MB
 STM32MP_VENDORFS_SIZE       ?= "10240"
-# Override vendorfs size to 48MB
-STM32MP_VENDORFS_SIZE:stm32mp2common ?= "49152"
 
 # limit size of rootfs
 STM32MP_ROOTFS_SIZE:emmc ?= "3145728"
@@ -319,10 +316,7 @@ STM32MP_MULTIUBI_UENV2_SIZE ?= "${STM32MP_MULTIUBI_UENV1_SIZE}"
 
 # Proposed value for rootfs should fit our highest constraint: NAND size (256MiB)
 # With FIP with have the maximum partitions:
-#   FSBL1 + FIP + FIP2 + Multivolume UBI = NAND size
-#   Multivolume UBI = 256MiB - (2MiB + 4MiB + 4MiB) = 246MiB
-# With FIP with have the maximum partitions:
-#   FSBL1 + FIP + FIP + Multivolume UBI = SPI NAND size
+#   FSBL1 + FSBL1 + FIP + FIP2 + Multivolume UBI = NAND size
 #   Multivolume UBI = 256MiB - (1MiB + 1MiB + 2MiB + 2MiB) = 250MiB
 # With multivolume UBI split:
 #   Multivolume UBI > uboot_config + uboot_config_r + bootfs + vendorfs + rootfs + userfs + UBI Overhead

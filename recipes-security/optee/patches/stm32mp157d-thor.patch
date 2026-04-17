@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/core/arch/arm/dts/stm32mp157d-thor.dts
-@@ -0,0 +1,757 @@
+@@ -0,0 +1,894 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
 +/*
 + * Copyright (C) THOR Engineering GmbH 2026
@@ -99,7 +99,22 @@
 +		regulator-max-microvolt = <5000000>;
 +		regulator-always-on;
 +	};
-+};
++
++	/* Support for SSM2518 audio codec. */
++
++	sound {
++		compatible = "audio-graph-card";
++		label = "ssm2518-hifi";
++		
++		routing =
++			"Playback", "OUTL",
++			"Playback", "OUTR";
++
++		dais = <&sai2a_port>;
++		status = "disabled";
++	};
++
++}; /* root */
 +
 +/* Boot and Security Configuration */
 +
@@ -129,6 +144,48 @@
 +		pins2 {
 +			pinmux = <STM32_PINMUX_NSEC('C', 11, AF8)>; /* UART4_RX */
 +			bias-disable;
++		};
++	};
++
++	/* Pins for the i2C command interface of the audio codec. */
++	
++	i2c2_pins_mx_z: i2c2_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX_NSEC('F', 1, AF4)>, /* I2C2_SCL */
++				 <STM32_PINMUX_NSEC('H', 5, AF4)>; /* I2C2_SDA */
++			bias-disable;
++			drive-open-drain;
++			slew-rate = <0>;
++		};
++	};
++
++	i2c2_sleep_pins_mx_z: i2c2_sleep_mx-0 {
++		pins {
++			pinmux = <STM32_PINMUX_NSEC('F', 1, ANALOG)>, /* I2C2_SCL */
++				 <STM32_PINMUX_NSEC('H', 5, ANALOG)>; /* I2C2_SDA */
++		};
++	};
++
++	/* Pins for the audio controller interface. */
++	
++	sai2a_pins_mx_z: sai2a-0 {
++		pins {
++			pinmux = <STM32_PINMUX_NSEC('D', 13, AF10)>, /* SAI2_SCK_A */
++					 <STM32_PINMUX_NSEC('I', 4, AF10)>, /* SAI2_MCLK_A */
++					 <STM32_PINMUX_NSEC('I', 6, AF10)>, /* SAI2_SD_A */
++					 <STM32_PINMUX_NSEC('I', 7, AF10)>; /* SAI2_FS_A */
++			slew-rate = <0>;
++			drive-push-pull;
++			bias-disable;
++		};
++	};
++
++	sai2a_sleep_pins_mx_z: sai2a-sleep-0 {
++		pins {
++			pinmux = <STM32_PINMUX_NSEC('D', 13, ANALOG)>, /* SAI2_SCK_A */
++					 <STM32_PINMUX_NSEC('I', 4, ANALOG)>, /* SAI2_MCLK_A */
++					 <STM32_PINMUX_NSEC('I', 6, ANALOG)>, /* SAI2_SD_A */
++					 <STM32_PINMUX_NSEC('I', 7, ANALOG)>; /* SAI2_FS_A */
 +		};
 +	};
 +};
@@ -169,11 +226,6 @@
 +	status = "disabled";
 +};
 +
-+/* External clocks sources */
-+
-+&clk_hse {
-+};
-+
 +/* CPU core voltage */
 +
 +&cpu0 {
@@ -197,10 +249,10 @@
 +	status = "disabled";
 +};
 +
-+&iwdg2 {
-+	timeout-sec = <32>;
-+	status = "disabled";
-+};
++
++
++
++
 +
 +/* Oscilator calibration. */
 +
@@ -438,6 +490,7 @@
 +				regulator-min-microvolt = <3300000>;
 +				regulator-max-microvolt = <3300000>;
 +				regulator-always-on;
++				interrupts = <IT_CURLIM_LDO1 0>;
 +			};
 +
 +			v3v3_unused: ldo2 {
@@ -445,10 +498,13 @@
 +				regulator-min-microvolt = <3300000>;
 +				regulator-max-microvolt = <3300000>;
 +				regulator-always-on;
++				interrupts = <IT_CURLIM_LDO2 0>;
 +			};
 +
 +			vtt_ddr: ldo3 {
 +				regulator-name = "vtt_ddr";
++				regulator-min-microvolt = <500000>;
++				regulator-max-microvolt = <750000>;
 +				regulator-always-on;
 +				regulator-over-current-protection;
 +				st,regulator-sink-source;
@@ -458,12 +514,15 @@
 +				regulator-name = "vdd_usb";
 +				regulator-min-microvolt = <3300000>;
 +				regulator-max-microvolt = <3300000>;
++				interrupts = <IT_CURLIM_LDO4 0>;
++				regulator-always-on;
 +			};
 +
 +			vdda: ldo5 {
 +				regulator-name = "vdda";
 +				regulator-min-microvolt = <2900000>;
 +				regulator-max-microvolt = <2900000>;
++				interrupts = <IT_CURLIM_LDO5 0>;
 +				regulator-boot-on;
 +			};
 +
@@ -472,26 +531,44 @@
 +				regulator-min-microvolt = <1200000>;
 +				regulator-max-microvolt = <1200000>;
 +				regulator-always-on;
++				interrupts = <IT_CURLIM_LDO6 0>;
 +			};
 +
 +			vref_ddr: vref_ddr {
 +				regulator-name = "vref_ddr";
 +				regulator-always-on;
++				regulator-over-current-protection;
 +			};
 +
 +			bst_out: boost {
 +				regulator-name = "bst_out";
++				interrupts = <IT_OCP_BOOST 0>;
 +			};
 +
 +			vbus_otg: pwr_sw1 {
 +				regulator-name = "vbus_otg";
++				interrupts = <IT_OCP_OTG 0>;
 +			};
 +
 +			vbus_sw: pwr_sw2 {
 +				regulator-name = "vbus_sw";
++				interrupts = <IT_OCP_SWOUT 0>;
 +				regulator-active-discharge = <1>;
 +				regulator-always-on;
 +			};
++		};
++
++		onkey {
++			compatible = "st,stpmic1-onkey";
++			interrupts = <IT_PONKEY_F 0>, <IT_PONKEY_R 0>;
++			interrupt-names = "onkey-falling", "onkey-rising";
++			power-off-time-sec = <10>;
++			status = "disabled";
++		};
++
++		watchdog {
++			compatible = "st,stpmic1-wdt";
++			status = "disabled";
 +		};
 +	};
 +};
@@ -609,10 +686,6 @@
 +&retram {
 +	access-controllers-conf-default = <&etzpc DECPROT(STM32MP1_ETZPC_RETRAM_ID, DECPROT_MCU_ISOLATION, DECPROT_UNLOCK)>;
 +	access-controllers-conf-load = <&etzpc DECPROT(STM32MP1_ETZPC_RETRAM_ID, DECPROT_S_RW, DECPROT_UNLOCK)>;
-+};
-+
-+&ethernet0 {
-+	status = "disabled";
 +};
 +
 +/* Low-power states of regulators */
@@ -758,3 +831,67 @@
 +		regulator-off-in-suspend;
 +	};
 +};
++
++/* Audio controller */
++
++&sai2 {
++	clock-names = "pclk", "x8k", "x11k";
++	clocks = <&rcc SAI2>, <&rcc PLL3_Q>, <&rcc PLL3_R>;
++	pinctrl-names = "default", "sleep";
++	pinctrl-0 = <&sai2a_pins_mx_z>;
++	pinctrl-1 = <&sai2a_sleep_pins_mx_z>;
++	status = "disabled";
++	
++	sai2a: audio-controller@4400b004 {
++		#clock-cells = <0>;
++		dma-names = "tx";
++		clocks = <&rcc SAI2_K>;
++		clock-names = "sai_ck";
++		status = "disabled";
++		
++		sai2a_port: port {
++			sai2a_endpoint: endpoint {
++				remote-endpoint = <&ssm2518_tx_endpoint>;
++				format = "i2s";
++				mclk-fs = <256>;
++				frame-master;
++				bitclock-master;
++				//dai-tdm-slot-num = <2>;
++				//dai-tdm-slot-width = <16>;
++				//dai-tdm-slot-tx-mask = <1 1>;
++				//dai-tdm-slot-rx-mask = <0 0>;
++			};
++		};
++	};
++};
++
++/* I2C for sending commands to the audio codec. */
++
++&i2c2 {	
++	pinctrl-names = "default", "sleep";
++	pinctrl-0 = <&i2c2_pins_mx_z>;
++	pinctrl-1 = <&i2c2_sleep_pins_mx_z>;
++	i2c-scl-rising-time-ns = <96>;
++	i2c-scl-falling-time-ns = <3>;
++	clock-frequency = <100000>;
++	/delete-property/dmas;
++	/delete-property/dma-names;
++	status = "disabled";
++
++	ssm2518: ssm2518@34 {
++		compatible = "adi,ssm2518";
++		reg = <0x34>;
++		gpios = <&gpiog 8 0>;
++		status = "disabled";
++
++		#sound-dai-cells = <0>;
++		
++		ssm2518_port: port {
++			ssm2518_tx_endpoint: endpoint {
++				format = "i2s";
++				mclk-fs = <256>;
++			};
++		};
++	};
++};
++

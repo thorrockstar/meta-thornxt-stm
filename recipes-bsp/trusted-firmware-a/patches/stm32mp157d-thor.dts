@@ -259,11 +259,17 @@
 	};
 };
 
-/* Watchdog unit */
+/* Watchdog units */
 
 &iwdg1 {
 	timeout-sec = <32>;
 	status = "disabled";
+};
+
+&iwdg2 {
+	timeout-sec = <32>;
+	secure-timeout-sec = <2>;
+	status = "okay";
 };
 
 /* Declare the MCU internal power regulator. */

@@ -1,6 +1,6 @@
 --- a/dev/null	2026-04-13 20:53:12.625000009 +0200
 +++ b/arch/arm/boot/dts/st/stm32mp157a-nous.dts	2026-04-11 01:31:22.260109880 +0200
-@@ -0,0 +1,1302 @@
+@@ -0,0 +1,1447 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
 +/*
 + * Copyright (C) THOR Engineering GmbH 2022
@@ -164,7 +164,6 @@
 +			#size-cells = <0>;
 +
 +			panel_input: endpoint {
-+				remote-endpoint = <&ltdc_ep0_out>;
 +			};
 +		};
 +		
@@ -823,15 +822,6 @@
 +	status = "okay";
 +};
 +
-+/* Internal SRAM. */
-+
-+&sram4 {
-+	dma_pool: dma_pool@0 {
-+		reg = <0x50000 0x10000>;
-+		pool;
-+	};
-+};
-+
 +/* Flexible Memory controller. */
 +
 +&fmc {
@@ -956,7 +946,6 @@
 +		
 +		ssm2518_port: port {
 +			ssm2518_tx_endpoint: endpoint {
-+				remote-endpoint = <&sai2a_endpoint>;
 +				format = "i2s";
 +				mclk-fs = <256>;
 +			};
@@ -1015,7 +1004,7 @@
 +			vref_ddr-supply = <&vin>;
 +			boost-supply = <&vin>;
 +			pwr_sw1-supply = <&bst_out>;
-+			pwr_sw2-supply = <&bst_out>;
++			pwr_sw2-supply = <&vin>;
 +
 +			vddcore: buck1 {
 +				regulator-name = "vddcore";
@@ -1062,10 +1051,10 @@
 +				interrupts = <IT_CURLIM_LDO1 0>;
 +			};
 +
-+			v2v8: ldo2 {
-+				regulator-name = "v2v8";
-+				regulator-min-microvolt = <2800000>;
-+				regulator-max-microvolt = <2800000>;
++			v3v3_unused: ldo2 {
++				regulator-name = "v3v3_unused";
++				regulator-min-microvolt = <3300000>;
++				regulator-max-microvolt = <3300000>;
 +				regulator-always-on;
 +				interrupts = <IT_CURLIM_LDO2 0>;
 +			};
@@ -1076,10 +1065,13 @@
 +				regulator-max-microvolt = <750000>;
 +				regulator-always-on;
 +				regulator-over-current-protection;
++				st,regulator-sink-source;
 +			};
 +
 +			vdd_usb: ldo4 {
 +				regulator-name = "vdd_usb";
++				regulator-min-microvolt = <3300000>;
++				regulator-max-microvolt = <3300000>;
 +				interrupts = <IT_CURLIM_LDO4 0>;
 +				regulator-always-on;
 +			};
@@ -1089,7 +1081,7 @@
 +				regulator-min-microvolt = <2900000>;
 +				regulator-max-microvolt = <2900000>;
 +				interrupts = <IT_CURLIM_LDO5 0>;
-+				regulator-always-on;
++				regulator-boot-on;
 +			};
 +
 +			v1v2_unused: ldo6 {
@@ -1111,12 +1103,12 @@
 +				interrupts = <IT_OCP_BOOST 0>;
 +			};
 +
-+			vbus_otg: pwr-sw1 {
++			vbus_otg: pwr_sw1 {
 +				regulator-name = "vbus_otg";
 +				interrupts = <IT_OCP_OTG 0>;
 +			};
 +
-+			vbus_sw: pwr-sw2 {
++			vbus_sw: pwr_sw2 {
 +				regulator-name = "vbus_sw";
 +				interrupts = <IT_OCP_SWOUT 0>;
 +				regulator-active-discharge = <1>;
@@ -1139,6 +1131,13 @@
 +	};
 +};
 +
++/* Watchdog */
++
++&iwdg2 {
++	timeout-sec = <32>;
++	status = "okay";
++};
++
 +/* The inter-processor communication controller (IPCC) is used to exchange data between two processors. */
 +
 +&ipcc {
@@ -1150,8 +1149,8 @@
 +&m4_rproc {
 +	memory-region = <&retram>, <&mcuram>, <&mcuram2>, <&vdev0vring0>,
 +			<&vdev0vring1>, <&vdev0buffer>, <&mcu_rsc_table>;
-+	mboxes = <&ipcc 0>, <&ipcc 1>, <&ipcc 2>;
-+	mbox-names = "vq0", "vq1", "shutdown";
++	mboxes = <&ipcc 0>, <&ipcc 1>, <&ipcc 2>, <&ipcc 3>;
++	mbox-names = "vq0", "vq1", "shutdown", "detach";
 +	interrupt-parent = <&exti>;
 +	interrupts = <68 1>;
 +	wakeup-source;
@@ -1256,6 +1255,8 @@
 +	dr_mode = "host";
 +	usb-role-switch;
 +	role-switch-default-mode = "host";
++	vusb_d-supply = <&vdd_usb>;
++	vusb_a-supply = <&vin>;
 +	status = "okay";
 +};
 +
@@ -1301,5 +1302,149 @@
 +
 +&rng1 {
 +	status = "okay";
++};
++
++/* Low-power states of regulators */
++
++&v1v2_unused {
++	standby-ddr-sr {
++		regulator-off-in-suspend;
++	};
++	standby-ddr-off {
++		regulator-off-in-suspend;
++	};
++};
++
++&vdd_sd {
++	standby-ddr-sr {
++		regulator-off-in-suspend;
++	};
++	standby-ddr-off {
++		regulator-off-in-suspend;
++	};
++};
++
++&v3v3 {
++	lp-stop {
++		regulator-suspend-microvolt = <3300000>;
++		regulator-on-in-suspend;
++	};
++	lplv-stop {
++		regulator-suspend-microvolt = <3300000>;
++		regulator-on-in-suspend;
++	};
++	standby-ddr-sr {
++		regulator-off-in-suspend;
++	};
++	standby-ddr-off {
++		regulator-off-in-suspend;
++	};
++};
++
++&v3v3_unused {
++	standby-ddr-sr {
++		regulator-off-in-suspend;
++	};
++	standby-ddr-off {
++		regulator-off-in-suspend;
++	};
++};
++
++&vdd {
++	lp-stop {
++		regulator-suspend-microvolt = <3300000>;
++		regulator-on-in-suspend;
++	};
++	standby-ddr-sr {
++		regulator-suspend-microvolt = <3300000>;
++		regulator-on-in-suspend;
++	};
++	standby-ddr-off {
++		regulator-suspend-microvolt = <3300000>;
++		regulator-on-in-suspend;
++	};
++};
++
++&vdda {
++	standby-ddr-sr {
++		regulator-off-in-suspend;
++	};
++	standby-ddr-off {
++		regulator-off-in-suspend;
++	};
++};
++
++&vddcore {
++	lp-stop {
++		regulator-on-in-suspend;
++		regulator-suspend-microvolt = <1200000>;
++	};
++	lplv-stop {
++		regulator-on-in-suspend;
++		regulator-suspend-microvolt = <900000>;
++	};
++	standby-ddr-sr {
++		regulator-off-in-suspend;
++	};
++	standby-ddr-off {
++		regulator-off-in-suspend;
++	};
++};
++
++&vdd_ddr {
++	lp-stop {
++		regulator-suspend-microvolt = <1350000>;
++		regulator-on-in-suspend;
++	};
++	lplv-stop {
++		regulator-suspend-microvolt = <1350000>;
++		regulator-on-in-suspend;
++	};
++	standby-ddr-sr {
++		regulator-suspend-microvolt = <1350000>;
++		regulator-on-in-suspend;
++	};
++	standby-ddr-off {
++		regulator-off-in-suspend;
++	};
++};
++
++&vdd_usb {
++	standby-ddr-sr {
++		regulator-off-in-suspend;
++	};
++	standby-ddr-off {
++		regulator-off-in-suspend;
++	};
++};
++
++&vref_ddr {
++	lp-stop {
++		regulator-on-in-suspend;
++	};
++	lplv-stop {
++		regulator-on-in-suspend;
++	};
++	standby-ddr-sr {
++		regulator-on-in-suspend;
++	};
++	standby-ddr-off {
++		regulator-off-in-suspend;
++	};
++};
++
++&vtt_ddr {
++	lp-stop {
++		regulator-off-in-suspend;
++	};
++	lplv-stop {
++		regulator-off-in-suspend;
++	};
++	standby-ddr-sr {
++		regulator-off-in-suspend;
++	};
++	standby-ddr-off {
++		regulator-off-in-suspend;
++	};
 +};
 +

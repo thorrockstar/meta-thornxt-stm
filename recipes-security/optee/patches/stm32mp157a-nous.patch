@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/core/arch/arm/dts/stm32mp157a-nous.dts
-@@ -0,0 +1,757 @@
+@@ -0,0 +1,782 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
 +/*
 + * Copyright (C) THOR Engineering GmbH 2026
@@ -197,10 +197,10 @@
 +	status = "disabled";
 +};
 +
-+&iwdg2 {
-+	timeout-sec = <32>;
-+	status = "disabled";
-+};
++
++
++
++
 +
 +/* Oscilator calibration. */
 +
@@ -438,6 +438,7 @@
 +				regulator-min-microvolt = <3300000>;
 +				regulator-max-microvolt = <3300000>;
 +				regulator-always-on;
++				interrupts = <IT_CURLIM_LDO1 0>;
 +			};
 +
 +			v3v3_unused: ldo2 {
@@ -445,10 +446,13 @@
 +				regulator-min-microvolt = <3300000>;
 +				regulator-max-microvolt = <3300000>;
 +				regulator-always-on;
++				interrupts = <IT_CURLIM_LDO2 0>;
 +			};
 +
 +			vtt_ddr: ldo3 {
 +				regulator-name = "vtt_ddr";
++				regulator-min-microvolt = <500000>;
++				regulator-max-microvolt = <750000>;
 +				regulator-always-on;
 +				regulator-over-current-protection;
 +				st,regulator-sink-source;
@@ -458,12 +462,15 @@
 +				regulator-name = "vdd_usb";
 +				regulator-min-microvolt = <3300000>;
 +				regulator-max-microvolt = <3300000>;
++				interrupts = <IT_CURLIM_LDO4 0>;
++				regulator-always-on;
 +			};
 +
 +			vdda: ldo5 {
 +				regulator-name = "vdda";
 +				regulator-min-microvolt = <2900000>;
 +				regulator-max-microvolt = <2900000>;
++				interrupts = <IT_CURLIM_LDO5 0>;
 +				regulator-boot-on;
 +			};
 +
@@ -472,26 +479,44 @@
 +				regulator-min-microvolt = <1200000>;
 +				regulator-max-microvolt = <1200000>;
 +				regulator-always-on;
++				interrupts = <IT_CURLIM_LDO6 0>;
 +			};
 +
 +			vref_ddr: vref_ddr {
 +				regulator-name = "vref_ddr";
 +				regulator-always-on;
++				regulator-over-current-protection;
 +			};
 +
 +			bst_out: boost {
 +				regulator-name = "bst_out";
++				interrupts = <IT_OCP_BOOST 0>;
 +			};
 +
 +			vbus_otg: pwr_sw1 {
 +				regulator-name = "vbus_otg";
++				interrupts = <IT_OCP_OTG 0>;
 +			};
 +
 +			vbus_sw: pwr_sw2 {
 +				regulator-name = "vbus_sw";
++				interrupts = <IT_OCP_SWOUT 0>;
 +				regulator-active-discharge = <1>;
 +				regulator-always-on;
 +			};
++		};
++
++		onkey {
++			compatible = "st,stpmic1-onkey";
++			interrupts = <IT_PONKEY_F 0>, <IT_PONKEY_R 0>;
++			interrupt-names = "onkey-falling", "onkey-rising";
++			power-off-time-sec = <10>;
++			status = "disabled";
++		};
++
++		watchdog {
++			compatible = "st,stpmic1-wdt";
++			status = "disabled";
 +		};
 +	};
 +};

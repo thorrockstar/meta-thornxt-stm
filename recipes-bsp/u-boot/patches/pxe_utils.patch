@@ -20,9 +20,9 @@
  	struct menu *m;
  	int err;
  
-+	gpio_direction_output(83 /*PF3 Back light*/, 0);
++	//gpio_direction_output(83 /*PF3 Back light*/, 0);
 +	
-+	udelay(50000);
++	//udelay(50000);
 +
  	if (IS_ENABLED(CONFIG_CMD_BMP)) {
  		/* display BMP if available */
