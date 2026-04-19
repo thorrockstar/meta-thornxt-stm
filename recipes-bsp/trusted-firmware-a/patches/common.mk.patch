@@ -1,0 +1,13 @@
+--- a/plat/st/common/common.mk	2026-04-19 01:24:24.606941958 +0200
++++ b/plat/st/common/common.mk	2026-04-19 18:10:17.822061494 +0200
+@@ -48,6 +48,10 @@
+ # Put both BL2 and FIP in eMMC boot partition
+ STM32MP_EMMC_BOOT		?=	0
+ 
++# Thor does not require the FW-Update feature. It is actually disabled on machine level.
++PSA_FWU_SUPPORT			:=	0
++ARM_GPT_SUPPORT			:=	0
++
+ # Serial boot devices
+ STM32MP_UART_PROGRAMMER		?=	0
+ STM32MP_USB_PROGRAMMER		?=	0
