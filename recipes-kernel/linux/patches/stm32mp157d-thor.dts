@@ -59,7 +59,7 @@
 			clock-frequency = <650000000>;
 		};
 	};
-	
+
 	/* RAM base address and size */
 
 	memory@c0000000 {
@@ -922,7 +922,7 @@
 
 /* I2C for sending commands to the audio codec. */
 
-&i2c2 {	
+&i2c2 {
 	pinctrl-names = "default", "sleep";
 	pinctrl-0 = <&i2c2_pins_mx_z>;
 	pinctrl-1 = <&i2c2_sleep_pins_mx_z>;
