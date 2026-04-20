@@ -573,7 +573,7 @@
 
 	/* Hardware Number Random Generator */
 
-	DECPROT(STM32MP1_ETZPC_RNG1_ID, DECPROT_NS_RW, DECPROT_UNLOCK)
+	DECPROT(STM32MP1_ETZPC_RNG1_ID, DECPROT_S_RW, DECPROT_UNLOCK)
 
 	/* Hardware Hash */
 
@@ -746,5 +746,11 @@
 			};
 		};
 	};
+};
+
+/* Random generator used for generating a stack canary value. */
+
+&rng1{
+	status = "okay";
 };
 

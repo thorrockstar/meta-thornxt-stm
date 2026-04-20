@@ -142,11 +142,11 @@
 +					reg = <0x00100000 0x00100000>;
 +				};
 +				partition@200000 {
-+					label = "ssbl1";
++					label = "fip";
 +					reg = <0x00200000 0x00200000>;
 +				};
 +				partition@400000 {
-+					label = "ssbl2";
++					label = "fip2";
 +					reg = <0x00400000 0x00200000>;
 +				};
 +				partition@600000 {

@@ -9,6 +9,7 @@ SRC_URI += " \
 	file://bl2_plat_setup.patch \
 	file://stm32mp_def.patch \
 	file://stm32mp_pmic.patch \
-	file://common.mk.patch \
+	file://io_fip.patch \
+	file://bl_common.patch \
 "
 

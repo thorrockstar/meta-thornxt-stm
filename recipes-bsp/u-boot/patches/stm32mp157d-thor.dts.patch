@@ -1,6 +1,6 @@
 --- /dev/null	2026-04-13 08:56:51.565002273 +0200
 +++ b/arch/arm/dts/stm32mp157d-thor.dts	2026-04-13 16:58:08.154852889 +0200
-@@ -0,0 +1,788 @@
+@@ -0,0 +1,782 @@
 +// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
 +/*
 + * Copyright (C) THOR Engineering GmbH 2026
@@ -698,12 +698,6 @@
 +&pwr_regulators {
 +	vdd-supply = <&vdd>;
 +	vdd_3v3_usbfs-supply = <&vdd_usb>;
-+};
-+
-+/* Hardware random numbers generator. */
-+
-+&rng1 {
-+	status = "okay";
 +};
 +
 +/* Reference voltage for the analogue inputs. */
