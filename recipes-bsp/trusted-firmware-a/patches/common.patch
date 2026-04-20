@@ -1,0 +1,13 @@
+--- a/plat/st/common/common.mk	2026-04-08 15:17:42.603640530 +0200
++++ b/plat/st/common/common.mk	2026-04-08 15:18:08.003531603 +0200
+@@ -6,8 +6,8 @@
+ 
+ RESET_TO_BL2			:=	1
+ 
+-STM32MP_EARLY_CONSOLE		?=	0
+-STM32MP_RECONFIGURE_CONSOLE	?=	0
++STM32MP_EARLY_CONSOLE		?=	1
++STM32MP_RECONFIGURE_CONSOLE	?=	0
+ STM32MP_UART_BAUDRATE		?=	115200
+ 
+ # Add specific ST version

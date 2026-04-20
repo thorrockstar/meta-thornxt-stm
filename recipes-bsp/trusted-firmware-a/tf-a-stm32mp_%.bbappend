@@ -1,16 +1,15 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/patches:"
 
 SRC_URI += " \
-	file://stm32mp157f-ev1.patch;patch=1 \
-	file://stm32mp157f-ev1-fw-config.patch;patch=1 \
-	file://stm32mp157d-ev1.patch;patch=1 \
-	file://stm32mp157d-ev1-fw-config.patch;patch=1 \
-	file://stm32mp157a-ev1.patch;patch=1 \
-	file://stm32mp157a-ev1-fw-config.patch;patch=1 \
-	file://stm32mp1_clk.patch;patch=1 \
-	file://stm32mp_pmic.patch;patch=1 \
-	file://bl2_plat_setup.patch;patch=1 \
+	file://stm32mp1_thor_ddr_1x4Gb.dtsi.patch \
+	file://stm32mp157d-thor.dts.patch \
+	file://stm32mp157d-thor-fw-config.dts.patch \
+	file://stm32mp157a-nous.dts.patch \
+	file://stm32mp157a-nous-fw-config.dts.patch \
+	file://bl2_plat_setup.patch \
+	file://stm32mp_def.patch \
+	file://stm32mp_pmic.patch \
+	file://io_fip.patch \
+	file://bl_common.patch \
 "
-
-PACKAGE_ARCH = "${MACHINE_ARCH}"
 

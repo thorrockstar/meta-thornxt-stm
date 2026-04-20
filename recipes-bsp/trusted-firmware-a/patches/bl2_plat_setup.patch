@@ -1,14 +1,14 @@
 --- a/plat/st/stm32mp1/bl2_plat_setup.c	2022-07-14 11:01:46.211692000 +0200
 +++ b/plat/st/stm32mp1/bl2_plat_setup.c	2022-07-14 11:42:13.230237079 +0200
 @@ -30,6 +30,7 @@
- #include <drivers/st/stm32mp1_clk.h>
  #include <drivers/st/stm32mp1_pwr.h>
  #include <drivers/st/stm32mp1_ram.h>
+ #include <drivers/st/stm32mp_pmic.h>
 +#include <drivers/st/stm32_gpio.h>
  #include <lib/fconf/fconf.h>
  #include <lib/fconf/fconf_dyn_cfg_getter.h>
- #include <lib/mmio.h>
-@@ -410,6 +411,13 @@
+ #include <libfdt.h>
+@@ -522,6 +523,13 @@
  	} else {
  		stm32mp_io_setup();
  	}

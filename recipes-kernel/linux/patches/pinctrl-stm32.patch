@@ -1,11 +1,11 @@
---- a/drivers/pinctrl/stm32/pinctrl-stm32.c
-+++ b/drivers/pinctrl/stm32/pinctrl-stm32.c
-@@ -469,7 +469,7 @@
- 	spin_lock_irqsave(&pctl->irqmux_lock, flags);
+--- a/drivers/pinctrl/stm32/pinctrl-stm32.c	2026-04-16 19:09:22.727364843 +0200
++++ a/drivers/pinctrl/stm32/pinctrl-stm32.c	2026-04-16 20:42:35.479758299 +0200
+@@ -1751,7 +1751,7 @@
+ 	if (fwnode_property_read_u32(fwnode, "st,bank-ioport", &bank_ioport_nr))
+ 		bank_ioport_nr = bank_nr;
  
- 	if (pctl->irqmux_map & BIT(hwirq)) {
--		dev_err(pctl->dev, "irq line %ld already requested.\n", hwirq);
-+		//dev_err(pctl->dev, "irq line %ld already requested.\n", hwirq);
- 		ret = -EBUSY;
- 	} else {
- 		pctl->irqmux_map |= BIT(hwirq);
+-	bank->gpio_chip.base = -1;
++	bank->gpio_chip.base = bank_nr * STM32_GPIO_PINS_PER_BANK;
+ 
+ 	bank->gpio_chip.ngpio = npins;
+ 	bank->gpio_chip.fwnode = fwnode;

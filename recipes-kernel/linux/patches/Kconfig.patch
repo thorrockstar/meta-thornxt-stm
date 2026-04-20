@@ -1,10 +1,9 @@
 --- a/sound/soc/stm/Kconfig	2021-08-26 14:51:21.000000000 +0200
 +++ b/sound/soc/stm/Kconfig	03-31 14:04:00.366731860 +0200
-@@ -43,4 +43,15 @@
- 	  Select this option to enable the STM32 Digital Filter
+@@ -45,6 +45,16 @@
  	  for Sigma Delta Modulators (DFSDM) driver used
  	  in various STM32 series for digital microphone capture.
-+
+ 
 +config SND_SOC_STM32_SSM2518
 +	tristate "STM32 ASoC driver for boards using SSM2518 codec"
 +	depends on ARCH_STM32 || COMPILE_TEST
@@ -15,4 +14,6 @@
 +	  Say Y if you want to add support for STM32 ASoC driver for boards using
 +	  SSM2518 codec.
 +
- endmenu
+ config SND_SOC_STM32_MDF
+ 	tristate "SoC Audio support for STM32 MDF"
+ 	depends on ARCH_STM32 || COMPILE_TEST

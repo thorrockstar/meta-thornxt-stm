@@ -1,6 +1,6 @@
 --- a/board/st/stm32mp1/stm32mp1.c	2022-05-10 17:30:11.707051000 +0200
 +++ b/board/st/stm32mp1/stm32mp1.c	2022-05-11 10:48:27.498955047 +0200
-@@ -21,7 +21,6 @@
+@@ -22,7 +22,6 @@
  #include <i2c.h>
  #include <regmap.h>
  #include <init.h>
@@ -8,21 +8,21 @@
  #include <log.h>
  #include <malloc.h>
  #include <misc.h>
-@@ -50,6 +49,10 @@
+@@ -51,6 +50,10 @@
+ #include <linux/stringify.h>
  #include <power/regulator.h>
- #include <tee/optee.h>
  #include <usb/dwc2_udc.h>
 +#include <spi.h>
 +
-+/* Set to one if building for the Nous Mk2 board. */
-+#define APP_NOUS_MK2_BOARD    0
++
++
  
  /* SYSCFG registers */
  #define SYSCFG_BOOTR		0x00
-@@ -88,6 +91,866 @@
+@@ -83,6 +86,864 @@
+ #define USB_WARNING_LOW_THRESHOLD_UV	660000
  #define USB_START_LOW_THRESHOLD_UV	1230000
  #define USB_START_HIGH_THRESHOLD_UV	2150000
- 
 +/* Vendor specific initialization command sequence for GC9503V IC */
 +
 +// Variant 1 - Display type made by HIFAY
@@ -382,7 +382,7 @@
 +    unsigned char txbuf[400];
 +    unsigned char rxbuf[400];
 +    
-+    printf("\nInitialize GC9503V display controller via SPI. ");
++    printf("\nInitialize optional GC9503V display controller via SPI. ");
 +
 +    /* Setup GPIO. */
 +	
@@ -402,8 +402,7 @@
 +
 +        if (str)
 +        {
-+            if (spi_get_bus_and_cs(5 /*SPI5*/, 0 /*NPCS0*/, 8000000/*32000000*/, SPI_MODE_0/*SPI_CS_HIGH*/, 
-+                                   "spi_generic_drv", str, &dev, &slave))
++            if (_spi_get_bus_and_cs(5 /*SPI5*/, 0 /*NPCS0*/, 8000000/*32000000*/, SPI_MODE_0/*SPI_CS_HIGH*/, "spi_generic_drv", str, &dev, &slave))
 +            {
 +                slave = 0;
 +            }
@@ -778,7 +777,7 @@
 +        gpio_free(17 /*PB1*/);
 +    }
 +
-+  #if APP_NOUS_MK2_BOARD
++    /* BEGIN - Extra Nous terminals for its second shift register line. */
 +  
 +    if (gpio_request(128 /*PI0*/, "SR_DO_SB") == -1)
 +    {
@@ -820,7 +819,7 @@
 +        gpio_free(141 /*PI13*/);
 +    }
 +
-+  #endif // #if APP_NOUS_MK2_BOARD
++    /* END - Extra Nous terminals for its second shift register line. */
 +
 +    if (gpio_request(35 /*PC3*/, "SR_DO_CPU") == -1)
 +    {
@@ -882,20 +881,19 @@
 +        gpio_free(101 /*PG8*/);
 +    }
 +}
-+
- int board_early_init_f(void)
- {
- 	/* nothing to do, only used in SPL */
-@@ -115,7 +978,7 @@
- 	fdt_compat = fdt_getprop(gd->fdt_blob, 0, "compatible",
- 				 &fdt_compat_len);
+ 
+ #if IS_ENABLED(CONFIG_EFI_HAVE_CAPSULE_SUPPORT)
+ struct efi_fw_image fw_images[1];
+@@ -121,7 +982,7 @@
+ 	fdt_compat = ofnode_get_property(ofnode_root(), "compatible",
+ 					 &fdt_compat_len);
  
 -	log_info("Board: stm32mp1 in %s mode (%s)\n", mode,
 +	log_info("THOR-E2-Board: stm32mp1 in %s mode (%s)\n", mode,
  		 fdt_compat && fdt_compat_len ? fdt_compat : "");
  
  	/* display the STMicroelectronics board identification */
-@@ -138,55 +1001,6 @@
+@@ -144,55 +1005,6 @@
  	return 0;
  }
  
@@ -951,16 +949,16 @@
  static int typec_usb_cable_connected(void)
  {
  	struct udevice *dev;
-@@ -252,220 +1066,6 @@
+@@ -258,220 +1070,6 @@
  }
  #endif /* CONFIG_USB_GADGET_DOWNLOAD */
  
 -static int get_led(struct udevice **dev, char *led_string)
 -{
--	char *led_name;
+-	const char *led_name;
 -	int ret;
 -
--	led_name = fdtdec_get_config_string(gd->fdt_blob, led_string);
+-	led_name = ofnode_conf_read_str(led_string);
 -	if (!led_name) {
 -		log_debug("could not find %s config string\n", led_string);
 -		return -ENOENT;
@@ -1007,7 +1005,7 @@
 -			for (i = 0; i < 2 * nb_blink; i++) {
 -				led_set_state(led, LEDST_TOGGLE);
 -				mdelay(125);
--				WATCHDOG_RESET();
+-				schedule();
 -			}
 -			led_set_state(led, LEDST_ON);
 -		}
@@ -1172,7 +1170,7 @@
  static void sysconf_init(void)
  {
  	u8 *syscfg;
-@@ -555,307 +1155,14 @@
+@@ -561,286 +1159,14 @@
  				 1000000);
  	if (ret) {
  		log_err("SYSCFG: I/O compensation failed, timeout.\n");
@@ -1236,18 +1234,9 @@
 -	return ret;
 -}
 -
--static bool board_is_stm32mp13x_dk(void)
--{
--	if (CONFIG_IS_ENABLED(TARGET_ST_STM32MP13x) &&
--	     of_machine_is_compatible("st,stm32mp135f-dk"))
--		return true;
--
--	return false;
--}
--
 -static bool board_is_stm32mp15x_dk2(void)
 -{
--	if (CONFIG_IS_ENABLED(TARGET_ST_STM32MP15x) &&
+-	if (CONFIG_IS_ENABLED(TARGET_ST_STM32MP15X) &&
 -	    (of_machine_is_compatible("st,stm32mp157c-dk2") ||
 -	     of_machine_is_compatible("st,stm32mp157f-dk2")))
 -		return true;
@@ -1257,7 +1246,7 @@
 -
 -static bool board_is_stm32mp15x_ev1(void)
 -{
--	if (CONFIG_IS_ENABLED(TARGET_ST_STM32MP15x) &&
+-	if (CONFIG_IS_ENABLED(TARGET_ST_STM32MP15X) &&
 -	    (of_machine_is_compatible("st,stm32mp157a-ev1") ||
 -	     of_machine_is_compatible("st,stm32mp157c-ev1") ||
 -	     of_machine_is_compatible("st,stm32mp157d-ev1") ||
@@ -1424,12 +1413,17 @@
 -	struct driver *drv;
 -	struct gpio_desc reset_gpio;
 -	char path[40];
+-	int ret;
 -
 -	/* configure IRQ line on EV1 for touchscreen before LCD reset */
--	uclass_get_device_by_driver(UCLASS_I2C_GENERIC, DM_DRIVER_GET(goodix), &dev);
+-	ret = uclass_get_device_by_driver(UCLASS_I2C_GENERIC, DM_DRIVER_GET(goodix), &dev);
+-	if (ret)
+-		return;
 -
 -	/* get & set reset gpio for panel */
--	uclass_get_device_by_driver(UCLASS_PANEL, DM_DRIVER_GET(rm68200_panel), &dev);
+-	ret = uclass_get_device_by_driver(UCLASS_PANEL, DM_DRIVER_GET(rm68200_panel), &dev);
+-	if (ret)
+-		return;
 -
 -	gpio_request_by_name(dev, "reset-gpios", 0, &reset_gpio, GPIOD_IS_OUT);
 -
@@ -1455,69 +1449,47 @@
 -	bind_driver(drv, path);
 -}
 -
--static void board_stm32mp13x_dk_init(void)
--{
--	struct udevice *dev;
--
--	/* configure IRQ line on DK for touchscreen before LCD reset */
--	uclass_get_device_by_driver(UCLASS_NOP, DM_DRIVER_GET(goodix), &dev);
--}
--
  /* board dependent setup after realloc */
  int board_init(void)
  {
--	struct udevice *dev;
--	int ret;
--
--	/* probe RCC to avoid circular access with usbphyc probe as clk provider */
--	if (IS_ENABLED(CONFIG_CLK_STM32MP13)) {
--		ret = uclass_get_device_by_driver(UCLASS_CLK, DM_DRIVER_GET(stm32mp1_clock), &dev);
--		log_debug("Clock init failed: %d\n", ret);
--	}
--
 -	board_key_check();
 -
  	regulators_enable_boot_on(_DEBUG);
  
  	/*
-@@ -865,10 +1172,17 @@
+@@ -850,7 +1176,17 @@
  	if (IS_ENABLED(CONFIG_ARMV7_NONSEC))
  		sysconf_init();
  
--	if (CONFIG_IS_ENABLED(LED))
--		led_default_state();
-+        /* THOR shift register IO initialization. */
+-	setup_led(LEDST_ON);
++	/* THOR shift register IO initialization. */
 +
 +	init_board_gpios_ios();
- 
--	setup_led(LEDST_ON);
-+        /* THOR display initialization. */
-+
-+  #if !APP_NOUS_MK2_BOARD
++ 
++	/* THOR display initialization. */
 +
 +	init_gc9503v_display_cntrl();
 +
-+  #endif // #if !APP_NOUS_MK2_BOARD
++
++
++
  
- 	return 0;
- }
-@@ -884,15 +1198,6 @@
+ #if IS_ENABLED(CONFIG_EFI_HAVE_CAPSULE_SUPPORT)
+ 	efi_guid_t image_type_guid = STM32MP_FIP_IMAGE_GUID;
+@@ -873,12 +1209,6 @@
  	char dtb_name[256];
  	int buf_len;
  
--	if (board_is_stm32mp13x_dk())
--		board_stm32mp13x_dk_init();
--
--	if (board_is_stm32mp15x_ev1())
+-	if (IS_ENABLED(CONFIG_VIDEO_LCD_RAYDIUM_RM68200) && board_is_stm32mp15x_ev1())
 -		board_stm32mp15x_ev1_init();
 -
 -	if (board_is_stm32mp15x_dk2())
 -		board_stm32mp15x_dk2_init();
 -
  	if (IS_ENABLED(CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG)) {
- 		fdt_compat = fdt_getprop(gd->fdt_blob, 0, "compatible",
- 					 &fdt_compat_len);
-@@ -931,18 +1236,11 @@
+ 		fdt_compat = ofnode_get_property(ofnode_root(), "compatible",
+ 						 &fdt_compat_len);
+@@ -917,8 +1247,6 @@
  		uclass_foreach_dev_probe(UCLASS_ADC, dev) {
  			log_debug("ACD probe for calibration: %s\n", dev->name);
  		}
@@ -1525,6 +1497,8 @@
 -		board_check_usb_power();
  	}
  
+ 	if (CONFIG_IS_ENABLED(FASTBOOT_FLASH_MMC))
+@@ -927,11 +1255,6 @@
  	return 0;
  }
  
@@ -1536,10 +1510,10 @@
  /* CLOCK feed to PHY*/
  #define ETH_CK_F_25M	25000000
  #define ETH_CK_F_50M	50000000
-@@ -1379,32 +1677,6 @@
- 	fdt_setprop_u32(new_blob, nodeoff_ov5640_ep, "remote-endpoint", phandle_stmipi_ep);
+@@ -1158,56 +1481,6 @@
  }
  
+ #if defined(CONFIG_OF_BOARD_SETUP)
 -void stm32mp15x_dk2_fdt_update(void *new_blob)
 -{
 -	struct udevice *dev;
@@ -1555,9 +1529,9 @@
 -
 -	ret = dm_i2c_probe(bus, 0x38, 0, &dev);
 -	if (ret < 0) {
--		nodeoff = fdt_path_offset(new_blob, "/soc/i2c@40012000/touchscreen@38");
+-		nodeoff = fdt_node_offset_by_compatible(new_blob, -1, "focaltech,ft6236");
 -		if (nodeoff < 0) {
--			log_warning("touchscreen@2a node not found\n");
+-			log_warning("touchscreen@38 node not found\n");
 -		} else {
 -			fdt_set_name(new_blob, nodeoff, "touchscreen@2a");
 -			fdt_setprop_u32(new_blob, nodeoff, "reg", 0x2a);
@@ -1566,16 +1540,37 @@
 -	}
 -}
 -
- void fdt_update_panel_dsi(void *new_blob)
- {
- 	char const *panel = env_get("panel-dsi");
-@@ -1453,15 +1725,6 @@
- 	if (CONFIG_IS_ENABLED(TARGET_ST_STM32MP15x))
- 		stm32mp15_fdt_update_optee_nodes(blob);
- 
--	if (board_is_stm32mp13x_dk())
--		stm32mp13x_dk_fdt_update(blob);
+-void fdt_update_panel_dsi(void *new_blob)
+-{
+-	char const *panel = env_get("panel-dsi");
+-	int nodeoff = 0;
 -
+-	if (!panel)
+-		return;
+-
+-	if (!strcmp(panel, "rocktech,rk055mhd042a0")) {
+-		nodeoff = fdt_node_offset_by_compatible(new_blob, -1, "raydium,rm68200");
+-		if (nodeoff < 0) {
+-			log_warning("panel-dsi node not found");
+-			return;
+-		}
+-		fdt_setprop_string(new_blob, nodeoff, "compatible", panel);
+-
+-		nodeoff = fdt_node_offset_by_compatible(new_blob, -1, "goodix,gt9147");
+-		if (nodeoff < 0) {
+-			log_warning("touchscreen node not found");
+-			return;
+-		}
+-		fdt_setprop_string(new_blob, nodeoff, "compatible", "goodix,gt911");
+-	}
+-}
+ 
+ int ft_board_setup(void *blob, struct bd_info *bd)
+ {
+@@ -1216,12 +1489,6 @@
+ 	if (IS_ENABLED(CONFIG_FDT_SIMPLEFB))
+ 		fdt_simplefb_enable_and_mem_rsv(blob);
+ 
 -	if (board_is_stm32mp15x_dk2())
 -		stm32mp15x_dk2_fdt_update(blob);
 -

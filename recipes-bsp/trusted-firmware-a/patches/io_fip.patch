@@ -1,0 +1,10 @@
+--- a/drivers/io/io_fip.c	2026-04-20 08:46:53.100683070 +0200
++++ b/drivers/io/io_fip.c	2026-04-20 15:28:52.995803157 +0200
+@@ -249,7 +249,6 @@
+ 			&bytes_read);
+ 	if (result == 0) {
+ 		if (!is_valid_header(&header)) {
+-			WARN("Firmware Image Package header check failed.\n");
+ 			result = -ENOENT;
+ 		} else {
+ 			VERBOSE("FIP header looks OK.\n");

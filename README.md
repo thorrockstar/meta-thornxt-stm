@@ -42,40 +42,41 @@ Requisites
 
 Build has been tested under Ubuntu 24.04 LTS. Anyway you need to install these required packages:
 
-    sudo apt install gawk wget git diffstat unzip texinfo gcc build-essential chrpath socat cpio python3 python3-pip python3-pexpect xz-utils debianutils iputils-ping python3-git python3-jinja2 libegl1-mesa libsdl1.2-dev python3-subunit mesa-common-dev zstd liblz4-tool file locales libacl1
+    sudo apt install build-essential chrpath cpio debianutils diffstat file gawk gcc git iputils-ping libacl1 liblz4-tool locales python3 python3-git python3-jinja2 python3-pexpect python3-pip python3-subunit socat texinfo unzip wget xz-utils zstd
+
     sudo locale-gen en_US.UTF-8
 
-    sudo apt install make python3-pip inkscape texlive-latex-extra
-    sudo pip3 install sphinx sphinx_rtd_theme pyyaml
+    sudo apt install git librsvg2-bin locales make python3-saneyaml python3-sphinx-rtd-theme sphinx
+
 
 
 Build procedure
-===============
+===============  
 
 0/ Create a directory.  
 
-    mkdir kirkstone_stm
-    cd kirkstone_stm
+    mkdir scarthgap_stm
+    cd scarthgap_stm
 
 1/ Clone yocto/poky git repository with the proper branch ready.  
 
-    git clone https://git.yoctoproject.org/poky -b kirkstone
+    git clone https://git.yoctoproject.org/poky -b scarthgap
 
 2/ Clone meta-openembedded git repository with the proper branch ready.  
 
-    git clone https://git.openembedded.org/meta-openembedded -b kirkstone
+    git clone https://git.openembedded.org/meta-openembedded -b scarthgap
 
 3/ Clone meta-st-stm32mp layer with the proper branch ready.  
 
-    git clone https://github.com/STMicroelectronics/meta-st-stm32mp.git -b kirkstone
+    git clone https://github.com/STMicroelectronics/meta-st-stm32mp.git -b scarthgap
 
 4/ Clone meta-st-openstlinux layer with the proper branch ready.  
 
-    git clone https://github.com/STMicroelectronics/meta-st-openstlinux.git -b kirkstone
+    git clone https://github.com/STMicroelectronics/meta-st-openstlinux.git -b scarthgap
 
 5/ Clone meta-thornxt-stm layer with the proper branch ready.  
 
-    git clone https://github.com/thorrockstar/meta-thornxt-stm.git -b kirkstone
+    git clone https://github.com/thorrockstar/meta-thornxt-stm.git -b scarthgap
 
 6/ Enter the poky directory to configure the build system and start the build process.  
 
@@ -117,9 +118,7 @@ BLAYERS_NON_REMOVABLE ?= " \
 "
 ```
 
-9/ Edit local.conf to specify the machine, location of source archived, package type (rpm, deb or ipk)
-Pick one MACHINE name from the "Supported SoCs / MACHINE names" chapter above
-and edit the "local.conf" file. Here is an example:  
+9/ Edit local.conf by appending the block below at the very end of the file.
 
 **Make sure that you have no white spaces left to "MACHINE ??=" and the other variables when editing the text block.**
 
@@ -143,74 +142,35 @@ GLIBC_GENERATE_LOCALES += "en_US.UTF-8"
 IMAGE_LINGUAS += "en-us"  
 ```
 
-10/ Remove some unwanted recipies from the ST folders.
-
-**meta-st-openstlinux**
-
-* meta-st-openstlinux/recipes-multimedia/gstreamer
-* meta-st-openstlinux/recipes-webadmin
-* meta-st-openstlinux/recipes-samples
-* meta-st-openstlinux/recipes-qt
-* meta-st-openstlinux/oe-core/recipes-gnome
-* meta-st-openstlinux/oe-core/recipes-core/systemd
-
-11/ Remove these lines from the meta-st-stm32mp/receipes-st/images/st-image-userfs.bb file.
-
-    <meta-st-stm32mp/recipes-st/images/st-image-userfs.bb>
-
-    ** Remove these lines! **
-
-    PACKAGE_INSTALL += " \
-        packagegroup-st-demo \
-        "
-
-12/ Remove some lines from the meta-st-openstlinux/conf/layer.conf file.
-
-    <meta-st-openstlinux/conf/layer.conf>
-
-    ** Remove this line! **
-
-    LAYERDEPENDS_st-openstlinux = "qt5-layer"
-
-
-**VERY IMPORTANT**
-
-13/ There is an issue with patching the file "st-machine-extlinux-config-stm32mp.inc" inside the ST-Layer at "meta-st-stm32mp/conf/machine/include".
-
-    So please copy the file "st-machine-extlinux-config-stm32mp.inc"
-    from the THOR-layer at "meta-thornxt-stm/conf/machine/include"
-    to the STM-layer at "meta-st-stm32mp/conf/machine/include"
-    and overwrite the original file.
-
 **IMPORTANT**
 
-14/ Double check that in the kernel configuration **'General Setup->Timers subsystem->Timer tick handling'** is set to **'Periodic timer ticks'**. This should be done by the 'defconfig' but double check before building because it is cruicial.
+10/ Double check that in the kernel configuration **'General Setup->Timers subsystem->Timer tick handling'** is set to **'Periodic timer ticks'**. This should be done by the 'defconfig' but double check before building because it is cruicial.
 
-15/ Build Thor image
+11/ Build Thor image
 
     bitbake thor-e-image
 
 Typical bitbake output
 ======================
     Build Configuration:
-    BB_VERSION           = "2.0.0"
+    BB_VERSION           = "2.8.1"
     BUILD_SYS            = "x86_64-linux"
-    NATIVELSBSTRING      = "universal"
+    NATIVELSBSTRING      = "ubuntu-24.04"
     TARGET_SYS           = "arm-thor-linux-gnueabi"
     MACHINE              = "stm32mp1-thor-e2"
     DISTRO               = "thor-stm"
-    DISTRO_VERSION       = "4.0.13"
+    DISTRO_VERSION       = "5.0.16"
     TUNE_FEATURES        = "arm vfp cortexa7 neon vfpv4 thumb callconvention-hard"
     TARGET_FPU           = "hard"
     meta                 
     meta-poky            
-    meta-yocto-bsp       = "kirkstone:02c15addea7c3303552df5994ce0616b2059388c"
-    meta-st-stm32mp      = "kirkstone:fcdd9c0100ccb1317bf4c6904a1c90692891fa6d"
-    meta-st-openstlinux  = "kirkstone:7f5d2a17b52f968da5dd73f627f1634223bd427d"
-    meta-thornxt-stm     = "kirkstone:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    meta-yocto-bsp       = "scarthgap:b301218f4da7793624db3545efd8bf66888b77b0"
+    meta-st-stm32mp      = "scarthgap:701c0ddb5afa29842c4146773d5303a1f192ff19"
+    meta-st-openstlinux  = "scarthgap:993e43adedbfe95dca8e93a64ec091a83a604633"
+    meta-thornxt-stm     = "scarthgap:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
     meta-oe              
     meta-networking      
-    meta-python          = "kirkstone:8a598a2bc9199a4fbb9008a32ab143fb509a0933"
+    meta-python          = "scarthgap:4d3e2639dec542b58708244662d5ce36810fc510"
 
 Contributing
 ============

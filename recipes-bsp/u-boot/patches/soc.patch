@@ -1,0 +1,29 @@
+--- a/arch/arm/mach-stm32mp/soc.c	2022-07-19 09:44:18.015013000 +0200
++++ b/arch/arm/mach-stm32mp/soc.c	2022-07-19 10:00:35.622241873 +0200
+@@ -21,6 +21,7 @@
+ {
+ 	int ret;
+ 	int i;
++	unsigned int seed;
+ 	u32 otp[MAX_NB_OTP];
+ 	uchar enetaddr[ARP_HLEN];
+ 	struct udevice *dev;
+@@ -63,9 +64,15 @@
+ 			continue;
+ 
+ 		if (!is_valid_ethaddr(enetaddr)) {
+-			log_err("invalid MAC address %d in OTP %pM\n",
+-				index, enetaddr);
+-			return -EINVAL;
++			pr_debug("Generating randomized MAC address\n");
++	
++			seed = get_ticks();
++
++			for (i = 0; i < 6; i++)
++				enetaddr[i] = rand_r(&seed);
++
++			enetaddr[0] &= 0xfe;	/* clear multicast bit */
++			enetaddr[0] |= 0x02;	/* set local assignment bit (IEEE802) */
+ 		}
+ 		log_debug("OTP MAC address %d = %pM\n", index, enetaddr);
+ 		ret = eth_env_set_enetaddr_by_index("eth", index, enetaddr);

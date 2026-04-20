@@ -1,10 +1,14 @@
---- a/cmd/pxe_utils.c	2022-07-20 10:43:25.902257000 +0200
-+++ b/cmd/pxe_utils.c	2022-07-20 11:11:55.509243408 +0200
-@@ -19,9 +19,11 @@
+--- a/boot/pxe_utils.c	2022-07-20 10:43:25.902257000 +0200
++++ b/boot/pxe_utils.c	2022-07-20 11:11:55.509243408 +0200
+@@ -20,6 +20,7 @@
  #include <linux/ctype.h>
  #include <errno.h>
  #include <linux/list.h>
 +#include <linux/delay.h>
+ 
+ #ifdef CONFIG_DM_RNG
+ #include <rng.h>
+@@ -27,6 +28,7 @@
  
  #include <splash.h>
  #include <asm/io.h>
@@ -12,18 +16,18 @@
  
  #include "menu.h"
  #include "cli.h"
-@@ -1458,6 +1460,10 @@
+@@ -1531,6 +1533,10 @@
  	struct menu *m;
  	int err;
  
-+	gpio_direction_output(83 /*PF3 Back light*/, 0);
++	//gpio_direction_output(83 /*PF3 Back light*/, 0);
 +	
-+	udelay(50000);
++	//udelay(50000);
 +
  	if (IS_ENABLED(CONFIG_CMD_BMP)) {
  		/* display BMP if available */
  		if (cfg->bmp) {
-@@ -1473,11 +1479,24 @@
+@@ -1551,11 +1557,25 @@
  		}
  	}
  
@@ -34,7 +38,7 @@
 +	udelay(1250000);
 +
 +	gpio_direction_output(83 /*PF3 Back light*/, 0);
-+
++	
  	m = pxe_menu_to_menu(cfg);
  	if (!m)
  		return;
@@ -46,6 +50,7 @@
 +	if (err != 1) {
 +		err = menu_get_choice(m, &choice);
 +	}
- 
++	
  	menu_destroy(m);
  
+ 	/*
