@@ -14,8 +14,8 @@
  #include <usb/dwc2_udc.h>
 +#include <spi.h>
 +
-+/* Set to one if building for the Nous Mk2 board. */
-+#define APP_NOUS_MK2_BOARD    0
++
++
  
  /* SYSCFG registers */
  #define SYSCFG_BOOTR		0x00
@@ -382,7 +382,7 @@
 +    unsigned char txbuf[400];
 +    unsigned char rxbuf[400];
 +    
-+    printf("\nInitialize GC9503V display controller via SPI. ");
++    printf("\nInitialize optional GC9503V display controller via SPI. ");
 +
 +    /* Setup GPIO. */
 +	
@@ -777,7 +777,7 @@
 +        gpio_free(17 /*PB1*/);
 +    }
 +
-+  #if APP_NOUS_MK2_BOARD
++    /* BEGIN - Extra Nous terminals for its second shift register line. */
 +  
 +    if (gpio_request(128 /*PI0*/, "SR_DO_SB") == -1)
 +    {
@@ -819,7 +819,7 @@
 +        gpio_free(141 /*PI13*/);
 +    }
 +
-+  #endif // #if APP_NOUS_MK2_BOARD
++    /* END - Extra Nous terminals for its second shift register line. */
 +
 +    if (gpio_request(35 /*PC3*/, "SR_DO_CPU") == -1)
 +    {
@@ -1462,17 +1462,17 @@
  		sysconf_init();
  
 -	setup_led(LEDST_ON);
-+        /* THOR shift register IO initialization. */
++	/* THOR shift register IO initialization. */
 +
 +	init_board_gpios_ios();
 + 
-+        /* THOR display initialization. */
-+
-+  #if !APP_NOUS_MK2_BOARD
++	/* THOR display initialization. */
 +
 +	init_gc9503v_display_cntrl();
 +
-+  #endif // #if !APP_NOUS_MK2_BOARD
++
++
++
  
  #if IS_ENABLED(CONFIG_EFI_HAVE_CAPSULE_SUPPORT)
  	efi_guid_t image_type_guid = STM32MP_FIP_IMAGE_GUID;
