@@ -1,11 +1,35 @@
 --- a/include/configs/stm32mp15_st_common.h
 +++ b/include/configs/stm32mp15_st_common.h
-@@ -31,18 +31,14 @@
+@@ -29,23 +29,43 @@
+  * for nand or spi-nand boot, distro boot with ubifs on UBI partition or
+  * sdcard
   * for nor boot, distro boot on SD card = mmc0 ONLY !
++ *
++ * THOR specific PKH OTP fuses for secure ROMBoot. These are basically the SHA256 of the public key.
   */
++#define THOR_STM32MP1_PKH_FUSES_ENABLE 0
++#define THOR_STM32MP1_PKH_FUSES_BYTES 0x01, 0x02, 0x03, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
++#define THOR_STM32MP1_PKH_FUSES_PROBE_STRING "0x04030201"    // First OTP word (little endian)
++#define THOR_STM32MP1_PKH_FUSES_ADDR_STRING  "0xc4000000"    // STMP151x specific - see https://wiki.st.com/stm32mpu/wiki/How_to_use_U-Boot_stm32key_command
++#define THOR_STM32MP1_PKH_FUSES_ADDR_PTR      0xc4000000
++
++#if THOR_STM32MP1_PKH_FUSES_ENABLE
++
++#define ST_STM32MP1_BOOTCMD "bootcmd_stm32mp=" \
++	"echo \"Check PKH...\";" \
++	"if fuse cmp 0 24 " THOR_STM32MP1_PKH_FUSES_PROBE_STRING "; then echo \"PKH ok\"; else stm32key select PKH; stm32key fuse -y " THOR_STM32MP1_PKH_FUSES_ADDR_STRING "; fi;" \
++	"echo \"Boot over ${boot_device}${boot_instance}!\";" \
++	"if test ${boot_device} = usb;" \
++	"then stm32prog ${boot_device} ${boot_instance}; " \
++	"else " \
++		"run env_check;" \
++		"env set boot_targets ubifs0;" \
++		"run distro_bootcmd;" \
++	"fi;\0"
++
++#else
++
  #define ST_STM32MP1_BOOTCMD "bootcmd_stm32mp=" \
-+	"echo \"TODO: Add your PKH fuse check here...\";" \
-+	"" \
  	"echo \"Boot over ${boot_device}${boot_instance}!\";" \
 -	"if test ${boot_device} = serial || test ${boot_device} = usb;" \
 +	"if test ${boot_device} = usb;" \
@@ -23,3 +47,8 @@
  		"run distro_bootcmd;" \
  	"fi;\0"
  
++#endif
++
+ #define ST_STM32MP1_ALTBOOTCMD "altbootcmd=run bootcmd_stm32mp\0"
+ 
+ #undef CFG_EXTRA_ENV_SETTINGS

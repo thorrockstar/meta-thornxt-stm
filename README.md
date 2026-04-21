@@ -169,8 +169,8 @@ Typical bitbake output
     meta-python          = "scarthgap:4d3e2639dec542b58708244662d5ce36810fc510"
 
 
-Install the Signing Tool for Production under Linux
-===================================================
+Install the Programmer and the Signing Tool for Production under Linux
+======================================================================
 
 To install the signing tool, download STMCubeProgrammer from the ST web site.
 You will need a log-in on their web page. Replace the "x.xx.x" with the actual
@@ -224,17 +224,25 @@ Writing your public key hash (PKH) into OTP via U-Boot
 
 When you create your public/private keys with the STM32MP_KeyGen_CLI you will
 get a third file, which is actually the SHA256 of your public key. Make a hexdump
-of that and split it into 8 words. Add this script to the "meta-thornxt-stm/recipes-bsp/u-boot/patches/stm32mp1_st_h.patch" file
-in order to make U-Boot write the OTP at the very first boot. Be aware that there is another patch file that looks almost the same. Double check that you are in the "stm32mp1_st_h.patch" file!
+of that file.
 
-Replace the 0x1111111 ... 0x88888888 with your actual hex-dump.
+    hexdump -v -e '1/1 " %02X" ","' publicKeyhash.bin
+
+Add your real hex-dumo to the "meta-thornxt-stm/recipes-bsp/u-boot/patches/stm32mp1_st_h.patch" file in order to make U-Boot write the OTP at the very first boot. Be aware that there is another patch file that looks almost the same. Double check that you are in the "stm32mp1_**st**_h.patch" file!
 
 ```
 File: stm32mp1_st_h.patch
 
+#define THOR_STM32MP1_PKH_FUSES_ENABLE 1
+#define THOR_STM32MP1_PKH_FUSES_BYTES 0x01, 0x02, 0x03, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x000, 0x00, 0x00, 0x00
+#define THOR_STM32MP1_PKH_FUSES_PROBE_STRING "0x04030201"    // First OTP word (little endian)
+#define THOR_STM32MP1_PKH_FUSES_ADDR_STRING  "0xc4000000"    // STMP151x specific - see https://wiki.st.com/stm32mpu/wiki/How_to_use_U-Boot_stm32key_command
+#define THOR_STM32MP1_PKH_FUSES_ADDR_PTR      0xc4000000
+
+#if THOR_STM32MP1_PKH_FUSES_ENABLE
 #define ST_STM32MP1_BOOTCMD "bootcmd_stm32mp=" \
-"echo \"TODO: Add your PKH fuse check here...\";" \
-"if fuse cmp 0 24 0x11111111; then echo \"PKH ok\"; else fuse prog -y 0 24 0x11111111 0x22222222 0x33333333 0x44444444 0x55555555 0x66666666 0x77777777 0x88888888; fi" \
+	"echo \"Check PKH...\";" \
+	"if fuse cmp 0 24 " THOR_STM32MP1_PKH_FUSES_PROBE_STRING "; then echo \"PKH ok\"; else stm32key select PKH; stm32key fuse -y " THOR_STM32MP1_PKH_FUSES_ADDR_STRING "; fi;" \
 <The original rest of the script.>
 ```
 

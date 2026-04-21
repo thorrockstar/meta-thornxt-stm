@@ -1457,7 +1457,7 @@
  	regulators_enable_boot_on(_DEBUG);
  
  	/*
-@@ -850,7 +1176,17 @@
+@@ -850,7 +1176,23 @@
  	if (IS_ENABLED(CONFIG_ARMV7_NONSEC))
  		sysconf_init();
  
@@ -1470,13 +1470,19 @@
 +
 +	init_gc9503v_display_cntrl();
 +
++	/* THOR PKH OTP fuses for RomBoot authentification and secure boot. */
 +
++#if THOR_STM32MP1_PKH_FUSES_ENABLE
 +
++	static const uint8_t s_thor_pkh_otp_fuses[] = { THOR_STM32MP1_PKH_FUSES_BYTES };
 +
++	memcpy(THOR_STM32MP1_PKH_FUSES_ADDR_PTR, s_thor_pkh_otp_fuses, sizeof(s_thor_pkh_otp_fuses));
++
++#endif // THOR_STM32MP1_PKH_FUSES_ENABLE
  
  #if IS_ENABLED(CONFIG_EFI_HAVE_CAPSULE_SUPPORT)
  	efi_guid_t image_type_guid = STM32MP_FIP_IMAGE_GUID;
-@@ -873,12 +1209,6 @@
+@@ -873,12 +1215,6 @@
  	char dtb_name[256];
  	int buf_len;
  
@@ -1489,7 +1495,7 @@
  	if (IS_ENABLED(CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG)) {
  		fdt_compat = ofnode_get_property(ofnode_root(), "compatible",
  						 &fdt_compat_len);
-@@ -917,8 +1247,6 @@
+@@ -917,8 +1253,6 @@
  		uclass_foreach_dev_probe(UCLASS_ADC, dev) {
  			log_debug("ACD probe for calibration: %s\n", dev->name);
  		}
@@ -1498,7 +1504,7 @@
  	}
  
  	if (CONFIG_IS_ENABLED(FASTBOOT_FLASH_MMC))
-@@ -927,11 +1255,6 @@
+@@ -927,11 +1261,6 @@
  	return 0;
  }
  
@@ -1510,7 +1516,7 @@
  /* CLOCK feed to PHY*/
  #define ETH_CK_F_25M	25000000
  #define ETH_CK_F_50M	50000000
-@@ -1158,56 +1481,6 @@
+@@ -1158,56 +1487,6 @@
  }
  
  #if defined(CONFIG_OF_BOARD_SETUP)
@@ -1567,7 +1573,7 @@
  
  int ft_board_setup(void *blob, struct bd_info *bd)
  {
-@@ -1216,12 +1489,6 @@
+@@ -1216,12 +1495,6 @@
  	if (IS_ENABLED(CONFIG_FDT_SIMPLEFB))
  		fdt_simplefb_enable_and_mem_rsv(blob);
  
