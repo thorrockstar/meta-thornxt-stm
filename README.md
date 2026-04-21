@@ -169,8 +169,8 @@ Typical bitbake output
     meta-python          = "scarthgap:4d3e2639dec542b58708244662d5ce36810fc510"
 
 
-Install the Signing Tool for Production
-=======================================
+Install the Signing Tool for Production under Linux
+===================================================
 
 To install the signing tool, download STMCubeProgrammer from the ST web site.
 You will need a log-in on their web page. Replace the "x.xx.x" with the actual
@@ -184,14 +184,19 @@ version number given in the file name.
 
     ./SetupSTM32CubeProgrammer-x.xx.x.linux
 
+Create you companies private/public keys
+======================================
+
+    STM32CubeProgrammer\bin>STM32MP_KeyGen_CLI -abs ./meta-thornxt-stm/conf/machine/signing -pwd <your password>
+
 Signing the Image for Production
 ================================
 
 In order to sign your image, you need to:
 
-1.) Use your companies private/public key pair and copy them into the "conf/machine/signing" folder.   
+1.) Use your companies private/public key pair and copy them into the "meta-thornxt-stm/conf/machine/signing" folder.   
 2.) Download the STMCubeProgrammer - see above.   
-3.) Enable the signing procedure in the machine configuration file "conf/machine/stm32mp1-thor-e2-conf" at the very end of the file - see below.   
+3.) Enable the signing procedure in the machine configuration file "meta-thornxt-stm/conf/machine/stm32mp1-thor-e2-conf" at the very end of the file - see below.   
 
 ### Edit your machine config file
 
@@ -214,6 +219,24 @@ In order to sign your image, you need to:
     SIGN_KEY_PASS = "your password"
 
 
+Writing your public key hash (PKH) into OTP via U-Boot
+======================================================
+
+When you create your public/private keys with the STM32MP_KeyGen_CLI you will
+get a third file, which is actually the SHA256 of your public key. Make a hexdump
+of that and split it into 8 words. Add this script to the "meta-thornxt-stm/recipes-bsp/u-boot/patches/stm32mp1_st_h.patch" file
+in order to make U-Boot write the OTP at the very first boot. Be aware that there is another patch file that looks almost the same. Double check that you are in the "stm32mp1_st_h.patch" file!
+
+Replace the 0x1111111 ... 0x88888888 with your actual hex-dump.
+
+```
+File: stm32mp1_st_h.patch
+
+#define ST_STM32MP1_BOOTCMD "bootcmd_stm32mp=" \
+"echo \"TODO: Add your PKH fuse check here...\";" \
+"if fuse cmp 0 24 0x11111111; then echo \"PKH ok\"; else fuse prog -y 0 24 0x11111111 0x22222222 0x33333333 0x44444444 0x55555555 0x66666666 0x77777777 0x88888888; fi" \
+<The original rest of the script.>
+```
 
 Contributing
 ============

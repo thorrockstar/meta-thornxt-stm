@@ -10,14 +10,15 @@ SRC_URI += " \
 	file://stm32mp15_defconfig.patch \
 	file://stm32mp1.patch \
 	file://stm32mp1_h.patch \
+	file://stm32mp1_st_h.patch \
 	file://common.patch \
 	file://soc.patch \
 	file://build.patch \
 	file://dfu.patch \
 	file://stm32prog.patch \
 	file://autoboot.patch \
-	file://fastmap.patch \
 	file://pxe_utils.patch \
+	file://fastmap.patch \
 	file://Makefile.patch \
 "
 
