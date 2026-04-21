@@ -205,10 +205,10 @@ In order to sign your image, you need to:
     SIGN_HEADER_VERSION_stm32mp15 = "1.0"
 
 ##### Path to the private key (PEM-Format)
-    SIGN_KEY = "conf/machine/signing/privateKey.pem"
+    SIGN_KEY = "${THOR_LAYER_CUSTOM_PATH}/conf/machine/signing/privateKey.pem"
 
 ##### Path to the public key (PEM-Format)
-    SIGN_KEY_PUB_stm32mp15 = "conf/machine/signing/publicKey.pem"
+    SIGN_KEY_PUB_stm32mp15 = "${THOR_LAYER_CUSTOM_PATH}/conf/machine/signing/publicKey.pem"
 
 ##### Password for the private key
     SIGN_KEY_PASS = "your password"
