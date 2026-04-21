@@ -46,7 +46,6 @@
 		regulator-always-on;
 	};
 
-
 }; /* root */
 
 /* DDR RAM supplies */
