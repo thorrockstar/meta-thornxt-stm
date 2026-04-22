@@ -222,22 +222,19 @@ In order to sign your image, you need to:
 Writing your public key hash (PKH) into OTP via U-Boot
 ======================================================
 
-When you create your public/private keys with the STM32MP_KeyGen_CLI you will
-get a third file, which is actually the SHA256 of your public key. Make a hexdump
-of that file.
+When you create your public/private keys with the STM32MP_KeyGen_CLI you will get a third file, which is actually the SHA256 of your public key. Make a hexdump of that file.
 
     hexdump -v -e '1/1 " %02X" ","' publicKeyhash.bin
 
-Add your real hex-dumo to the "meta-thornxt-stm/recipes-bsp/u-boot/patches/stm32mp1_st_h.patch" file in order to make U-Boot write the OTP at the very first boot. Be aware that there is another patch file that looks almost the same. Double check that you are in the "stm32mp1_**st**_h.patch" file!
+Add your real hex-dumo to the "meta-thornxt-stm/recipes-bsp/u-boot/patches/stm32mp15_st_common.h.patch" file in order to make U-Boot write the OTP at the very first boot. Be aware that there is another patch file that looks almost the same. Double check that you are in the "stm32mp15_st_common.h.patch" file!
 
 ```
 File: stm32mp1_st_h.patch
 
 #define THOR_STM32MP1_PKH_FUSES_ENABLE 1
 #define THOR_STM32MP1_PKH_FUSES_BYTES 0x01, 0x02, 0x03, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x000, 0x00, 0x00, 0x00
-#define THOR_STM32MP1_PKH_FUSES_PROBE_STRING "0x04030201"    // First OTP word (little endian)
+#define THOR_STM32MP1_PKH_FUSES_PROBE_STRING "0x01020304"    // First OTP word (big endian)
 #define THOR_STM32MP1_PKH_FUSES_ADDR_STRING  "0xc4000000"    // STMP151x specific - see https://wiki.st.com/stm32mpu/wiki/How_to_use_U-Boot_stm32key_command
-#define THOR_STM32MP1_PKH_FUSES_ADDR_PTR      0xc4000000
 
 #if THOR_STM32MP1_PKH_FUSES_ENABLE
 #define ST_STM32MP1_BOOTCMD "bootcmd_stm32mp=" \
@@ -245,6 +242,14 @@ File: stm32mp1_st_h.patch
 	"if fuse cmp 0 24 " THOR_STM32MP1_PKH_FUSES_PROBE_STRING "; then echo \"PKH ok\"; else stm32key select PKH; stm32key fuse -y " THOR_STM32MP1_PKH_FUSES_ADDR_STRING "; fi;" \
 <The original rest of the script.>
 ```
+
+Replacing the normal patches with the "_secure" patches
+=======================================================
+
+For production, when you are sure that your public key, private key and the hash of the public key (PHK) is perfectly fine and all binaries have been signed, you can replace the normal patch, with the "_secure" patches in the "**recipe-secure/optee/optee-os-stm32mp_\%.bbappend**" file and then do a rebuild.
+
+    conf.mk.patch ===> conf.mk_secure.patch
+
 
 Contributing
 ============

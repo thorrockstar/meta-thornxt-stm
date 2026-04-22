@@ -10,7 +10,7 @@ SRC_URI += " \
 	file://stm32mp15_defconfig.patch \
 	file://stm32mp1.patch \
 	file://stm32mp1_h.patch \
-	file://stm32mp1_st_h.patch \
+	file://stm32mp15_st_common.h.patch \
 	file://common.patch \
 	file://soc.patch \
 	file://build.patch \

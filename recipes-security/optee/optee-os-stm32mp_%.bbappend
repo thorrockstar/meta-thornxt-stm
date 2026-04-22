@@ -8,5 +8,3 @@ SRC_URI += " \
 	file://boot.c.patch \
 "
 
-PACKAGE_ARCH = "${MACHINE_ARCH}"
-

@@ -1,5 +1,5 @@
---- a/core/arch/arm/plat-stm32mp1/conf.mk
-+++ b/core/arch/arm/plat-stm32mp1/conf.mk
+--- conf.mk	2026-04-22 23:38:50.492347881 +0200
++++ _conf.mk	2026-04-22 23:51:16.298215354 +0200
 @@ -316,7 +316,7 @@
  endif
  
@@ -9,6 +9,15 @@
  ifeq ($(CFG_STM32MP15)-$(CFG_WITH_PAGER),y-y)
  CFG_TZSRAM_START ?= 0x2ffc0000
  CFG_TZSRAM_SIZE  ?= 0x00040000
+@@ -344,7 +344,7 @@
+ CFG_STM32_TAMP ?= y
+ CFG_STM32_TIM ?= y
+ CFG_STM32_UART ?= y
+-CFG_STM32MP_PROVISIONING ?= y
++CFG_STM32MP_PROVISIONING ?= n
+ CFG_STPMIC1 ?= y
+ CFG_STPMIC2 ?= y
+ CFG_SYSCFG ?= y
 @@ -424,7 +424,7 @@
  $(call force,CFG_STM32_BSEC,y,Required by CFG_STM32_BSEC_PTA)
  endif
