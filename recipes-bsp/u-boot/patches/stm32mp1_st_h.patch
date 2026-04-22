@@ -7,18 +7,18 @@
 + *
 + * THOR specific PKH OTP fuses for secure ROMBoot. These are basically the SHA256 of the public key.
   */
-+#define THOR_STM32MP1_PKH_FUSES_ENABLE 0
-+#define THOR_STM32MP1_PKH_FUSES_BYTES 0x01, 0x02, 0x03, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-+#define THOR_STM32MP1_PKH_FUSES_PROBE_STRING "0x04030201"    // First OTP word (little endian)
++
++#define THOR_STM32MP1_PKH_FUSES_ENABLE 1
++#define THOR_STM32MP1_PKH_FUSES_BYTES 0x8b, 0xbd, 0xf6, 0x2b, 0x0f, 0xb6, 0x19, 0xef, 0x6c, 0x00, 0x99, 0x31, 0x07, 0xbf, 0xed, 0x4e, 0xe2, 0xf4, 0x6c, 0x46, 0x1e, 0xd6, 0x3b, 0x5e, 0xc4, 0xd8, 0xd0, 0x25, 0x05, 0xff, 0xde, 0x0e
++#define THOR_STM32MP1_PKH_FUSES_PROBE_STRING "0x8bbdf62b"    // First OTP word (First 4 fuse bytes but big endian)
 +#define THOR_STM32MP1_PKH_FUSES_ADDR_STRING  "0xc4000000"    // STMP151x specific - see https://wiki.st.com/stm32mpu/wiki/How_to_use_U-Boot_stm32key_command
-+#define THOR_STM32MP1_PKH_FUSES_ADDR_PTR      0xc4000000
 +
 +#if THOR_STM32MP1_PKH_FUSES_ENABLE
 +
 +#define ST_STM32MP1_BOOTCMD "bootcmd_stm32mp=" \
-+	"echo \"Check PKH...\";" \
++	"echo \"Checking PKH\";" \
 +	"if fuse cmp 0 24 " THOR_STM32MP1_PKH_FUSES_PROBE_STRING "; then echo \"PKH ok\"; else stm32key select PKH; stm32key fuse -y " THOR_STM32MP1_PKH_FUSES_ADDR_STRING "; fi;" \
-+	"echo \"Boot over ${boot_device}${boot_instance}!\";" \
++	"echo \"Booting ${boot_device}${boot_instance}!\";" \
 +	"if test ${boot_device} = usb;" \
 +	"then stm32prog ${boot_device} ${boot_instance}; " \
 +	"else " \

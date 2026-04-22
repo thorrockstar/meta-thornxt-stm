@@ -1476,7 +1476,7 @@
 +
 +	static const uint8_t s_thor_pkh_otp_fuses[] = { THOR_STM32MP1_PKH_FUSES_BYTES };
 +
-+	memcpy(THOR_STM32MP1_PKH_FUSES_ADDR_PTR, s_thor_pkh_otp_fuses, sizeof(s_thor_pkh_otp_fuses));
++	memcpy(simple_strtoul(THOR_STM32MP1_PKH_FUSES_ADDR_STRING, NULL, 0), s_thor_pkh_otp_fuses, sizeof(s_thor_pkh_otp_fuses));
 +
 +#endif // THOR_STM32MP1_PKH_FUSES_ENABLE
  
