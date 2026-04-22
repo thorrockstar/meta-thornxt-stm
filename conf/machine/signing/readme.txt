@@ -13,6 +13,11 @@ version number given in the file name.
 
     ./SetupSTM32CubeProgrammer-x.xx.x.linux
 
+Create you companies private/public keys
+========================================
+
+    STM32CubeProgrammer\bin>STM32MP_KeyGen_CLI -abs ./meta-thornxt-stm/conf/machine/signing -pwd <your password>
+
 Signing the Image for Production
 ================================
 
