@@ -13,7 +13,9 @@ https://www.st.com/en/embedded-software/stm32-mpu-openstlinux-distribution.html
 
 Supported SoCs / MACHINE names
 ==============================
-- STM32MP157 based THOR-E2 and Nous-X lift controller boards
+- STM32MP157 based THOR-E2 and Nous-X lift controller boards.
+- Featuring "OP-TEE-OS" security.
+- For the STM32MP157C/F MPU secure boot is supported. See below.
 
 
 Sources
@@ -142,11 +144,7 @@ GLIBC_GENERATE_LOCALES += "en_US.UTF-8"
 IMAGE_LINGUAS += "en-us"  
 ```
 
-**IMPORTANT**
-
-10/ Double check that in the kernel configuration **'General Setup->Timers subsystem->Timer tick handling'** is set to **'Periodic timer ticks'**. This should be done by the 'defconfig' but double check before building because it is cruicial.
-
-11/ Build Thor image
+10/ Build Thor image
 
     bitbake thor-e-image
 
@@ -171,6 +169,85 @@ Typical bitbake output
     meta-oe              
     meta-networking      
     meta-python          = "scarthgap:4d3e2639dec542b58708244662d5ce36810fc510"
+
+
+Install the Programmer and the Signing Tool for Production under Linux
+======================================================================
+
+To install the signing tool, download STMCubeProgrammer from the ST web site.
+You will need a log-in on their web page. Replace the "x.xx.x" with the actual
+version number given in the file name.
+
+    https://www.st.com/en/development-tools/stm32cubeprog.html
+
+    unzip SetupSTM32CubeProgrammer_linux_64.zip
+
+    chmod +x SetupSTM32CubeProgrammer-x.xx.x.linux
+
+    ./SetupSTM32CubeProgrammer-x.xx.x.linux
+
+Create you companies private/public keys
+======================================
+
+    STM32CubeProgrammer\bin>STM32MP_KeyGen_CLI -abs ./meta-thornxt-stm/conf/machine/signing -pwd <your password>
+
+Signing the Image for Production
+================================
+
+In order to sign your image, you need to:
+
+1.) Use your companies private/public key pair and copy them into the "meta-thornxt-stm/conf/machine/signing" folder.   
+2.) Download the STMCubeProgrammer - see above.   
+3.) Enable the signing procedure in the machine configuration file "meta-thornxt-stm/conf/machine/stm32mp1-thor-e2-conf" at the very end of the file - see below.   
+
+### Edit your machine config file
+
+    gnome-text-editor conf/machine/stm32mp1-thor-e2-conf
+
+##### Activate the signing of TF-A/FIP at the end of the file
+    SIGN_ENABLE = "1"
+    SIGN_TOOL = "absolute path to STM32CubeProgrammer/bin/STM32_SigningTool_CLI"
+
+##### Version for STMP32MP15X
+    SIGN_HEADER_VERSION_stm32mp15 = "1.0"
+
+##### Path to the private key (PEM-Format)
+    SIGN_KEY = "${THOR_LAYER_CUSTOM_PATH}/conf/machine/signing/privateKey.pem"
+
+##### Path to the public key (PEM-Format)
+    SIGN_KEY_PUB_stm32mp15 = "${THOR_LAYER_CUSTOM_PATH}/conf/machine/signing/publicKey.pem"
+
+##### Password for the private key
+    SIGN_KEY_PASS = "your password"
+
+Secure Boot for STM32MP157C/F MPUs
+==================================
+
+Writing your public key hash (PKH) into OTP via U-Boot
+------------------------------------------------------
+
+When you create your public/private keys with the STM32MP_KeyGen_CLI you will get a third file, which is actually the SHA256 of your public key. Make a hexdump of that file.
+
+    hexdump -v -e '1/1 " %02X" ","' publicKeyhash.bin
+
+Add your real hex-dumo to the "meta-thornxt-stm/recipes-bsp/u-boot/patches/stm32mp15_st_common.h.patch" file in order to make U-Boot write the PKH into the OTP at the very first boot. Double check that you are in the "stm32mp15_st_common.h.patch" file!
+
+```
+File: stm32mp15_st_common.h.patch
+
+#define THOR_STM32MP1_PKH_FUSES_ENABLE 1
+#define THOR_STM32MP1_PKH_FUSES_BYTES 0x01, 0x02, 0x03, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x000, 0x00, 0x00, 0x00
+#define THOR_STM32MP1_PKH_FUSES_PROBE_STRING "0x01020304"    // First OTP word (big endian)
+#define THOR_STM32MP1_PKH_FUSES_ADDR_STRING  "0xc4000000"    // STMP151x specific - see https://wiki.st.com/stm32mpu/wiki/How_to_use_U-Boot_stm32key_command
+```
+
+Replacing the normal patches with the "_secure" patches in OPTEE
+----------------------------------------------------------------
+
+For production, when you are sure that your public key, private key and the hash of the public key (PHK) is perfectly fine and all binaries have been signed, you can replace the normal patch, with the "_secure" patch in the "**recipe-secure/optee/optee-os-stm32mp_\%.bbappend**" file and then do a rebuild.
+
+    conf.mk.patch ===> conf.mk_secure.patch
+
 
 Contributing
 ============

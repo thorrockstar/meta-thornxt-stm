@@ -13,3 +13,5 @@ SRC_URI += " \
 	file://bl_common.patch \
 "
 
+ST_TF_A_DEBUG_TRACE := "0"
+

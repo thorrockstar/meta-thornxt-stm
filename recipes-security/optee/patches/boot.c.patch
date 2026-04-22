@@ -1,0 +1,11 @@
+--- a/core/arch/arm/kernel/boot.c
++++ b/core/arch/arm/kernel/boot.c
+@@ -1209,7 +1209,7 @@
+ 	configure_console_from_dt();
+ 
+ 	IMSG("OP-TEE version: %s", core_v_str);
+-	if (IS_ENABLED(CFG_INSECURE)) {
++	if (IS_ENABLED(CFG_WARN_INSECURE)) {
+ 		IMSG("WARNING: This OP-TEE configuration might be insecure!");
+ 		IMSG("WARNING: Please check https://optee.readthedocs.io/en/latest/architecture/porting_guidelines.html");
+ 	}

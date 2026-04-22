@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/core/arch/arm/dts/stm32mp157d-thor.dts
-@@ -0,0 +1,756 @@
+@@ -0,0 +1,743 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
 +/*
 + * Copyright (C) THOR Engineering GmbH 2026
@@ -115,19 +115,6 @@
 +	};
 +
 +}; /* root */
-+
-+/* Boot and Security Configuration */
-+
-+&bsec {
-+	board_id: board_id@ec {
-+		reg = <0xec 0x4>;
-+		st,non-secure-otp;
-+	};
-+
-+	huk_otp: huk-otp@f0 {
-+		reg = <0xf0 0x10>;
-+	};
-+};
 +
 +/* Pinout mapping */
 +

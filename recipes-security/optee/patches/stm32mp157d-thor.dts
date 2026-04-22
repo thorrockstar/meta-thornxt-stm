@@ -113,19 +113,6 @@
 
 }; /* root */
 
-/* Boot and Security Configuration */
-
-&bsec {
-	board_id: board_id@ec {
-		reg = <0xec 0x4>;
-		st,non-secure-otp;
-	};
-
-	huk_otp: huk-otp@f0 {
-		reg = <0xf0 0x10>;
-	};
-};
-
 /* Pinout mapping */
 
 &pinctrl {
