@@ -1298,9 +1298,9 @@
 +	};
 +};
 +
-+/* Random Number generator */
 +
-+&rng1 {
-+	status = "okay";
-+};
++
++
++
++
 +
