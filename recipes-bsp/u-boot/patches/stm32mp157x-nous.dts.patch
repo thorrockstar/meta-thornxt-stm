@@ -1,5 +1,5 @@
---- /dev/null	2026-04-13 08:56:51.565002273 +0200
-+++ b/arch/arm/dts/stm32mp157d-thor.dts	2026-04-13 16:58:08.154852889 +0200
+--- /dev/null
++++ b/arch/arm/dts/stm32mp157x-nous.dts
 @@ -0,0 +1,782 @@
 +// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
 +/*
@@ -12,7 +12,7 @@
 +/dts-v1/;
 +
 +#include "stm32mp153.dtsi"               /* dt-bindings/#? */
-+#include "stm32mp15xd.dtsi"              /* stm32mp15xd.dtsi */
++#include "stm32mp15xa.dtsi"              /* stm32mp15xa.dtsi */
 +#include "stm32mp15-pinctrl.dtsi"        /* Analogue, Ethernet, etc. */
 +#include "stm32mp15xxaa-pinctrl.dtsi"    /* GPIOA..Z */
 +#include "stm32mp15-m4-srm.dtsi"         /* M4 CPU, USART, timers, etc. */
@@ -24,13 +24,13 @@
 +
 +/* SCMI/OPTEE */
 +
-+#include "stm32mp157d-thor-scmi.dtsi"
++#include "stm32mp157x-nous-scmi.dtsi"
 +
 +/* Board description */
 +
 +/ {
-+	model = "THOR Engineering E2-Board";
-+	compatible = "st,stm32mp157d-thor", "st,stm32mp157";
++	model = "THOR Engineering Nous-X-Board";
++	compatible = "st,stm32mp157x-nous", "st,stm32mp157";
 +
 +	aliases {
 +		ethernet0 = &ethernet0;
@@ -141,15 +141,15 @@
 +
 +		display-timings {
 +			timing@0 {
-+				clock-frequency = <33011000>;
-+				hactive = <480>;
-+				vactive = <960>;
-+				hfront-porch = <30>;
-+				hback-porch = <30>;
-+				hsync-len = <8>;
-+				vfront-porch = <20>;
-+				vback-porch = <20>;
-+				vsync-len = <4>;
++				clock-frequency = <33333333>;
++				hactive = <800>;
++				vactive = <480>;
++				hfront-porch = <40>;
++				hback-porch = <40>;
++				hsync-len = <48>;
++				vfront-porch = <13>;
++				vback-porch = <29>;
++				vsync-len = <3>;
 +				hsync-active = <0>;
 +				vsync-active = <0>;
 +				de-active = <1>;

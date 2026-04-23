@@ -1,5 +1,5 @@
 --- a/dev/null	2026-04-13 20:53:12.625000009 +0200
-+++ b/arch/arm/boot/dts/st/stm32mp157d-thor.dts	2026-04-11 01:31:22.260109880 +0200
++++ b/arch/arm/boot/dts/st/stm32mp157x-thor.dts	2026-04-11 01:31:22.260109880 +0200
 @@ -0,0 +1,1303 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
 +/*
@@ -19,7 +19,7 @@
 +
 +/* SCMI/OPTEE include. */
 +
-+#include "stm32mp157d-thor-scmi.dtsi"
++#include "stm32mp157x-thor-scmi.dtsi"
 +
 +/* DT-Bindings */
 +
@@ -31,7 +31,7 @@
 +
 +/ {
 +	model = "THOR Engineering E2-Board";
-+	compatible = "st,stm32mp157d-thor", "st,stm32mp157";
++	compatible = "st,stm32mp157x-thor", "st,stm32mp157";
 +
 +	aliases {
 +		ethernet0 = &ethernet0;

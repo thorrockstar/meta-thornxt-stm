@@ -1,5 +1,5 @@
 --- /dev/null
-+++ b/core/arch/arm/dts/stm32mp157d-thor.dts
++++ b/core/arch/arm/dts/stm32mp157x-thor.dts
 @@ -0,0 +1,743 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
 +/*
@@ -31,7 +31,7 @@
 +
 +/ {
 +	model = "THOR Engineering E2-Board";
-+	compatible = "st,stm32mp157d-thor", "st,stm32mp157";
++	compatible = "st,stm32mp157x-thor", "st,stm32mp157";
 +
 +	aliases {
 +		serial0 = &uart4;

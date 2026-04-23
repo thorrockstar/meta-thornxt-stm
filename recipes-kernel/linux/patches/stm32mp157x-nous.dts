@@ -16,7 +16,7 @@
 
 /* SCMI/OPTEE include. */
 
-#include "stm32mp157a-nous-scmi.dtsi"
+#include "stm32mp157x-nous-scmi.dtsi"
 
 /* DT-Bindings */
 
@@ -28,7 +28,7 @@
 
 / {
 	model = "THOR Engineering Nous-X-Board";
-	compatible = "st,stm32mp157a-nous", "st,stm32mp157";
+	compatible = "st,stm32mp157x-nous", "st,stm32mp157";
 
 	aliases {
 		ethernet0 = &ethernet0;

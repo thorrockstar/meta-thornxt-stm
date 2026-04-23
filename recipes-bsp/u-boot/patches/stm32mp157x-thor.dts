@@ -21,13 +21,13 @@
 
 /* SCMI/OPTEE */
 
-#include "stm32mp157d-thor-scmi.dtsi"
+#include "stm32mp157x-thor-scmi.dtsi"
 
 /* Board description */
 
 / {
 	model = "THOR Engineering E2-Board";
-	compatible = "st,stm32mp157d-thor", "st,stm32mp157";
+	compatible = "st,stm32mp157x-thor", "st,stm32mp157";
 
 	aliases {
 		ethernet0 = &ethernet0;

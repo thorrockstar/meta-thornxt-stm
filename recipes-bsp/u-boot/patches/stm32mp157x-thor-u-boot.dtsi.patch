@@ -1,5 +1,5 @@
 --- /dev/null
-+++ b/arch/arm/dts/stm32mp157a-nous-u-boot.dtsi
++++ b/arch/arm/dts/stm32mp157x-thor-u-boot.dtsi
 @@ -0,0 +1,157 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later OR BSD-3-Clause
 +/*

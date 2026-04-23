@@ -5,10 +5,10 @@ KERNEL_CONFIG_FRAGMENTS:append = "${WORKDIR}/fragments/${LINUX_VERSION}/fragment
 SRC_URI:append = " file://${LINUX_VERSION}/fragment-custom.config;subdir=fragments "
 
 SRC_URI += " \
-	file://stm32mp157a-nous.dts.patch \
-	file://stm32mp157a-nous-scmi.dtsi.patch \
-	file://stm32mp157d-thor.dts.patch \
-	file://stm32mp157d-thor-scmi.dtsi.patch \
+	file://stm32mp157x-nous.dts.patch \
+	file://stm32mp157x-nous-scmi.dtsi.patch \
+	file://stm32mp157x-thor.dts.patch \
+	file://stm32mp157x-thor-scmi.dtsi.patch \
 	file://stmmac_platform.patch \
 	file://stm32_sai_sub.patch \
 	file://drm_fb_helper.patch \
