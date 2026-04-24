@@ -28,7 +28,7 @@
 
 / {
 	model = "THOR Engineering Nous-X-Board";
-	compatible = "st,stm32mp157a-nous", "st,stm32mp157";
+	compatible = "st,stm32mp157x-nous", "st,stm32mp157";
 
 	aliases {
 		serial0 = &uart4;

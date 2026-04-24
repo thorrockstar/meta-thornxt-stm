@@ -202,7 +202,9 @@ In order to sign your image, you need to:
 
 ### Edit your machine config file
 
-    gnome-text-editor conf/machine/stm32mp1-thor-e2-conf
+Assuming your are already in the build folder at this stage, use this command line to open your machine config file.
+
+    gnome-text-editor ../../meta-thornxt-stm/conf/machine/stm32mp1-thor-e2.conf
 
 ##### Activate the signing of TF-A/FIP at the end of the file
     SIGN_ENABLE = "1"
@@ -230,7 +232,7 @@ When you create your public/private keys with the STM32MP_KeyGen_CLI you will ge
 
     hexdump -v -e '1/1 " %02X" ","' publicKeyhash.bin
 
-Add your real hex-dumo to the "meta-thornxt-stm/recipes-bsp/u-boot/patches/stm32mp15_st_common.h.patch" file in order to make U-Boot write the PKH into the OTP at the very first boot. Double check that you are in the "stm32mp15_st_common.h.patch" file!
+Add your real hex-dump to the "meta-thornxt-stm/recipes-bsp/u-boot/patches/stm32mp15_st_common.h.patch" file in order to make U-Boot write the PKH into the OTP at the very first boot. Double check that you are in the "stm32mp15_st_common.h.patch" file!
 
 ```
 File: stm32mp15_st_common.h.patch

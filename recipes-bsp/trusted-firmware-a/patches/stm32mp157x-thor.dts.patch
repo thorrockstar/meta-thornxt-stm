@@ -1,6 +1,6 @@
 --- /dev/null	2026-04-10 09:17:36.938000228 +0200
-+++ b/fdts/stm32mp157a-nous.dts	2026-04-10 12:21:22.402031185 +0200
-@@ -0,0 +1,463 @@
++++ b/fdts/stm32mp157x-thor.dts	2026-04-10 12:21:22.402031185 +0200
+@@ -0,0 +1,462 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
 +/*
 + * Copyright (C) THOR Engineering GmbH 2026
@@ -16,7 +16,7 @@
 +#include <dt-bindings/clock/stm32mp1-clksrc.h>
 +
 +#include "stm32mp157.dtsi"               /* dt-bindings/#? */
-+#include "stm32mp15xa.dtsi"              /* stm32mp15xa.dtsi */
++#include "stm32mp15xf.dtsi"              /* stm32mp15xf.dtsi */
 +#include "stm32mp15xxac-pinctrl.dtsi"    /* GPIOA..Z */
 +#include "stm32mp15-pinctrl.dtsi"        /* Analogue, Ethernet, etc. */
 +
@@ -25,8 +25,8 @@
 +/* Board definition */
 +
 +/ {
-+	model = "THOR Engineering Nous-X-Board";
-+	compatible = "st,stm32mp157a-nous", "st,stm32mp157";
++	model = "THOR Engineering E2-Board";
++	compatible = "st,stm32mp157x-thor", "st,stm32mp157";
 +
 +	memory@c0000000 {
 +		device_type = "memory";
@@ -48,7 +48,6 @@
 +		regulator-max-microvolt = <5000000>;
 +		regulator-always-on;
 +	};
-+
 +
 +}; /* root */
 +

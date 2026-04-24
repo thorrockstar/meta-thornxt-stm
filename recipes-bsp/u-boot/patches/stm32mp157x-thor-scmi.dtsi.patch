@@ -1,5 +1,5 @@
 --- /dev/null
-+++ b/arch/arm/dts/stm32mp157a-nous-scmi.dtsi
++++ b/arch/arm/dts/stm32mp157x-thor-scmi.dtsi
 @@ -0,0 +1,124 @@
 +// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
 +/*

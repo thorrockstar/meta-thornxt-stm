@@ -81,7 +81,7 @@ IMAGE_INSTALL:append = "\
 
 CUSTOMFILESPATH_EXTRA := "${THISDIR}/images/files"
 
-ROOTFS_POSTPROCESS_COMMAND += " fix_udev_files ; fix_usr_files ; fix_firmware_files ; "
+ROOTFS_POSTPROCESS_COMMAND += " fix_udev_files ; fix_usr_files ; fix_firmware_files ; fix_etc_files ; "
 
 fix_udev_files () {
     rm -f $D${sysconfdir}/udev/hwdb.bin
@@ -122,6 +122,11 @@ fix_usr_files () {
     rm -fr $D/usr/libexec/bluetooth
     rm -fr $D/usr/libexec/nfc
 }
+
+fix_etc_files () {
+    rm -fr $D/etc/chatscripts
+}
+
 
 fix_firmware_files () {
     rm -fr $D/usr/lib/firmware/*

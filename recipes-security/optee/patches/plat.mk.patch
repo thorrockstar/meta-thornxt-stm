@@ -4,8 +4,8 @@
  flavor_dts_file-157F_DK2 = stm32mp157f-dk2.dts
  flavor_dts_file-157F_ED1 = stm32mp157f-ed1.dts
  flavor_dts_file-157F_EV1 = stm32mp157f-ev1.dts
-+flavor_dts_file-157D_THOR = stm32mp157d-thor.dts
-+flavor_dts_file-157A_NOUS = stm32mp157a-nous.dts
++flavor_dts_file-157D_THOR = stm32mp157x-thor.dts
++flavor_dts_file-157A_NOUS = stm32mp157x-nous.dts
  
  flavor_dts_file-135F_DK = stm32mp135f-dk.dts
  
@@ -15,8 +15,8 @@
  flavorlist-no_cryp-512M = $(flavor_dts_file-157A_DK1) \
 -			  $(flavor_dts_file-157D_DK1)
 +			  $(flavor_dts_file-157D_DK1) \
-+		          $(flavor_dts_file-157D_THOR) \
-+		          $(flavor_dts_file-157A_NOUS)
++		          $(flavor_dts_file-157X_THOR) \
++		          $(flavor_dts_file-157X_NOUS)
  
  flavorlist-cryp-1G = $(flavor_dts_file-157C_DHCOM_PDK2) \
  		     $(flavor_dts_file-157C_ED1) \
@@ -26,8 +26,8 @@
  		  $(flavor_dts_file-157F_ED1) \
 -		  $(flavor_dts_file-157F_EV1)
 +		  $(flavor_dts_file-157F_EV1) \
-+		  $(flavor_dts_file-157D_THOR) \
-+		  $(flavor_dts_file-157A_NOUS)
++		  $(flavor_dts_file-157X_THOR) \
++		  $(flavor_dts_file-157X_NOUS)
 +
  
  flavorlist-MP13 = $(flavor_dts_file-135F_DK)

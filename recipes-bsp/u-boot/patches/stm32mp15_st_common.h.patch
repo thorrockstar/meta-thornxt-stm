@@ -49,7 +49,7 @@
 +			"stm32key close -y;" \
 +			"echo \"Device is now CLOSED. Please reboot.\";" \
 +		"else " \
-+			"echo \"ERROR: PKH provisioning failed!\";" \
++			"echo \"Device is OPEN.\";" \
 +		"fi;" \
 +	"fi;" \
 +	"echo \"Booting ${boot_device}${boot_instance}!\";" \

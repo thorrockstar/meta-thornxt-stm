@@ -1,6 +1,6 @@
---- a/dev/null	2026-04-13 20:53:12.625000009 +0200
-+++ b/arch/arm/boot/dts/st/stm32mp157a-nous-scmi.dtsi	2026-04-11 01:31:21.553198621 +0200
-@@ -0,0 +1,141 @@
+--- /dev/null
++++ b/arch/arm/dts/stm32mp157x-nous-scmi.dtsi
+@@ -0,0 +1,124 @@
 +// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
 +/*
 + * Copyright (C) STMicroelectronics 2022 - All Rights Reserved
@@ -16,10 +16,6 @@
 +			no-map;
 +		};
 +	};
-+};
-+
-+&ltdc {
-+	clocks = <&rcc LTDC_PX>, <&scmi_clk CK_SCMI_HSE>, <&rcc LTDC_R>;
 +};
 +
 +&cpu0 {
@@ -88,11 +84,6 @@
 +	resets = <&scmi_reset RST_SCMI_I2C4>;
 +};
 +
-+&i2c6 {
-+	clocks = <&scmi_clk CK_SCMI_I2C6>;
-+	resets = <&scmi_reset RST_SCMI_I2C6>;
-+};
-+
 +&iwdg2 {
 +	clocks = <&rcc IWDG2>, <&scmi_clk CK_SCMI_LSI>;
 +};
@@ -102,14 +93,6 @@
 +		 <&scmi_reset RST_SCMI_MCU_HOLD_BOOT>;
 +	reset-names = "mcu_rst", "hold_boot";
 +	/delete-property/ st,syscfg-holdboot;
-+};
-+
-+&m_can1 {
-+	clocks = <&scmi_clk CK_SCMI_HSE>, <&rcc FDCAN_K>;
-+};
-+
-+&m_can2 {
-+	clocks = <&scmi_clk CK_SCMI_HSE>, <&rcc FDCAN_K>;
 +};
 +
 +&mdma1 {

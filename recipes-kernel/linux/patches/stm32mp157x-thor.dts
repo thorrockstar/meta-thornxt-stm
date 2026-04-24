@@ -10,13 +10,13 @@
 /dts-v1/;
 
 #include "stm32mp153.dtsi"               /* dt-bindings/#? */
-#include "stm32mp15xa.dtsi"              /* stm32mp15xa.dtsi */
+#include "stm32mp15xd.dtsi"              /* stm32mp15xd.dtsi */
 #include "stm32mp15-pinctrl.dtsi"        /* Analogue, Ethernet, etc. */
 #include "stm32mp15xxac-pinctrl.dtsi"    /* GPIOA..Z */
 
 /* SCMI/OPTEE include. */
 
-#include "stm32mp157a-nous-scmi.dtsi"
+#include "stm32mp157x-thor-scmi.dtsi"
 
 /* DT-Bindings */
 
@@ -27,8 +27,8 @@
 /* Board description */
 
 / {
-	model = "THOR Engineering Nous-X-Board";
-	compatible = "st,stm32mp157a-nous", "st,stm32mp157";
+	model = "THOR Engineering E2-Board";
+	compatible = "st,stm32mp157x-thor", "st,stm32mp157";
 
 	aliases {
 		ethernet0 = &ethernet0;
@@ -149,8 +149,8 @@
 	/* Simple display panel */
 
 	panel {
-		compatible = "thor,thor_nousx", "panel-dpi";
-		label = "ertft050";
+		compatible = "thor,thor_e2", "panel-dpi";
+		label = "hifaycx_rd570";
 		power-supply = <&panel_reg>;
 		status = "okay";
 		data-mapping = "rgb24";
@@ -165,15 +165,15 @@
 		};
 		
 		panel-timing {
-			clock-frequency = <33333333>;
-			hactive = <800>;
-			vactive = <480>;
-			hfront-porch = <40>;
-			hback-porch = <40>;
-			hsync-len = <48>;
-			vfront-porch = <13>;
-			vback-porch = <29>;
-			vsync-len = <3>;
+			clock-frequency = <33011000>;
+			hactive = <480>;
+			vactive = <960>;
+			hfront-porch = <30>;
+			hback-porch = <30>;
+			hsync-len = <8>;
+			vfront-porch = <20>;
+			vback-porch = <20>;
+			vsync-len = <4>;
 			hsync-active = <0>;
 			vsync-active = <0>;
 			de-active = <1>;
@@ -1293,11 +1293,5 @@
 		compatible = "usb-a-connector";
 		vbus-supply = <&v3v3>;
 	};
-};
-
-/* Random Number generator */
-
-&rng1 {
-	status = "okay";
 };
 
