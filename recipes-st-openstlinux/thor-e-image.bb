@@ -77,7 +77,6 @@ IMAGE_INSTALL:append = "\
     ca-certificates \
     openssh \
     openssh-sshd \
-    icu \
     "
 
 CUSTOMFILESPATH_EXTRA := "${THISDIR}/images/files"
