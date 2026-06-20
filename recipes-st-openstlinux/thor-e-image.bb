@@ -5,8 +5,6 @@ include recipes-st-openstlinux/thor-e.inc
 
 inherit core-image
 
-# IMAGE_LINGUAS = "en-us"
-
 #
 # INSTALL addons
 #
@@ -64,6 +62,7 @@ IMAGE_INSTALL:remove = "\
     nfc \
     zeroconf \
     zeromq \
+    icu \
     "
 
 # add important components to image
